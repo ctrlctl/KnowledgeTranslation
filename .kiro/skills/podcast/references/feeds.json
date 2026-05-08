@@ -1,0 +1,17 @@
+[
+  {"name": "Anthropic Research", "source": "web", "url": "https://www.anthropic.com/research", "link_pattern": "/research/"},
+  {"name": "Anthropic Engineering", "source": "web", "url": "https://www.anthropic.com/engineering", "link_pattern": "/engineering/"},
+  {"name": "LangChain Blog", "source": "web", "url": "https://www.langchain.com/blog", "link_pattern": "/blog/"},
+  {"name": "Mistral AI Engineering", "source": "web", "url": "https://mistral.ai/news?category=engineering", "link_pattern": "/news/"},
+  {"name": "Mistral AI Solutions", "source": "web", "url": "https://mistral.ai/news?category=solutions", "link_pattern": "/news/"},
+  {"name": "OpenAI Alignment", "source": "web", "url": "https://alignment.openai.com/", "link_pattern": ""},
+  {"name": "OpenAI Developers Blog", "source": "web", "url": "https://developers.openai.com/blog", "link_pattern": "/blog/"},
+  {"name": "Latent Space", "url": "https://www.latent.space/feed"},
+  {"name": "No Priors", "url": "https://feeds.megaphone.fm/nopriors"},
+  {"name": "Lex Fridman", "url": "https://lexfridman.com/feed/podcast/"},
+  {"name": "Dwarkesh Podcast", "url": "https://api.substack.com/feed/podcast/69345.rss"},
+  {"name": "Lilian Weng Blog", "url": "https://lilianweng.github.io/index.xml"},
+  {"name": "Practical AI", "url": "https://feeds.transistor.fm/practical-ai-machine-learning-data-science-llm"},
+  {"name": "Machine Learning Street Talk", "url": "https://feeds.megaphone.fm/MLN2155636147"},
+  {"name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/"}
+]

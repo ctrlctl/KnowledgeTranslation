@@ -1,0 +1,3 @@
+feedparser
+yt-dlp
+openai-whisper

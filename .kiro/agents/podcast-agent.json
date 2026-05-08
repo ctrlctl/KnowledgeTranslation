@@ -1,0 +1,12 @@
+{
+  "name": "podcast-agent",
+  "description": "播客扫描、筛选、转录、翻译整理Agent",
+  "prompt": "file://.kiro/skills/podcast/SKILL.md",
+  "tools": ["fs_read", "fs_write", "execute_bash", "grep", "glob"],
+  "allowedTools": ["fs_read", "fs_write", "execute_bash", "grep", "glob"],
+  "resources": [
+    "file://.kiro/skills/podcast/references/feeds.json",
+    "skill://.kiro/skills/podcast/SKILL.md"
+  ],
+  "welcomeMessage": "播客Agent已就绪。输入 scan 扫描推荐，或 pick <序号> 处理指定单集。"
+}

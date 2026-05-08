@@ -1,0 +1,336 @@
+[
+  {
+    "index": 1,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Scaling Managed Agents: Decoupling the brain from the hands",
+    "link": "https://www.anthropic.com/engineering/managed-agents"
+  },
+  {
+    "index": 2,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Harness design for long-running application development",
+    "link": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+  },
+  {
+    "index": 3,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Effective harnesses for long-running agents",
+    "link": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
+  },
+  {
+    "index": 4,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Building effective agents",
+    "link": "https://www.anthropic.com/engineering/building-effective-agents"
+  },
+  {
+    "index": 5,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Demystifying evals for AI agents",
+    "link": "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"
+  },
+  {
+    "index": 6,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Writing effective tools for agents — with agents",
+    "link": "https://www.anthropic.com/engineering/writing-tools-for-agents"
+  },
+  {
+    "index": 7,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Effective context engineering for AI agents",
+    "link": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"
+  },
+  {
+    "index": 8,
+    "score": 10,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "How we built our multi-agent research system",
+    "link": "https://www.anthropic.com/engineering/multi-agent-research-system"
+  },
+  {
+    "index": 9,
+    "score": 9,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "Training agents to self-report misbehavior",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 10,
+    "score": 9,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "How we monitor internal coding agents for misalignment",
+    "link": "https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment/"
+  },
+  {
+    "index": 11,
+    "score": 9,
+    "type": "media",
+    "feed": "Machine Learning Street Talk",
+    "title": "How to Find the Agent Failures Your Evals Miss with Scott Clark - #767",
+    "link": "https://twimlai.com/podcast/twimlai/how-find-agent-failures-your-evals-miss",
+    "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN7498240745.mp3?updated=1778194521"
+  },
+  {
+    "index": 12,
+    "score": 9,
+    "type": "media",
+    "feed": "Machine Learning Street Talk",
+    "title": "How Capital One Delivers Multi-Agent Systems with Rashmi Shetty - #765",
+    "link": "https://twimlai.com/podcast/twimlai/how-capital-one-delivers-multi-agent-systems",
+    "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN9114691307.mp3?updated=1776383902"
+  },
+  {
+    "index": 13,
+    "score": 9,
+    "type": "media",
+    "feed": "Machine Learning Street Talk",
+    "title": "Rethinking Pre-Training for Agentic AI with Aakanksha Chowdhery - #759",
+    "link": "https://twimlai.com/podcast/twimlai/rethinking-pretraining-for-agentic-ai/",
+    "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN3462034138.mp3?updated=1766003076"
+  },
+  {
+    "index": 14,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Equipping agents for the real world with Agent Skills",
+    "link": "https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills"
+  },
+  {
+    "index": 15,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Code execution with MCP: Building more efficient agents",
+    "link": "https://www.anthropic.com/engineering/code-execution-with-mcp"
+  },
+  {
+    "index": 16,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Introducing advanced tool use on the Claude Developer Platform",
+    "link": "https://www.anthropic.com/engineering/advanced-tool-use"
+  },
+  {
+    "index": 17,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Beyond permission prompts: making Claude Code more secure and autonomous",
+    "link": "https://www.anthropic.com/engineering/claude-code-security-autonomous"
+  },
+  {
+    "index": 18,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "The think tool: Enabling Claude to stop and think in complex tool use",
+    "link": "https://www.anthropic.com/engineering/the-think-tool"
+  },
+  {
+    "index": 19,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Claude Code: Best practices for agentic coding",
+    "link": "https://www.anthropic.com/engineering/claude-code-best-practices"
+  },
+  {
+    "index": 20,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Quantifying infrastructure noise in agentic coding evals",
+    "link": "https://www.anthropic.com/engineering/quantifying-infrastructure-noise-in-agentic-coding-evals"
+  },
+  {
+    "index": 21,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Eval awareness in Claude Opus 4.6 BrowseComp performance",
+    "link": "https://www.anthropic.com/engineering/eval-awareness-browsecomp"
+  },
+  {
+    "index": 22,
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Engineering",
+    "title": "Designing AI-resistant technical evaluations",
+    "link": "https://www.anthropic.com/engineering/ai-resistant-evaluations"
+  },
+  {
+    "index": 23,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "Auto-review of agent actions without synchronous human oversight",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 24,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "Metagaming matters for training, evaluation, and oversight",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 25,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "Sidestepping Evaluation Awareness and Anticipating Misalignment",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 26,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "Discovering unknown AI misalignments in real-world usage",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 27,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Alignment",
+    "title": "A Practical Approach to Verifying Code at Scale",
+    "link": "https://alignment.openai.com/"
+  },
+  {
+    "index": 28,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Developers Blog",
+    "title": "Shell + Skills + Compaction: Tips for long-running agents",
+    "link": "https://developers.openai.com/blog/skills-shell-tips"
+  },
+  {
+    "index": 29,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Developers Blog",
+    "title": "Testing Agent Skills Systematically with Evals",
+    "link": "https://developers.openai.com/blog/eval-skills"
+  },
+  {
+    "index": 30,
+    "score": 8,
+    "type": "article",
+    "feed": "OpenAI Developers Blog",
+    "title": "Using skills to accelerate OSS maintenance",
+    "link": "https://developers.openai.com/blog/skills-agents-sdk"
+  },
+  {
+    "index": 31,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Runtime Behind Production Deep Agents",
+    "link": "https://www.langchain.com/blog/runtime-behind-production-deep-agents"
+  },
+  {
+    "index": 32,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "The Anatomy Of An Agent Harness",
+    "link": "https://www.langchain.com/blog/the-anatomy-of-an-agent-harness"
+  },
+  {
+    "index": 33,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Agent Observability Needs Feedback To Power Learning",
+    "link": "https://www.langchain.com/blog/agent-observability-needs-feedback-to-power-learning"
+  },
+  {
+    "index": 34,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Running Subagents In The Background",
+    "link": "https://www.langchain.com/blog/running-subagents-in-the-background"
+  },
+  {
+    "index": 35,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Your Harness Your Memory",
+    "link": "https://www.langchain.com/blog/your-harness-your-memory"
+  },
+  {
+    "index": 36,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Human Judgment In The Agent Improvement Loop",
+    "link": "https://www.langchain.com/blog/human-judgment-in-the-agent-improvement-loop"
+  },
+  {
+    "index": 37,
+    "score": 8,
+    "type": "article",
+    "feed": "Lilian Weng Blog",
+    "title": "LLM Powered Autonomous Agents",
+    "link": "https://lilianweng.github.io/posts/2023-06-23-agent/"
+  },
+  {
+    "index": 38,
+    "score": 8,
+    "type": "article",
+    "feed": "Lilian Weng Blog",
+    "title": "Extrinsic Hallucinations in LLMs",
+    "link": "https://lilianweng.github.io/posts/2024-07-07-hallucination/"
+  },
+  {
+    "index": 39,
+    "score": 8,
+    "type": "media",
+    "feed": "Machine Learning Street Talk",
+    "title": "Agent Swarms and Knowledge Graphs for Autonomous Software Development - #763",
+    "link": "https://twimlai.com/podcast/twimlai/agent-swarms-knowledge-graphs-autonomous-software-development",
+    "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN3982555965.mp3?updated=1773185885"
+  },
+  {
+    "index": 40,
+    "score": 8,
+    "type": "media",
+    "feed": "No Priors",
+    "title": "Andrej Karpathy on Code Agents, AutoResearch, and the Loopy Era of AI",
+    "link": "",
+    "audio": "https://traffic.megaphone.fm/PDP8703207384.mp3"
+  },
+  {
+    "index": 41,
+    "score": 8,
+    "type": "media",
+    "feed": "Practical AI",
+    "title": "Post-Mortem of Anthropic Claude Code Leak",
+    "link": "https://share.transistor.fm/s/44e59b0b",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/44e59b0b/1ecd61fa.mp3"
+  }
+]
