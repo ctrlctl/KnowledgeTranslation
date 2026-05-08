@@ -1,0 +1,82 @@
+[
+  {
+    "feed": "Practical AI",
+    "title": "The Myth of Model Wars: Open vs Closed AI in 2026",
+    "summary": "<p>In this fully connected episode, Dan and Chris break down one of the biggest questions in AI today: do open vs. closed models still matter? From the rise of physical AI and edge devices to the shifting landscape of open-source models like LLaMA, they explore whether the “model wars” are becoming irrelevant. The conversation then dives into a bigger transformation, the rise of agentic systems, workflows, and AI-driven infrastructure.</p><p>Featuring:</p><ul><li>Chris Benson – <a href=\"https://",
+    "link": "https://share.transistor.fm/s/6095edc5",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/6095edc5/d370f038.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "The mythos of Mythos and Allbirds takes flight to the neocloud",
+    "summary": "<p>In this Fully-Connected episode, Dan and Chris start with Anthropic's Mythos frontier model, parsing what is publicly known about its cybersecurity capabilities and projecting its possible implications from \"<em>We've been here before. </em>🙄<em>\"</em> to <em>\"See ya, cybersecurity! </em>😱<em>\"</em>  It's the end of the world as we know it, and I feel fine. 🙃</p><p>Then they have fun with the craziest AI announcement of the year (except for the Mythos one of course).  Allbirds pivots from sho",
+    "link": "https://share.transistor.fm/s/b11bd219",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/b11bd219/8827ba44.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "Open Source Self-Driving with Comma AI",
+    "summary": "<p>Autonomous driving is not just a big tech or closed-source game, it's becoming accessible through open innovation and real-world deployment. Dan and Chris sit down with Harald Schäfer, CTO at Comma AI, to explore how OpenPilot is bringing self-driving to everyday vehicles using open source AI. We dive into the intersection of machine learning, robotics, and simulation, including how world models are enabling training at scale and shaping the future of autonomy.</p><p>Featuring:</p><ul><li>Har",
+    "link": "https://share.transistor.fm/s/9d157a1b",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/9d157a1b/d3175cb9.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "Post-Mortem of Anthropic's Claude Code Leak",
+    "summary": "<p>In this fully connected episode, Dan and Chris break down the Anthropic Claude Code leak, what went wrong and what it reveals about agentic systems, AI architecture, and AI safety. They also explore how the open source community is responding and why this moment could reshape how AI systems are built and secured.</p><p>Featuring:</p><ul><li>Chris Benson – <a href=\"https://chrisbenson.com/\">Website</a>, <a href=\"https://www.linkedin.com/in/chrisbenson\">LinkedIn</a>, <a href=\"https://bsky.app/p",
+    "link": "https://share.transistor.fm/s/44e59b0b",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/44e59b0b/1ecd61fa.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "Agentic Coding and the Economics of Open Source",
+    "summary": "<p>AI is rapidly transforming how software is built, shifting economic incentives from open source code and collaboration toward on-demand, personalized development through agentic coding a.k.a. vibe coding. In this episode, Chris speaks with Miklós Koren of Central European University about how AI is reshaping open source and the software industry. They explore the economics of incentives, evolving collaboration patterns, and what this shift means for software development, the future of AI, and",
+    "link": "https://share.transistor.fm/s/7d8e0293",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/7d8e0293/0bbed6a2.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "AI at the Edge is a different operating environment",
+    "summary": "<p>What does “AI at the edge” really mean in 2026, and why does it matter now more than ever before? In this episode, we’re joined by Brandon Shibley, Edge AI Solutions Engineering Lead at Qualcomm’s Edge Impulse, to discuss the current state and future of Edge AI in 2026. We discuss Gen AI, Small Models, and Cascades of Models, along with real-world constraints like latency, power, and privacy. We also dive into the role of MLOps, evolving hardware, and how developers can start building practic",
+    "link": "https://share.transistor.fm/s/ea7694a9",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/ea7694a9/378817af.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "Humility in the Age of Agentic Coding",
+    "summary": "<p>What happens when an AI hater starts building with AI agents? In this episode, we talk with software engineer Steve Klabnik, known for his work on the Rust programming language, about his journey from criticizing AI to experimenting with it firsthand. We explore Steve’s programming language Rue, largely built with the help of AI tools like Claude, and discuss what this means for software engineering and the future of coding in an AI-driven world.</p><p>Featuring:</p><ul><li>Steve Klabnik –<a ",
+    "link": "https://share.transistor.fm/s/7e1ca2c8",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/7e1ca2c8/3ade85d6.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "AI policy and the battle for computing power",
+    "summary": "<p>AI is reshaping global power, from chip manufacturing and computing power to AI governance and US-China relations.  In this episode, Ben Buchanan, Assistant Professor at The Johns Hopkins University and former White House Special Advisor for AI, explores how AI policy, geopolitics, and international cooperation intersect with AI  innovation and AI safety. We discuss the strategic importance of computing power, the future of AI governance, and what it will take for democracies to lead responsi",
+    "link": "https://share.transistor.fm/s/1923dca1",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/1923dca1/0dd54a72.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "Cognitive Synthesis and Neural Athletes",
+    "summary": "<p>As AI accelerates innovation and adoption, leaders are facing rising cognitive load, shifting systems, and new emotional realities inside their organizations. In this episode, Deloitte’s Chief Innovation Officer Deborah Golden joins us to explore how AI is reshaping leadership, why vulnerability and empathy are critical in this moment, and how anti-fragility, not just resilience, will define the future of work.</p><p>Featuring:</p><ul><li>Deborah Golden –<a href=\"https://www.linkedin.com/in/d",
+    "link": "https://share.transistor.fm/s/4aaf31b4",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/4aaf31b4/4eefa767.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Practical AI",
+    "title": "AI incidents, audits, and the limits of benchmarks",
+    "summary": "<p>AI is moving fast from research to real-world deployment, and when things go wrong, the consequences are no longer hypothetical. In this episode, Sean McGregor, co-founder of the AI Verification &amp; Evaluation Research Institute and also the founder of the AI Incident Database, joins Chris and Dan to discuss AI safety, verification, evaluation, and auditing. They explore why benchmarks often fall short, what red-teaming at DEFCON reveals about machine learning risks, and how organizations c",
+    "link": "https://share.transistor.fm/s/1b8e65f4",
+    "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/1b8e65f4/5f10a20b.mp3",
+    "type": "media"
+  }
+]
