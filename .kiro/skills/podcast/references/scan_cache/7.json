@@ -1,0 +1,82 @@
+[
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] GPT-Realtime-2, -Translate, and -Whisper: new SOTA realtime voice APIs",
+    "summary": "OpenAI continues deploying GPT-5 everywhere",
+    "link": "https://www.latent.space/p/ainews-gpt-realtime-2-translate-and",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Anthropic-SpaceXai's 300MW/$5B/yr deal for Colossus I, ARR growth is 8000% annualized",
+    "summary": "And the kingmaker picks a side.",
+    "link": "https://www.latent.space/p/ainews-anthropic-spacexais-300mw5byr",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Silicon Valley gets Serious about Services",
+    "summary": "A series of announcements line up to a big theme: Services are the next big opportunity.",
+    "link": "https://www.latent.space/p/ainews-silicon-valley-gets-serious",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "🔬Doing Vibe Physics — Alex Lupsasca, OpenAI",
+    "summary": "The full story of how GPT&#8209;5.x derived new results in theoretical physics and quantum gravity.",
+    "link": "https://www.latent.space/p/lupsasca",
+    "audio": "https://api.substack.com/feed/podcast/196292432/5a1552f1791348300399bbce5a75a0a7.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] The Other vs The Utility",
+    "summary": "a quiet day lets us reflect on the nature of AI \"character\" in the Clippy vs Anton debate",
+    "link": "https://www.latent.space/p/ainews-the-other-vs-the-utility",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] AI Engineer World's Fair — Autoresearch, Memory, World Models, Tokenmaxxing, Agentic Commerce, and Vertical AI Call for Speakers",
+    "summary": "a quiet day lets us make a call for speakers!",
+    "link": "https://www.latent.space/p/ainews-ai-engineer-worlds-fair-autoresearch",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Agents for Everything Else: Codex for Knowledge Work, Claude for Creative Work",
+    "summary": "a quiet day lets us reflect on coding agents \"breaking containment\"",
+    "link": "https://www.latent.space/p/ainews-agents-for-everything-else",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] The Inference Inflection",
+    "summary": "a quiet day lets us reflect on the growing implications of the inference age",
+    "link": "https://www.latent.space/p/ainews-the-inference-inflection",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] not much happened today",
+    "summary": "a quiet day.",
+    "link": "https://www.latent.space/p/ainews-not-much-happened-today",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] ImageGen is on the Path to AGI",
+    "summary": "reflecting on the continued GPT-Image-2 explosion",
+    "link": "https://www.latent.space/p/ainews-imagegen-is-on-the-path-to",
+    "audio": "",
+    "type": "article"
+  }
+]

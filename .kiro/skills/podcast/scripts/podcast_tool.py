@@ -118,25 +118,60 @@ def scan_rss(feed_info):
     return episodes
 
 
-def scan_feeds():
+SCAN_DIR = Path(__file__).parent.parent / "references" / "scan_cache"
+
+
+def scan_single_feed(feed_index):
+    """Scan a single feed by index, save results to scan_cache/<index>.json."""
     if not FEEDS_FILE.exists():
         print("feeds.json not found", file=sys.stderr)
         sys.exit(1)
     feeds = json.loads(FEEDS_FILE.read_text())
-    all_episodes = []
+    if feed_index < 0 or feed_index >= len(feeds):
+        print(f"Invalid index {feed_index}, total feeds: {len(feeds)}", file=sys.stderr)
+        sys.exit(1)
 
-    for feed_info in feeds:
-        print(f"抓取: {feed_info['name']}...", file=sys.stderr)
+    SCAN_DIR.mkdir(parents=True, exist_ok=True)
+    feed_info = feeds[feed_index]
+    print(f"抓取: {feed_info['name']}...", file=sys.stderr)
+    try:
+        if feed_info.get("source") == "web":
+            episodes = scrape_blog_links(feed_info)
+        else:
+            episodes = scan_rss(feed_info)
+    except Exception as e:
+        print(f"失败: {e}", file=sys.stderr)
+        episodes = []
+
+    out_path = SCAN_DIR / f"{feed_index}.json"
+    out_path.write_text(json.dumps(episodes, ensure_ascii=False, indent=2))
+    print(f"已保存 {len(episodes)} 条到 {out_path}")
+
+
+def scan_feeds():
+    """Scan all feeds sequentially, saving each to scan_cache/<index>.json."""
+    if not FEEDS_FILE.exists():
+        print("feeds.json not found", file=sys.stderr)
+        sys.exit(1)
+    feeds = json.loads(FEEDS_FILE.read_text())
+    SCAN_DIR.mkdir(parents=True, exist_ok=True)
+
+    for i, feed_info in enumerate(feeds):
+        print(f"[{i}/{len(feeds)}] 抓取: {feed_info['name']}...", file=sys.stderr)
         try:
             if feed_info.get("source") == "web":
                 episodes = scrape_blog_links(feed_info)
             else:
                 episodes = scan_rss(feed_info)
-            all_episodes.extend(episodes)
         except Exception as e:
             print(f"  失败: {e}", file=sys.stderr)
+            episodes = []
+        out_path = SCAN_DIR / f"{i}.json"
+        out_path.write_text(json.dumps(episodes, ensure_ascii=False, indent=2))
+        print(f"  已保存 {len(episodes)} 条", file=sys.stderr)
 
-    print(json.dumps(all_episodes, ensure_ascii=False, indent=2))
+    # Print summary only
+    print(json.dumps({"total_feeds": len(feeds), "cache_dir": str(SCAN_DIR)}))
 
 
 # ─── FETCH ARTICLE ──────────────────────────────────────────────────────────
@@ -186,7 +221,10 @@ def main():
     parser = argparse.ArgumentParser(description="播客工具")
     sub = parser.add_subparsers(dest="command")
 
-    sub.add_parser("scan", help="扫描feeds，输出JSON")
+    sub.add_parser("scan", help="扫描所有feeds，结果存入scan_cache/")
+
+    sf = sub.add_parser("scan-feed", help="扫描单个feed（按索引）")
+    sf.add_argument("index", type=int)
 
     fa = sub.add_parser("fetch-article", help="抓取文章HTML")
     fa.add_argument("url")
@@ -200,6 +238,8 @@ def main():
 
     if args.command == "scan":
         scan_feeds()
+    elif args.command == "scan-feed":
+        scan_single_feed(args.index)
     elif args.command == "fetch-article":
         fetch_article(args.url)
     elif args.command == "transcribe":

@@ -1,0 +1,82 @@
+[
+  {
+    "feed": "Simon Willison",
+    "title": "llm-gemini 0.31",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/simonw/llm-gemini/releases/tag/0.31\">llm-gemini 0.31</a></p>\n        <blockquote>\n<ul>\n<li><code>gemini-3.1-flash-lite</code> is <a href=\"https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-lite-is-now-generally-available\">no longer a preview</a>. </li>\n</ul>\n</blockquote>\n<p>Here's my write-up of the <a href=\"https://simonwillison.net/2026/Mar/3/gemini-31-flash-lite/\">Gemini 3.1 Flash-Lite Preview model</a> back in",
+    "link": "https://simonwillison.net/2026/May/7/llm-gemini/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Big Words",
+    "summary": "<p><strong>Tool:</strong> <a href=\"https://tools.simonwillison.net/big-words\">Big Words</a></p>\n        <p>I'm using my <a href=\"https://simonwillison.net/2026/Feb/25/present/\">vibe coded macOS presentations tool</a> to put together a talk, and I wanted to add a slide with some text on it. The tool only accepts URLs, so I <a href=\"https://github.com/simonw/tools/pull/279\">put together</a> a quick page that accepts query string arguments and turns them into a simple slide.</p>\n<p>Here's an exampl",
+    "link": "https://simonwillison.net/2026/May/7/big-words/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Behind the Scenes Hardening Firefox with Claude Mythos Preview",
+    "summary": "<p><strong><a href=\"https://hacks.mozilla.org/2026/05/behind-the-scenes-hardening-firefox/\">Behind the Scenes Hardening Firefox with Claude Mythos Preview</a></strong></p>\nFascinating, in-depth details on how Mozilla used their access to the Claude Mythos preview to locate and then fix hundreds of vulnerabilities in Firefox:</p>\n<blockquote>\n<p><strong>Suddenly, the bugs are very good</strong></p>\n<p>Just a few months ago, AI-generated security bug reports to open source projects were mostly kno",
+    "link": "https://simonwillison.net/2026/May/7/firefox-claude-mythos/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Notes on the xAI/Anthropic data center deal",
+    "summary": "<p>There weren't a lot of big new announcements from Anthropic at yesterday's Code w/ Claude event, but the biggest by far was the deal they've struck with SpaceX/xAI to use \"all of the capacity of their Colossus data center\".</p>\n<p>As I mentioned in my <a href=\"https://simonwillison.net/2026/May/6/code-w-claude-2026/\">live blog of the keynote</a>, that's the one with the <a href=\"https://www.politico.com/news/2025/05/06/elon-musk-xai-memphis-gas-turbines-air-pollution-permits-00317582\">particu",
+    "link": "https://simonwillison.net/2026/May/7/xai-anthropic/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "GitHub Repo Stats",
+    "summary": "<p><strong>Tool:</strong> <a href=\"https://tools.simonwillison.net/github-repo-stats\">GitHub Repo Stats</a></p>\n        <p>One of the things I always look for when evaluating a new GitHub repository is the number of commits it has... but that number isn't visible on GitHub's mobile site layout. I built this tool to fix that, using this prompt:</p>\n<blockquote>\n<p><code>Given a GitHub repo URL or foo/bar repo ID show information about that repo absorbed via wither REST or graphql CORS fetch() inc",
+    "link": "https://simonwillison.net/2026/May/7/github-repo-stats/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Live blog: Code w/ Claude 2026",
+    "summary": "<p>I'm at Anthropic's Code w/ Claude event today. Here's my live blog of the morning keynote sessions.</p>\n    \n        <p>Tags: <a href=\"https://simonwillison.net/tags/ai\">ai</a>, <a href=\"https://simonwillison.net/tags/generative-ai\">generative-ai</a>, <a href=\"https://simonwillison.net/tags/llms\">llms</a>, <a href=\"https://simonwillison.net/tags/anthropic\">anthropic</a>, <a href=\"https://simonwillison.net/tags/claude\">claude</a>, <a href=\"https://simonwillison.net/tags/claude-code\">claude-cod",
+    "link": "https://simonwillison.net/2026/May/6/code-w-claude-2026/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Vibe coding and agentic engineering are getting closer than I'd like",
+    "summary": "<p>I recently talked with Joseph Ruscio about AI coding tools for Heavybit's High Leverage podcast: <a href=\"https://www.heavybit.com/library/podcasts/high-leverage/ep-9-the-ai-coding-paradigm-shift-with-simon-willison\">Ep. #9, The AI Coding Paradigm Shift with Simon Willison</a>. Here are some of my highlights, including my disturbing realization that vibe coding and agentic engineering have started to converge in my own work.</p>\n<p>One thing I really enjoy about podcasts is that they sometime",
+    "link": "https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "datasette-referrer-policy 0.1",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/datasette/datasette-referrer-policy/releases/tag/0.1\">datasette-referrer-policy 0.1</a></p>\n        <p>The OpenStreetMap tiles on the Datasette <a href=\"https://datasette.io/global-power-plants/global-power-plants\">global-power-plants demo</a> weren't displaying correctly. This turned out to be caused by two bugs.</p>\n<p>The first is that the CAPTCHA <a href=\"https://github.com/simonw/datasette-turnstile\">I added</a> to that site a few wee",
+    "link": "https://simonwillison.net/2026/May/5/datasette-referrer-policy/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Our AI started a cafe in Stockholm",
+    "summary": "<p><strong><a href=\"https://andonlabs.com/blog/ai-cafe-stockholm\">Our AI started a cafe in Stockholm</a></strong></p>\nAndon Labs previously <a href=\"https://andonlabs.com/blog/andon-market-launch\">started an AI-run retail store</a> in San Francisco. Now they're running a similar experiment in Stockholm, Sweden, only this time it's a cafe.</p>\n<p>These experiments are interesting, and often throw out amusing anecdotes:</p>\n<blockquote>\n<p>During the first week of inventory, Mona ordered 120 eggs ",
+    "link": "https://simonwillison.net/2026/May/5/our-ai-started-a-cafe-in-stockholm/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "datasette-llm 0.1a7",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/datasette/datasette-llm/releases/tag/0.1a7\">datasette-llm 0.1a7</a></p>\n        <blockquote>\n<ul>\n<li>Mechanism for <a href=\"https://github.com/datasette/datasette-llm/blob/main/README.md#configuration\">configuring default options</a> for specific models.</li>\n</ul>\n</blockquote>\n<p>Part of Datasette's evolving support mechanism for plugins that use LLMs. It's now possible to configure a model with default options, e.g. to say all <a href=",
+    "link": "https://simonwillison.net/2026/May/5/datasette-llm/#atom-everything",
+    "audio": "",
+    "type": "article"
+  }
+]

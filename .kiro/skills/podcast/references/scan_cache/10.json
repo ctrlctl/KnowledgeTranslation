@@ -1,0 +1,82 @@
+[
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Reiner Pope – The math behind how LLMs are trained and served",
+    "summary": "<p>Did a very different format with Reiner Pope - a blackboard lecture where he walks through how frontier LLMs are trained and served.</p><p>It’s shocking how much you can deduce about what the labs are doing from a handful of equations, public API prices, and some chalk.</p><p>It’s a bit technical, but I encourage you to hang in there – it’s really worth it.</p><p>There are less than a handful of people who understand the full stack of AI, from chip design to model architecture, as well as Rei",
+    "link": "https://www.dwarkesh.com/p/reiner-pope",
+    "audio": "https://api.substack.com/feed/podcast/195859978/d0ec0edfef14862f0fc2e095a1ee64b0.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Jensen Huang – TPU competition, why we should sell chips to China, & Nvidia’s supply chain moat",
+    "summary": "<p>I asked Jensen about TPU competition, Nvidia’s lock on the ever more bottlenecked supply chain needed to make advanced chips, whether we should be selling AI chips to China, why Nvidia doesn’t just become a hyperscaler, how it makes its investments, and much more. Enjoy!</p><p>Watch on <a href=\"https://youtu.be/Hrbq66XqtCo\" target=\"_blank\">YouTube</a>; read the <a href=\"https://www.dwarkesh.com/p/jensen-huang\" target=\"_blank\">transcript</a>.</p><p><strong>Sponsors</strong></p><p>* <a href=\"ht",
+    "link": "https://www.dwarkesh.com/p/jensen-huang",
+    "audio": "https://api.substack.com/feed/podcast/194289889/4ad9f4582dd59f13b5a5cc452125b1f6.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Michael Nielsen – How science actually progresses",
+    "summary": "<p>Really enjoyed chatting with Michael Nielsen about how we recognize scientific progress.</p><p>It's especially relevant for closing the RL verification loop for scientific discovery.</p><p>But it's also a surprisingly mysterious and elusive question when you look at the history of human science.</p><p>We approach this question stories like Einstein (who claimed that he hadn't even heard of the famous Michelson-Morley experiment, which is supposed to have motivated special relativity, until af",
+    "link": "https://www.dwarkesh.com/p/michael-nielsen",
+    "audio": "https://api.substack.com/feed/podcast/193466212/e5343bce6cf37efafa778abc5594aa67.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Terence Tao – Kepler, Newton, and the true nature of mathematical discovery",
+    "summary": "<p>We begin the episode with the absolutely ingenious and surprising way in which Kepler discovered the laws of planetary motion.</p><p>People sometimes say that AI will make especially fast progress at scientific discovery because of tight verification loops.</p><p>But the story of how we discovered the shape of our solar system shows how the verification loop for correct ideas can be decades (or even millennia) long.</p><p>During this time, what we know today as the better theory can actually ",
+    "link": "https://www.dwarkesh.com/p/terence-tao",
+    "audio": "https://api.substack.com/feed/podcast/191582481/09bfc20781f3d248e53c5f3350823514.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Dylan Patel — Deep dive on the 3 big bottlenecks to scaling AI compute",
+    "summary": "<p><a href=\"https://x.com/dylan522p?lang=en\" target=\"_blank\">Dylan Patel</a>, founder of <a href=\"https://semianalysis.com/\" target=\"_blank\">SemiAnalysis</a>, provides a deep dive into the 3 big bottlenecks to scaling AI compute: logic, memory, and power.</p><p>And walks through the economics of labs, hyperscalers, foundries, and fab equipment manufacturers.</p><p>Learned a ton about every single level of the stack. Enjoy!</p><p>Watch on <a href=\"https://youtu.be/mDG_Hx3BSUE\" target=\"_blank\">You",
+    "link": "https://www.dwarkesh.com/p/dylan-patel",
+    "audio": "https://api.substack.com/feed/podcast/190839917/e3c75a06762af10f374661e8af1d1af6.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "The most important question nobody's asking about AI",
+    "summary": "<p>Read the full essay here: <a href=\"https://www.dwarkesh.com/p/dow-anthropic\" target=\"_blank\">https://www.dwarkesh.com/p/dow-anthropic</a></p><p></p><p>Timestamps</p><p>(00:00:00) - Anthropic vs The Pentagon</p><p>(00:04:16) - The overhangs of tyranny</p><p>(00:05:54) - AI structurally favors mass surveillance</p><p>(00:08:25) - Alignment...to whom?</p><p>(00:13:55) - Coordination not worth the costs</p> <br /><br />Get full access to Dwarkesh Podcast at <a href=\"https://www.dwarkesh.com/subsc",
+    "link": "https://www.dwarkesh.com/p/dow-anthropic",
+    "audio": "https://api.substack.com/feed/podcast/190633588/94a1857634f9ebd3857e20d95893ec75.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Why Leonardo was a saboteur, Gutenberg went broke, and Florence was weird – Ada Palmer",
+    "summary": "<p>Renaissance history is so much wilder and weirder than you would have expected. Very fun chatting with <a href=\"https://www.adapalmer.com/\" target=\"_blank\">Ada Palmer</a> (historian, novelist, and composer based at the University of Chicago).</p><p>Some especially fascinating things I learned from the conversation and her excellent book, <a href=\"https://a.co/d/03EjyByR\" target=\"_blank\"><em>Inventing the Renaissance</em></a>:</p><p>Not only did Gutenberg go bankrupt in the 1450s (after invent",
+    "link": "https://www.dwarkesh.com/p/ada-palmer",
+    "audio": "https://api.substack.com/feed/podcast/190118311/8c3433af58d7b7ad7ee60c28c569017a.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Dario Amodei — \"We are near the end of the exponential\"",
+    "summary": "<p>Dario Amodei thinks we are just a few years away from AGI — or as he puts it, from having “a country of geniuses in a data center”. In this episode, we discuss what to make of the scaling hypothesis in the current RL regime, why task-specific RL might lead to generalization, and how AI will diffuse throughout the economy. We also dive into Anthropic’s revenue projections, compute commitments, path to profitability, and more.</p><p>Watch on <a href=\"https://youtu.be/n1E9IZfvGMA\" target=\"_blank",
+    "link": "https://www.dwarkesh.com/p/dario-amodei-2",
+    "audio": "https://api.substack.com/feed/podcast/187852154/cecdbe38125e2786cbfebe31dd083d4f.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Elon Musk — \"In 36 months, the cheapest place to put AI will be space”",
+    "summary": "<p>In this episode, John and I got to do a real deep-dive with Elon. We discuss the economics of orbital data centers, the difficulties of scaling power on Earth, what it would take to manufacture humanoids at high-volume in America, xAI’s business and alignment plans, DOGE, and much more.</p><p>Watch on <a href=\"https://youtu.be/BYXbuik3dgA\" target=\"_blank\">YouTube</a>; read the <a href=\"https://www.dwarkesh.com/p/elon-musk\" target=\"_blank\">transcript</a>.</p><p>Sponsors</p><p>* <a href=\"https:",
+    "link": "https://www.dwarkesh.com/p/elon-musk",
+    "audio": "https://api.substack.com/feed/podcast/186967347/7e1421b0bbe8243af32f70dda75bef63.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
+    "title": "Adam Marblestone — AI is missing something fundamental about the brain",
+    "summary": "<p><a href=\"https://twitter.com/AdamMarblestone\" target=\"_blank\">Adam Marblestone</a> is CEO of <a href=\"https://www.convergentresearch.org/\" target=\"_blank\">Convergent Research</a>. He’s had a very interesting past life: he was a research scientist at Google Deepmind on their neuroscience team and has worked on everything from brain-computer interfaces to quantum computing to nanotech and even formal mathematics.</p><p>In this episode, we discuss how the brain learns so much from so little, wha",
+    "link": "https://www.dwarkesh.com/p/adam-marblestone",
+    "audio": "https://api.substack.com/feed/podcast/182960540/b1d297278a7f613027bddbaa7f0efcb7.mp3",
+    "type": "media"
+  }
+]
