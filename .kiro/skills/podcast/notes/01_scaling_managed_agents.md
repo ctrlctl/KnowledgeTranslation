@@ -31,7 +31,7 @@ Harness（agent的外部控制框架——负责调用模型、路由tool call�
 
 举个例子：Claude Sonnet 4.5 快用完 context window 时会提前收工——团队管这叫"context anxiety"（上下文焦虑）。于是在 harness 里加了 context reset 机制来应对。结果换到 Opus 4.5 一跑，这个毛病没了，reset 变成了多余的死代码。
 
-既然 harness 注定要不断演进，Anthropic 就做了 Managed Agents：一个托管服务，通过一组**比任何具体实现都更持久的接口**来运行长周期 agent 任务。
+既然 harness 注定要不断演进，Anthropic 就做了 Managed Agents：一个托管服务，通过一组能够跨越底层实现变化的稳定接口，代你运行长周期 agent——包括我们今天使用的那些实现。
 
 ---
 
