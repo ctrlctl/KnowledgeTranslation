@@ -113,6 +113,10 @@ def parse_md_to_blocks(md_text):
             blocks.append({"type": "h2", "text": line[3:].strip()})
             i += 1
             continue
+        if line.startswith('### '):
+            blocks.append({"type": "h2", "text": line[4:].strip()})
+            i += 1
+            continue
         if line.startswith('# '):
             blocks.append({"type": "h2", "text": line[2:].strip()})
             i += 1
