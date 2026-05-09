@@ -1,6 +1,14 @@
 [
   {
     "feed": "Dwarkesh Podcast",
+    "title": "David Reich – Why the Bronze Age was an inflection point in human evolution",
+    "summary": "<p><a href=\"https://reich.hms.harvard.edu/\" target=\"_blank\">David Reich</a> is back.</p><p>He and collaborator <a href=\"https://reich.hms.harvard.edu/people/ali-akbari\" target=\"_blank\">Ali Akbari</a> just <a href=\"https://reich.hms.harvard.edu/sites/reich.hms.harvard.edu/files/inline-files/2026_Akbari_Nature_selection_0.pdf\" target=\"_blank\">published a paper</a> that overturns a long-standing consensus about human evolution — that natural selection has been dormant in our species since the agric",
+    "link": "https://www.dwarkesh.com/p/david-reich-2",
+    "audio": "https://api.substack.com/feed/podcast/196892360/60c5fc38586fe814f5fd91f0895a59c1.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Dwarkesh Podcast",
     "title": "Reiner Pope – The math behind how LLMs are trained and served",
     "summary": "<p>Did a very different format with Reiner Pope - a blackboard lecture where he walks through how frontier LLMs are trained and served.</p><p>It’s shocking how much you can deduce about what the labs are doing from a handful of equations, public API prices, and some chalk.</p><p>It’s a bit technical, but I encourage you to hang in there – it’s really worth it.</p><p>There are less than a handful of people who understand the full stack of AI, from chip design to model architecture, as well as Rei",
     "link": "https://www.dwarkesh.com/p/reiner-pope",
@@ -69,14 +77,6 @@
     "summary": "<p>In this episode, John and I got to do a real deep-dive with Elon. We discuss the economics of orbital data centers, the difficulties of scaling power on Earth, what it would take to manufacture humanoids at high-volume in America, xAI’s business and alignment plans, DOGE, and much more.</p><p>Watch on <a href=\"https://youtu.be/BYXbuik3dgA\" target=\"_blank\">YouTube</a>; read the <a href=\"https://www.dwarkesh.com/p/elon-musk\" target=\"_blank\">transcript</a>.</p><p>Sponsors</p><p>* <a href=\"https:",
     "link": "https://www.dwarkesh.com/p/elon-musk",
     "audio": "https://api.substack.com/feed/podcast/186967347/7e1421b0bbe8243af32f70dda75bef63.mp3",
-    "type": "media"
-  },
-  {
-    "feed": "Dwarkesh Podcast",
-    "title": "Adam Marblestone — AI is missing something fundamental about the brain",
-    "summary": "<p><a href=\"https://twitter.com/AdamMarblestone\" target=\"_blank\">Adam Marblestone</a> is CEO of <a href=\"https://www.convergentresearch.org/\" target=\"_blank\">Convergent Research</a>. He’s had a very interesting past life: he was a research scientist at Google Deepmind on their neuroscience team and has worked on everything from brain-computer interfaces to quantum computing to nanotech and even formal mathematics.</p><p>In this episode, we discuss how the brain learns so much from so little, wha",
-    "link": "https://www.dwarkesh.com/p/adam-marblestone",
-    "audio": "https://api.substack.com/feed/podcast/182960540/b1d297278a7f613027bddbaa7f0efcb7.mp3",
     "type": "media"
   }
 ]

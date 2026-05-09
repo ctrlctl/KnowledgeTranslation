@@ -16,7 +16,7 @@ from pathlib import Path
 STYLES = {
     "section": (
         "font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;"
-        "font-size:15px;color:#333;padding:0 10px;max-width:578px;margin:0 auto;"
+        "font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;"
         "box-sizing:border-box;word-wrap:break-word;"
     ),
     "h1": (
@@ -38,11 +38,11 @@ STYLES = {
     "em": "font-style:italic;",
     "blockquote": (
         "border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;"
-        "background:#f8f8f8;color:#666;font-size:14px;"
+        "background:#f3f1ed;color:#555;font-size:14px;"
     ),
     "blockquote_p": "margin:0;line-height:1.9;",
     "code_inline": (
-        "font-size:13px;padding:2px 5px;background:#f5f5f5;border-radius:3px;"
+        "font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;"
         "font-family:Menlo,Monaco,Consolas,monospace;color:#d14;"
     ),
     "code_block": (
