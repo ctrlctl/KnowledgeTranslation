@@ -268,3 +268,30 @@ python3 -m venv .venv
 ```bash
 .venv/bin/pip install openai-whisper
 ```
+
+### GPU 转录（Windows侧 anaconda）
+
+WSL 内的 CUDA 驱动不兼容，转录使用 Windows 侧的 anaconda 环境 + RTX 3060 GPU。
+
+**环境位置**：`C:\Users\lqita\anaconda3\python.exe`（已安装 openai-whisper、yt-dlp、PyTorch CUDA）
+
+**使用方式**（从 WSL 调用）：
+
+1. 用 WSL 的 yt-dlp 下载音频到 Windows 可访问路径：
+```bash
+.venv/bin/yt-dlp -x --audio-format mp3 -o "/mnt/c/Users/lqita/tmp_transcribe/audio.%(ext)s" "<url>"
+```
+
+2. 调用 Windows 侧 Python 跑 GPU 转录：
+```bash
+cmd.exe /c "C:\Users\lqita\anaconda3\python.exe C:\Users\lqita\tmp_transcribe\run_whisper.py C:\Users\lqita\tmp_transcribe\audio.mp3 medium > C:\Users\lqita\tmp_transcribe\transcript.txt"
+```
+
+3. 复制结果回来：
+```bash
+cp /mnt/c/Users/lqita/tmp_transcribe/transcript.txt /tmp/transcript.txt
+```
+
+**转录脚本**：`/mnt/c/Users/lqita/tmp_transcribe/run_whisper.py`
+
+**Windows pip 代理注意**：安装新包时需设置 `HTTPS_PROXY=http://127.0.0.1:7897`（注意是 `http://` 不是 `https://`）。
