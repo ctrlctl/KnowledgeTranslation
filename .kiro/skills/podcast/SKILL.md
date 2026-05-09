@@ -87,6 +87,10 @@ description: 播客/文章扫描、筛选、转录、翻译整理为中文笔记
 将合并后的结果保存到 `.kiro/skills/podcast/references/recommendations.json`。
 新条目标记 `"new": true`，方便用户识别本次新增。
 
+同时更新 `.kiro/skills/podcast/references/recommendations.md`，保持与 JSON 同步。
+Markdown 格式：按分数分组，每条包含序号、类型图标、来源、中文标题、评分/理由、链接。
+顶部包含扫描日期、来源列表、筛选标准、统计数字，以及按分数段分组的索引。
+
 #### 备选：只抓取单个 feed
 
 ```bash
@@ -168,7 +172,7 @@ description: 播客/文章扫描、筛选、转录、翻译整理为中文笔记
 ```
 - 输出为可直接粘贴到微信公众平台编辑器的渲染完毕的 HTML 片段
 - 所有样式内联（微信不支持 `<style>` 标签和 class）
-- 风格参考 https://md.doocs.org/ 的输出
+- 基础排版风格：思源宋体、15px、line-height 2、色值 #2c2c2c、max-width 578px、不指定背景色（由微信平台决定）
 - 包含：标题下划线、引用块左边框+灰底、代码块深色背景、链接微信蓝色(#576b95)、分隔线用居中点号
 
 **版本3：小红书图片**
@@ -207,7 +211,7 @@ description: 播客/文章扫描、筛选、转录、翻译整理为中文笔记
 
 排版层面做可读性优化，但不改变内容本身：
 
-1. 衬线字体，15px，line-height 1.9，行宽 68ch
+1. 衬线字体（思源宋体），15px，line-height 2，行宽 38em，暖白底 #faf8f5
 2. 段落保持短（3-5句），但不碎片化——每段仍然是完整的论述单元
 3. 章节之间用分隔线（`---`）留出呼吸空间
 4. 关键词/关键短语加粗做视觉锚点，但不过度
@@ -224,11 +228,12 @@ description: 播客/文章扫描、筛选、转录、翻译整理为中文笔记
 body, .markdown-body {
   font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", Georgia, serif;
   font-size: 15px;
-  line-height: 1.9;
-  max-width: 68ch;
+  line-height: 2;
+  max-width: 38em;
   margin: 0 auto;
   padding: 2em;
   color: #2c2c2c;
+  background: #faf8f5;
 }
 </style>
 ```
@@ -241,6 +246,8 @@ body, .markdown-body {
 笔记保存到 `.kiro/skills/podcast/notes/` 目录。
 
 ## 环境准备
+
+虚拟环境位于项目根目录的 `.venv/`（与 `.kiro/` 平级），**不要**在 `.kiro/` 或 skill 目录下创建虚拟环境。
 
 首次使用需安装依赖：
 ```bash

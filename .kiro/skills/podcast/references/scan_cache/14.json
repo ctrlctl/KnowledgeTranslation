@@ -1,6 +1,22 @@
 [
   {
     "feed": "Simon Willison",
+    "title": "Quoting Luke Curley",
+    "summary": "<blockquote cite=\"https://moq.dev/blog/webrtc-is-the-problem/\"><p>WebRTC is designed to <strong>degrade and drop my prompt</strong> during poor network conditions.</p>\n<p>wtf my dude</p>\n<p>WebRTC aggressively drops audio packets to keep latency low. If you’ve ever heard distorted audio on a conference call, that’s WebRTC baybee. The idea is that conference calls depend on rapid back-and-forth, so pausing to wait for audio is unacceptable.</p>\n<p>…but as a user, I would much rather wait an extra",
+    "link": "https://simonwillison.net/2026/May/9/luke-curley/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Using Claude Code: The Unreasonable Effectiveness of HTML",
+    "summary": "<p><strong><a href=\"https://twitter.com/trq212/status/2052809885763747935\">Using Claude Code: The Unreasonable Effectiveness of HTML</a></strong></p>\nThought-provoking piece by Thariq Shihipar (on the Claude Code team at Anthropic) advocating for HTML over Markdown as an output format to request from Claude.</p>\n<p>The article is crammed with interesting examples (collected on <a href=\"https://thariqs.github.io/html-effectiveness/\">this site</a>) and prompt suggestions like this one:</p>\n<blockq",
+    "link": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
     "title": "llm-gemini 0.31",
     "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/simonw/llm-gemini/releases/tag/0.31\">llm-gemini 0.31</a></p>\n        <blockquote>\n<ul>\n<li><code>gemini-3.1-flash-lite</code> is <a href=\"https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-1-flash-lite-is-now-generally-available\">no longer a preview</a>. </li>\n</ul>\n</blockquote>\n<p>Here's my write-up of the <a href=\"https://simonwillison.net/2026/Mar/3/gemini-31-flash-lite/\">Gemini 3.1 Flash-Lite Preview model</a> back in",
     "link": "https://simonwillison.net/2026/May/7/llm-gemini/#atom-everything",
@@ -60,22 +76,6 @@
     "title": "datasette-referrer-policy 0.1",
     "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/datasette/datasette-referrer-policy/releases/tag/0.1\">datasette-referrer-policy 0.1</a></p>\n        <p>The OpenStreetMap tiles on the Datasette <a href=\"https://datasette.io/global-power-plants/global-power-plants\">global-power-plants demo</a> weren't displaying correctly. This turned out to be caused by two bugs.</p>\n<p>The first is that the CAPTCHA <a href=\"https://github.com/simonw/datasette-turnstile\">I added</a> to that site a few wee",
     "link": "https://simonwillison.net/2026/May/5/datasette-referrer-policy/#atom-everything",
-    "audio": "",
-    "type": "article"
-  },
-  {
-    "feed": "Simon Willison",
-    "title": "Our AI started a cafe in Stockholm",
-    "summary": "<p><strong><a href=\"https://andonlabs.com/blog/ai-cafe-stockholm\">Our AI started a cafe in Stockholm</a></strong></p>\nAndon Labs previously <a href=\"https://andonlabs.com/blog/andon-market-launch\">started an AI-run retail store</a> in San Francisco. Now they're running a similar experiment in Stockholm, Sweden, only this time it's a cafe.</p>\n<p>These experiments are interesting, and often throw out amusing anecdotes:</p>\n<blockquote>\n<p>During the first week of inventory, Mona ordered 120 eggs ",
-    "link": "https://simonwillison.net/2026/May/5/our-ai-started-a-cafe-in-stockholm/#atom-everything",
-    "audio": "",
-    "type": "article"
-  },
-  {
-    "feed": "Simon Willison",
-    "title": "datasette-llm 0.1a7",
-    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/datasette/datasette-llm/releases/tag/0.1a7\">datasette-llm 0.1a7</a></p>\n        <blockquote>\n<ul>\n<li>Mechanism for <a href=\"https://github.com/datasette/datasette-llm/blob/main/README.md#configuration\">configuring default options</a> for specific models.</li>\n</ul>\n</blockquote>\n<p>Part of Datasette's evolving support mechanism for plugins that use LLMs. It's now possible to configure a model with default options, e.g. to say all <a href=",
-    "link": "https://simonwillison.net/2026/May/5/datasette-llm/#atom-everything",
     "audio": "",
     "type": "article"
   }

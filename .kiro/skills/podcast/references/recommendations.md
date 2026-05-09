@@ -5,13 +5,13 @@ body, .markdown-body {
 }
 </style>
 
-# 播客与文章推荐列表 (2026-05-08)
+# 播客与文章推荐列表 (2026-05-09)
 
 扫描来源：Anthropic Research/Engineering、LangChain Blog、OpenAI Alignment/Developers、Mistral AI、Latent Space、No Priors、Lex Fridman、Dwarkesh Podcast、Lilian Weng、Practical AI、MLST、Simon Willison
 
 筛选标准：Agent架构（tool calling、memory、state、orchestration）、Failure mode（eval、hallucination、reliability）、Production constraints（部署、scaling、latency）
 
-共扫描172条，筛选出75条（评分≥5/10）
+共扫描172条，筛选出96条（评分≥5/10）
 
 ---
 
@@ -61,6 +61,7 @@ body, .markdown-body {
 - [39. Agent Swarm与知识图谱用于自主软件开发](#39)
 - [40. Andrej Karpathy谈Code Agent与AutoResearch](#40)
 - [41. Anthropic Claude Code泄露事后分析](#41)
+- [92. Teaching Claude why：减少Agentic Misalignment 🆕](#92)
 
 ### 7分
 - [42. 用一组并行Claude构建C编译器](#42)
@@ -86,6 +87,7 @@ body, .markdown-body {
 - [62. AI事故、审计与Benchmark的局限](#62)
 - [63. OpenClaw：爆火的开源AI Agent框架](#63)
 - [64. 2026 AI现状：LLM、Coding、Scaling Laws、Agent](#64)
+- [93. Using Claude Code: The Unreasonable Effectiveness of HTML 🆕](#93)
 
 ### 6分
 - [65-75. 其他相关内容](#65)
@@ -573,6 +575,19 @@ body, .markdown-body {
 
 ---
 
+<a id="92"></a>
+### 92. Teaching Claude why：减少Agentic Misalignment 🆕
+
+📄 **Anthropic Research** | 2026-05-08 | 评分: 8/10
+
+**总结**：关于如何减少agentic misalignment的新研究。探讨通过让模型理解"为什么"某些行为是不期望的（而非仅仅训练它避免这些行为），来从根本上减少agent在自主运行时的对齐偏差。
+
+**关键主题**：Agent alignment、misalignment减少、行为理解、failure mode防御
+
+🔗 https://www.anthropic.com/research/teaching-claude-why
+
+---
+
 ## 7分：相关
 
 <a id="42"></a>
@@ -828,6 +843,19 @@ body, .markdown-body {
 
 ---
 
+<a id="93"></a>
+### 93. Using Claude Code: The Unreasonable Effectiveness of HTML 🆕
+
+📄 **Simon Willison** | 2026-05-08 | 评分: 7/10
+
+**总结**：Anthropic Claude Code团队成员Thariq Shihipar提出用HTML而非Markdown作为Claude的输出格式。文章包含大量实际示例和prompt建议，展示HTML在agent coding场景中的优势——更丰富的表达能力、更精确的布局控制。对agent输出格式工程有直接参考价值。
+
+**关键主题**：Agent输出格式、prompt engineering、实用coding模式
+
+🔗 https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/#atom-everything
+
+---
+
 <a id="65"></a>
 ## 6分：补充参考
 
@@ -844,3 +872,22 @@ body, .markdown-body {
 | 73 | 📄 | Anthropic Engineering | Introducing Contextual Retrieval | anthropic.com |
 | 74 | 📄 | Anthropic Engineering | Claude Code auto mode | anthropic.com |
 | 75 | 📄 | Anthropic Research | Natural Language Autoencoders | anthropic.com |
+| 76 | 🎙️ | Dwarkesh Podcast | Dario Amodei — 'We are near the end of the exponential' | dwarkesh.com |
+| 94 | 📄 | Anthropic Research | Natural Language Autoencoders: Turning Claude's thoughts into text 🆕 | anthropic.com |
+
+## 5分：边缘相关
+
+| # | 类型 | 来源 | 标题 | 链接 |
+|---|------|------|------|------|
+| 82 | 📄 | LangChain Blog | Secure Agents Cisco AI Defense | langchain.com |
+| 83 | 📄 | OpenAI Alignment | Helpful assistant features suppress emergent misalignment | alignment.openai.com |
+| 84 | 📄 | OpenAI Alignment | Debugging misaligned completions with SAE | alignment.openai.com |
+| 85 | 📄 | OpenAI Developers | 15 lessons learned building ChatGPT Apps | developers.openai.com |
+| 86 | 📄 | Latent Space | The Inference Inflection | latent.space |
+| 87 | 🎙️ | Practical AI | Agentic Coding and the Economics of Open Source | transistor.fm |
+| 88 | 🎙️ | MLST #761 | The Evolution of Reasoning in Small Language Models | twimlai.com |
+| 89 | 🎙️ | MLST #758 | Why Vision Language Models Ignore What They See | twimlai.com |
+| 90 | 📄 | Simon Willison | Live blog: Code w/ Claude 2026 | simonwillison.net |
+| 91 | 📄 | Simon Willison | Our AI started a cafe in Stockholm | simonwillison.net |
+| 95 | 📄 | Mistral AI | Remote agents in Vibe: Powered by Mistral Medium 3.5 🆕 | mistral.ai |
+| 96 | 🎙️ | Latent Space | Doing Vibe Physics — Alex Lupsasca, OpenAI 🆕 | latent.space |

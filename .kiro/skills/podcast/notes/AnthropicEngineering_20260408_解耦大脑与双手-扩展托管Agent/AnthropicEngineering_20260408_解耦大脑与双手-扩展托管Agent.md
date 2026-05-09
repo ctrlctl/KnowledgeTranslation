@@ -1,12 +1,14 @@
 <style>
+/* @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap'); */
 body, .markdown-body {
   font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", Georgia, serif;
   font-size: 15px;
-  line-height: 1.9;
-  max-width: 68ch;
+  line-height: 2;
+  max-width: 38em;
   margin: 0 auto;
   padding: 2em;
   color: #2c2c2c;
+  background: #faf8f5;
 }
 </style>
 

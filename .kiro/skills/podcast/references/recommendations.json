@@ -339,7 +339,6 @@
     "feed": "Anthropic Engineering",
     "title": "Building a C compiler with a team of parallel Claudes",
     "link": "https://www.anthropic.com/engineering/building-c-compiler",
-    "new": true,
     "index": 42
   },
   {
@@ -349,7 +348,6 @@
     "title": "OpenClaw: The Viral AI Agent that Broke the Internet – Peter Steinberger",
     "link": "https://lexfridman.com/peter-steinberger/",
     "audio": "https://media.blubrry.com/takeituneasy/ins.blubrry.com/takeituneasy/lex_ai_peter_steinberger.mp3",
-    "new": true,
     "index": 43
   },
   {
@@ -359,7 +357,6 @@
     "title": "Reiner Pope – The math behind how LLMs are trained and served",
     "link": "https://www.dwarkesh.com/p/reiner-pope",
     "audio": "https://api.substack.com/feed/podcast/195859978/d0ec0edfef14862f0fc2e095a1ee64b0.mp3",
-    "new": true,
     "index": 44
   },
   {
@@ -368,7 +365,6 @@
     "feed": "Lilian Weng Blog",
     "title": "Why We Think",
     "link": "https://lilianweng.github.io/posts/2025-05-01-thinking/",
-    "new": true,
     "index": 45
   },
   {
@@ -378,7 +374,6 @@
     "title": "How to Engineer AI Inference Systems with Philip Kiely - #766",
     "link": "https://twimlai.com/podcast/twimlai/how-engineer-ai-inference-systems",
     "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN3829343846.mp3?updated=1777581088",
-    "new": true,
     "index": 46
   },
   {
@@ -387,7 +382,6 @@
     "feed": "Anthropic Research",
     "title": "Trustworthy agents in practice",
     "link": "https://www.anthropic.com/research/trustworthy-agents",
-    "new": true,
     "index": 47
   },
   {
@@ -396,7 +390,6 @@
     "feed": "Anthropic Engineering",
     "title": "An update on recent Claude Code quality reports",
     "link": "https://www.anthropic.com/engineering/april-23-postmortem",
-    "new": true,
     "index": 48
   },
   {
@@ -405,7 +398,6 @@
     "feed": "Anthropic Engineering",
     "title": "Claude Code auto mode: a safer way to skip permissions",
     "link": "https://www.anthropic.com/engineering/claude-code-auto-mode",
-    "new": true,
     "index": 49
   },
   {
@@ -414,7 +406,6 @@
     "feed": "Anthropic Engineering",
     "title": "A postmortem of three recent issues",
     "link": "https://www.anthropic.com/engineering/a-postmortem-of-three-recent-issues",
-    "new": true,
     "index": 50
   },
   {
@@ -423,7 +414,6 @@
     "feed": "LangChain Blog",
     "title": "Building A Company Due Diligence Agent With Deep Agents Langsmith And Parallel",
     "link": "https://www.langchain.com/blog/building-a-company-due-diligence-agent-with-deep-agents-langsmith-and-parallel",
-    "new": true,
     "index": 51
   },
   {
@@ -432,7 +422,6 @@
     "feed": "LangChain Blog",
     "title": "Tuning Deep Agents Different Models",
     "link": "https://www.langchain.com/blog/tuning-deep-agents-different-models",
-    "new": true,
     "index": 52
   },
   {
@@ -441,7 +430,6 @@
     "feed": "OpenAI Alignment",
     "title": "Investigating the consequences of accidentally grading CoT during RL",
     "link": "https://alignment.openai.com/accidental-cot-grading/",
-    "new": true,
     "index": 53
   },
   {
@@ -450,7 +438,6 @@
     "feed": "OpenAI Alignment",
     "title": "Open Sourcing Monitorability Evaluations",
     "link": "https://alignment.openai.com/monitorability-evals/",
-    "new": true,
     "index": 54
   },
   {
@@ -459,7 +446,6 @@
     "feed": "OpenAI Alignment",
     "title": "How far does alignment midtraining generalize?",
     "link": "https://alignment.openai.com/how-far-does-alignment-midtraining-generalize/",
-    "new": true,
     "index": 55
   },
   {
@@ -468,7 +454,6 @@
     "feed": "OpenAI Developers Blog",
     "title": "Run long horizon tasks with Codex",
     "link": "https://developers.openai.com/blog/run-long-horizon-tasks-with-codex",
-    "new": true,
     "index": 56
   },
   {
@@ -478,7 +463,6 @@
     "title": "Baseten CEO Tuhin Srivastava on the AI Inference Crunch, Custom Models, and Building the Inference Cloud",
     "link": "",
     "audio": "https://traffic.megaphone.fm/PDP9772942588.mp3",
-    "new": true,
     "index": 57
   },
   {
@@ -488,7 +472,6 @@
     "title": "From Coder to Manager: Navigating the Shift to Agentic Engineering with Notion Co-Founder Simon Last",
     "link": "",
     "audio": "https://traffic.megaphone.fm/PDP4039354704.mp3",
-    "new": true,
     "index": 58
   },
   {
@@ -498,7 +481,6 @@
     "title": "State of AI in 2026: LLMs, Coding, Scaling Laws, China, Agents, GPUs, AGI",
     "link": "https://lexfridman.com/ai-sota-2026/",
     "audio": "https://media.blubrry.com/takeituneasy/ins.blubrry.com/takeituneasy/lex_ai_ai_sota_2026.mp3",
-    "new": true,
     "index": 59
   },
   {
@@ -507,7 +489,6 @@
     "feed": "Lilian Weng Blog",
     "title": "Reward Hacking in Reinforcement Learning",
     "link": "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/",
-    "new": true,
     "index": 60
   },
   {
@@ -516,7 +497,6 @@
     "feed": "Lilian Weng Blog",
     "title": "Large Transformer Model Inference Optimization",
     "link": "https://lilianweng.github.io/posts/2023-01-10-inference-optimization/",
-    "new": true,
     "index": 61
   },
   {
@@ -526,7 +506,6 @@
     "title": "AI incidents, audits, and the limits of benchmarks",
     "link": "https://share.transistor.fm/s/1b8e65f4",
     "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/1b8e65f4/5f10a20b.mp3",
-    "new": true,
     "index": 62
   },
   {
@@ -536,7 +515,6 @@
     "title": "AI Trends 2026: OpenClaw Agents, Reasoning LLMs, and More with Sebastian Raschka - #762",
     "link": "https://twimlai.com/podcast/twimlai/ai-trends-2026-openclaw-agents-reasoning-llms",
     "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN2274417899.mp3?updated=1772147656",
-    "new": true,
     "index": 63
   },
   {
@@ -545,7 +523,6 @@
     "feed": "Simon Willison",
     "title": "Vibe coding and agentic engineering are getting closer than I'd like",
     "link": "https://simonwillison.net/2026/May/6/vibe-coding-and-agentic-engineering/#atom-everything",
-    "new": true,
     "index": 64
   },
   {
@@ -554,7 +531,6 @@
     "feed": "Anthropic Research",
     "title": "Automated Alignment Researchers: Using large language models to scale scalable oversight",
     "link": "https://www.anthropic.com/research/automated-alignment-researchers",
-    "new": true,
     "index": 65
   },
   {
@@ -563,7 +539,6 @@
     "feed": "Anthropic Engineering",
     "title": "Raising the bar on SWE-bench Verified with Claude 3.5 Sonnet",
     "link": "https://www.anthropic.com/engineering/swe-bench-sonnet",
-    "new": true,
     "index": 66
   },
   {
@@ -572,7 +547,6 @@
     "feed": "Anthropic Engineering",
     "title": "Introducing Contextual Retrieval",
     "link": "https://www.anthropic.com/engineering/contextual-retrieval",
-    "new": true,
     "index": 67
   },
   {
@@ -581,7 +555,6 @@
     "feed": "LangChain Blog",
     "title": "Agentic Engineering Redefining Software Engineering",
     "link": "https://www.langchain.com/blog/agentic-engineering-redefining-software-engineering",
-    "new": true,
     "index": 68
   },
   {
@@ -590,7 +563,6 @@
     "feed": "LangChain Blog",
     "title": "Reusable Langsmith Evaluator Templates",
     "link": "https://www.langchain.com/blog/reusable-langsmith-evaluator-templates",
-    "new": true,
     "index": 69
   },
   {
@@ -599,7 +571,6 @@
     "feed": "OpenAI Alignment",
     "title": "Introducing Model Spec Evals",
     "link": "https://alignment.openai.com/model-spec-evals/",
-    "new": true,
     "index": 70
   },
   {
@@ -608,7 +579,6 @@
     "feed": "OpenAI Alignment",
     "title": "Why we are excited about confessions",
     "link": "https://alignment.openai.com/confessions/",
-    "new": true,
     "index": 71
   },
   {
@@ -617,7 +587,6 @@
     "feed": "OpenAI Developers Blog",
     "title": "Supercharging Codex with JetBrains MCP at Skyscanner",
     "link": "https://developers.openai.com/blog/skyscanner-codex-jetbrains-mcp",
-    "new": true,
     "index": 72
   },
   {
@@ -626,7 +595,6 @@
     "feed": "OpenAI Developers Blog",
     "title": "Why we built the Responses API",
     "link": "https://developers.openai.com/blog/responses-api",
-    "new": true,
     "index": 73
   },
   {
@@ -635,7 +603,6 @@
     "feed": "Latent Space",
     "title": "Agents for Everything Else: Codex for Knowledge Work, Claude for Creative Work",
     "link": "https://www.latent.space/p/ainews-agents-for-everything-else",
-    "new": true,
     "index": 74
   },
   {
@@ -645,7 +612,6 @@
     "title": "Dylan Patel — Deep dive on the 3 big bottlenecks to scaling AI compute",
     "link": "https://www.dwarkesh.com/p/dylan-patel",
     "audio": "https://api.substack.com/feed/podcast/190839917/e3c75a06762af10f374661e8af1d1af6.mp3",
-    "new": true,
     "index": 75
   },
   {
@@ -655,7 +621,6 @@
     "title": "Dario Amodei — 'We are near the end of the exponential'",
     "link": "https://www.dwarkesh.com/p/dario-amodei-2",
     "audio": "https://api.substack.com/feed/podcast/187852154/cecdbe38125e2786cbfebe31dd083d4f.mp3",
-    "new": true,
     "index": 76
   },
   {
@@ -664,7 +629,6 @@
     "feed": "Lilian Weng Blog",
     "title": "Adversarial Attacks on LLMs",
     "link": "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
-    "new": true,
     "index": 77
   },
   {
@@ -674,7 +638,6 @@
     "title": "The Myth of Model Wars: Open vs Closed AI in 2026",
     "link": "https://share.transistor.fm/s/6095edc5",
     "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/6095edc5/d370f038.mp3",
-    "new": true,
     "index": 78
   },
   {
@@ -684,7 +647,6 @@
     "title": "AI at the Edge is a different operating environment",
     "link": "https://share.transistor.fm/s/ea7694a9",
     "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/ea7694a9/378817af.mp3",
-    "new": true,
     "index": 79
   },
   {
@@ -694,7 +656,6 @@
     "title": "Humility in the Age of Agentic Coding",
     "link": "https://share.transistor.fm/s/7e1ca2c8",
     "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/7e1ca2c8/3ade85d6.mp3",
-    "new": true,
     "index": 80
   },
   {
@@ -703,7 +664,6 @@
     "feed": "Simon Willison",
     "title": "Behind the Scenes Hardening Firefox with Claude Mythos Preview",
     "link": "https://simonwillison.net/2026/May/7/firefox-claude-mythos/#atom-everything",
-    "new": true,
     "index": 81
   },
   {
@@ -712,7 +672,6 @@
     "feed": "LangChain Blog",
     "title": "Secure Agents Cisco Ai Defense",
     "link": "https://www.langchain.com/blog/secure-agents-cisco-ai-defense",
-    "new": true,
     "index": 82
   },
   {
@@ -721,7 +680,6 @@
     "feed": "OpenAI Alignment",
     "title": "Helpful assistant features suppress emergent misalignment",
     "link": "https://alignment.openai.com/helpful-assistant-features/",
-    "new": true,
     "index": 83
   },
   {
@@ -730,7 +688,6 @@
     "feed": "OpenAI Alignment",
     "title": "Debugging misaligned completions with sparse-autoencoder latent attribution",
     "link": "https://alignment.openai.com/sae-latent-attribution/",
-    "new": true,
     "index": 84
   },
   {
@@ -739,7 +696,6 @@
     "feed": "OpenAI Developers Blog",
     "title": "15 lessons learned building ChatGPT Apps",
     "link": "https://developers.openai.com/blog/15-lessons-building-chatgpt-apps",
-    "new": true,
     "index": 85
   },
   {
@@ -748,7 +704,6 @@
     "feed": "Latent Space",
     "title": "The Inference Inflection",
     "link": "https://www.latent.space/p/ainews-the-inference-inflection",
-    "new": true,
     "index": 86
   },
   {
@@ -758,7 +713,6 @@
     "title": "Agentic Coding and the Economics of Open Source",
     "link": "https://share.transistor.fm/s/7d8e0293",
     "audio": "https://pscrb.fm/rss/p/dts.podtrac.com/redirect.mp3/media.transistor.fm/7d8e0293/0bbed6a2.mp3",
-    "new": true,
     "index": 87
   },
   {
@@ -768,7 +722,6 @@
     "title": "The Evolution of Reasoning in Small Language Models with Yejin Choi - #761",
     "link": "https://twimlai.com/podcast/twimlai/the-evolution-of-reasoning-in-small-language-models/",
     "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN2256483849.mp3?updated=1769723982",
-    "new": true,
     "index": 88
   },
   {
@@ -778,7 +731,6 @@
     "title": "Why Vision Language Models Ignore What They See with Munawar Hayat - #758",
     "link": "https://twimlai.com/podcast/twimlai/why-vision-language-models-ignore-what-they-see/",
     "audio": "https://pscrb.fm/rss/p/traffic.megaphone.fm/MLN7251543598.mp3?updated=1765310086",
-    "new": true,
     "index": 89
   },
   {
@@ -787,7 +739,6 @@
     "feed": "Simon Willison",
     "title": "Live blog: Code w/ Claude 2026",
     "link": "https://simonwillison.net/2026/May/6/code-w-claude-2026/#atom-everything",
-    "new": true,
     "index": 90
   },
   {
@@ -796,7 +747,52 @@
     "feed": "Simon Willison",
     "title": "Our AI started a cafe in Stockholm",
     "link": "https://simonwillison.net/2026/May/5/our-ai-started-a-cafe-in-stockholm/#atom-everything",
-    "new": true,
     "index": 91
+  },
+  {
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Research",
+    "title": "Teaching Claude why: New research on reducing agentic misalignment",
+    "link": "https://www.anthropic.com/research/teaching-claude-why",
+    "new": true,
+    "index": 92
+  },
+  {
+    "score": 7,
+    "type": "article",
+    "feed": "Simon Willison",
+    "title": "Using Claude Code: The Unreasonable Effectiveness of HTML",
+    "link": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/#atom-everything",
+    "new": true,
+    "index": 93
+  },
+  {
+    "score": 6,
+    "type": "article",
+    "feed": "Anthropic Research",
+    "title": "Natural Language Autoencoders: Turning Claude's thoughts into text",
+    "link": "https://www.anthropic.com/research/natural-language-autoencoders",
+    "new": true,
+    "index": 94
+  },
+  {
+    "score": 5,
+    "type": "article",
+    "feed": "Mistral AI Engineering",
+    "title": "Remote agents in Vibe: Powered by Mistral Medium 3.5",
+    "link": "https://mistral.ai/news/vibe-remote-agents-mistral-medium-3-5",
+    "new": true,
+    "index": 95
+  },
+  {
+    "score": 5,
+    "type": "media",
+    "feed": "Latent Space",
+    "title": "Doing Vibe Physics — Alex Lupsasca, OpenAI",
+    "link": "https://www.latent.space/p/lupsasca",
+    "audio": "https://api.substack.com/feed/podcast/196292432/5a1552f1791348300399bbce5a75a0a7.mp3",
+    "new": true,
+    "index": 96
   }
 ]
