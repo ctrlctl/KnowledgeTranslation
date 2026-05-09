@@ -31,10 +31,16 @@ STYLES = {
     ),
     "h3": (
         "margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;"
+        "border-left:3px solid #1e88e5;padding-left:0.6em;"
+        "font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;"
+    ),
+    "h4": (
+        "margin-top:1.2em;margin-bottom:0.5em;font-size:15px;font-weight:bold;color:#1a1a1a;"
+        "border-left:3px solid #1e88e5;padding-left:0.6em;"
         "font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;"
     ),
     "p": "margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;",
-    "strong": "color:#1a1a1a;font-weight:bold;",
+    "strong": "color:#1e88e5;font-weight:bold;",
     "em": "font-style:italic;",
     "blockquote": (
         "border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;"
@@ -66,19 +72,18 @@ def escape_html(text):
 def render_inline(text):
     """处理行内元素：bold, italic, code, links, images."""
     # Images (must be before links)
-    # 微信需手动上传图片，显示文件名提示
+    # 输出 <img> 标签，粘贴到微信编辑器时图片会被自动上传
     text = re.sub(
         r'!\[([^\]]*)\]\(([^)]+)\)',
         lambda m: (
-            f'<p style="text-align:center;margin:1.5em 0;color:#999;font-size:13px;">'
-            f'[ 插入图片：{m.group(2).split("/")[-1]} ]</p>'
+            f'<img style="{STYLES["img"]}" src="{m.group(2)}" alt="{m.group(1)}" />'
         ),
         text
     )
-    # Links — 微信公众号不允许非 mp.weixin.qq.com 域名链接，全部转为纯文本
+    # Links — 微信公众号不允许外部链接，转为加粗纯文本（无链接色）
     text = re.sub(
         r'\[([^\]]+)\]\(([^)]+)\)',
-        lambda m: f'<span style="color:#576b95;">{m.group(1)}</span>',
+        lambda m: f'<span style="color:#1e88e5;font-weight:bold;">{m.group(1)}</span>',
         text
     )
     # Bold
@@ -126,12 +131,12 @@ def md_to_wechat_html(md_text):
             continue
 
         # 标题
-        h_match = re.match(r'^(#{1,3})\s+(.+)$', line)
+        h_match = re.match(r'^(#{1,4})\s+(.+)$', line)
         if h_match:
             level = len(h_match.group(1))
             text = render_inline(h_match.group(2))
-            tag = f"h{level}"
-            style = STYLES.get(tag, STYLES["h3"])
+            tag = f"h{level}" if level <= 4 else "h4"
+            style = STYLES.get(tag, STYLES["h4"])
             html_parts.append(f'<{tag} style="{style}">{text}</{tag}>')
             i += 1
             continue
@@ -173,13 +178,40 @@ def md_to_wechat_html(md_text):
             html_parts.append(f'<ul style="{STYLES["ul"]}">{"".join(items)}</ul>')
             continue
 
+        # 表格
+        if line.strip().startswith('|') and '|' in line.strip()[1:]:
+            table_rows = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                row = lines[i].strip()
+                if re.match(r'^\|[\s\-:|]+\|$', row):
+                    i += 1
+                    continue
+                cells = [c.strip() for c in row.strip('|').split('|')]
+                table_rows.append(cells)
+                i += 1
+            if table_rows:
+                tbl = '<table style="width:100%;border-collapse:collapse;margin:1.5em 0;font-size:14px;">'
+                for ri, row in enumerate(table_rows):
+                    tbl += '<tr>'
+                    for cell in row:
+                        tag = 'th' if ri == 0 else 'td'
+                        cell_style = "border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;"
+                        if ri == 0:
+                            cell_style += "background:#f5f5f5;font-weight:bold;"
+                        tbl += f'<{tag} style="{cell_style}">{render_inline(cell)}</{tag}>'
+                    tbl += '</tr>'
+                tbl += '</table>'
+                html_parts.append(tbl)
+            continue
+
         # 图片单独一行
         img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)\s*$', line.strip())
         if img_match:
-            img_name = img_match.group(2).split("/")[-1]
+            img_src = img_match.group(2)
+            img_alt = img_match.group(1)
             html_parts.append(
-                f'<p style="text-align:center;margin:1.5em 0;color:#999;font-size:13px;">'
-                f'[ 插入图片：{img_name} ]</p>'
+                f'<p style="text-align:center;margin:1.5em 0;">'
+                f'<img style="{STYLES["img"]}" src="{img_src}" alt="{img_alt}" /></p>'
             )
             i += 1
             continue
@@ -187,7 +219,7 @@ def md_to_wechat_html(md_text):
         # 普通段落（收集连续非空行，但遇到特殊行停止）
         para_lines = []
         while i < len(lines) and lines[i].strip():
-            if re.match(r'^#{1,3}\s+', lines[i]):
+            if re.match(r'^#{1,4}\s+', lines[i]):
                 break
             if re.match(r'^-{3,}\s*$', lines[i].strip()):
                 break
@@ -200,6 +232,8 @@ def md_to_wechat_html(md_text):
             if re.match(r'^[-*]\s+', lines[i].strip()):
                 break
             if re.match(r'^!\[', lines[i].strip()):
+                break
+            if lines[i].strip().startswith('|') and '|' in lines[i].strip()[1:]:
                 break
             para_lines.append(lines[i].strip())
             i += 1

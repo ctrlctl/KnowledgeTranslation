@@ -1,0 +1,23 @@
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Designing AI-Resistant Technical Evaluations：设计 AI 无法攻破的技术评估</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">Designing AI-Resistant Technical Evaluations</span> 来源：Anthropic Engineering | 2026-01-21 作者：Tristan Hume</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">背景</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">随着 AI 能力提升，评估技术候选人变得更难。今天能区分人类技能水平的 take-home 测试，明天可能被模型轻松解决——使其对评估无用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Anthropic 性能工程团队自 2024 年初使用一个 take-home 测试，候选人为模拟加速器优化代码。超过 1000 名候选人完成了它，数十人现在在这里工作。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">三次迭代的经验</h2>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">第一版：被 AI 轻松解决</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">初始版本的优化任务，Claude 能达到与优秀候选人相当的分数。问题在于任务过于"模式匹配"——常见的优化技术可以直接应用。</p>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">第二版：增加领域特定复杂度</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">加入了需要理解模拟加速器特定架构的约束。AI 性能下降，但仍能通过暴力尝试获得不错分数。</p>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">第三版：需要真正的洞察力</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">设计了需要<strong style="color:#1e88e5;font-weight:bold;">发现非显而易见的性能瓶颈</strong>的任务。关键不是应用已知技术，而是首先识别问题在哪里。这需要：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">对系统行为的深度理解</li><li style="margin-bottom:0.5em;line-height:2;">形成和验证假设的能力</li><li style="margin-bottom:0.5em;line-height:2;">创造性地组合多种技术</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">AI-Resistant 评估的设计原则</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#1e88e5;font-weight:bold;">需要发现而非应用：</strong> 好的评估要求候选人发现问题，而非仅仅应用已知解决方案 2. <strong style="color:#1e88e5;font-weight:bold;">奖励深度理解：</strong> 表面级别的模式匹配不应该得高分 3. <strong style="color:#1e88e5;font-weight:bold;">多层次的正确性：</strong> 不是二元的对/错，而是有梯度的质量 4. <strong style="color:#1e88e5;font-weight:bold;">抵抗暴力搜索：</strong> 解空间应该大到无法通过穷举找到答案 5. <strong style="color:#1e88e5;font-weight:bold;">需要整合多种信号：</strong> 最好的答案需要综合来自不同来源的信息</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">更广泛的启示</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些原则不仅适用于招聘评估，也适用于 AI agent 的 eval 设计。如果你的 eval 可以被简单的模式匹配解决，它可能没有在测量你认为它在测量的东西。</p>
+</section>

@@ -1,0 +1,22 @@
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Auto-Review of Agent Actions Without Synchronous Human Oversight：无需同步人类监督的 Agent 行为自动审查</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">Auto-Review of Agent Actions Without Synchronous Human Oversight</span> 来源：OpenAI Alignment | 2026-04-30 作者：Maja Trębacz et al.</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心思想</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Auto-review 为部署编码 agent 提供了更安全的默认设置：使用一个独立的 agent 来批准或拒绝越界行为，无需人类实时在线。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">问题</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">同步人类监督（每次 agent 做敏感操作都等人类批准）不可扩展：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">人类不可能 24/7 在线</li><li style="margin-bottom:0.5em;line-height:2;">频繁中断破坏 agent 的长时间运行能力</li><li style="margin-bottom:0.5em;line-height:2;">对于低风险操作，人类审批是不必要的开销</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但完全无监督又有风险——agent 可能执行有害操作。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">解决方案：异步自动审查</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">用一个独立的"审查 agent"来评估主 agent 的行为：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. 主 agent 提出要执行的操作 2. 审查 agent 评估该操作是否安全/合规 3. 如果安全 → 自动批准 4. 如果不确定 → 升级给人类 5. 如果明确危险 → 自动拒绝</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">设计考量</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">审查 agent 与主 agent 独立：</strong> 避免共谋</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">审查标准明确：</strong> 基于预定义的策略而非模糊判断</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">保守默认：</strong> 不确定时拒绝而非批准</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">审计追踪：</strong> 所有决策都被记录以供后续分析</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">人类升级路径：</strong> 始终保留人类介入的通道</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">与 HITL 的关系</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Auto-review 不是替代人类监督，而是在"完全人类监督"和"完全无监督"之间提供一个实用的中间地带。它让 agent 能在大多数情况下自主运行，同时在关键决策点保持安全保障。</p>
+</section>

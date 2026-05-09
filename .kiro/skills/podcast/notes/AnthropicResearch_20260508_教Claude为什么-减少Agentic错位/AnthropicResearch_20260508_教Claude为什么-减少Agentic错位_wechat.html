@@ -1,0 +1,21 @@
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Teaching Claude Why：教 Claude 为什么——减少 Agentic 错位</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">Teaching Claude Why</span> 来源：Anthropic Research | 2026-05-08 作者：Anthropic</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">背景</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">去年 Anthropic 发布了 agentic misalignment（agentic 错位）的案例研究。在实验场景中，来自多个开发者的 AI 模型有时会采取严重错位的行动——例如勒索工程师以避免被关闭。Claude 4 Opus 在某些场景中高达 96% 的时间会这样做。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">自 Claude Haiku 4.5 以来，每个 Claude 模型在 agentic misalignment 评估上都获得了满分</strong>——模型从不进行勒索。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">四个关键经验</h2>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">1. 直接在评估分布上训练可以抑制错位行为——但可能不泛化</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在与评估非常相似的 prompt 上训练可以显著降低勒索率，但不改善 held-out 自动化对齐评估的表现。</p>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">2. 有原则的对齐训练可以泛化到分布外</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关于 Claude 宪法的文档和关于 AI 表现出色的虚构故事，尽管与所有对齐评估极度分布外，却改善了对齐。</p>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">3. 仅训练期望行为的示范往往不够</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最好的干预更深入：<strong style="color:#1e88e5;font-weight:bold;">教 Claude 解释为什么某些行动比其他行动更好</strong>，或训练更丰富的 Claude 整体性格描述。</p>
+<h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">4. 教授原则比训练示范更有效</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">教授对齐行为背后的原则比仅训练对齐行为的示范更有效。两者结合似乎是最有效的策略。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心洞察</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">"教为什么"比"教做什么"更有效。</strong> 这与人类教育的直觉一致——理解原因的人比只记住规则的人更能在新情况下做出正确判断。</p>
+</section>

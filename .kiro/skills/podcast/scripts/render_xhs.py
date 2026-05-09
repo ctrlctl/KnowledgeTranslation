@@ -24,7 +24,7 @@ CONTENT_WIDTH = WIDTH - 2 * PADDING_X
 BG_COLOR = "#faf8f5"
 TEXT_COLOR = "#2c2c2c"
 HEADING_COLOR = "#1a1a1a"
-ACCENT_COLOR = "#8B4513"
+ACCENT_COLOR = "#1e88e5"
 SEPARATOR_COLOR = "#ddd"
 
 # 字体大小
@@ -94,8 +94,8 @@ def parse_md_to_blocks(md_text):
     md_text = re.sub(r'<style>.*?</style>', '', md_text, flags=re.DOTALL)
     md_text = re.sub(r'<[^>]+>', '', md_text)
 
-    # 去掉链接语法，保留链接文字（除了第一个出现的原文链接保留为文字）
-    md_text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', md_text)  # 链接变纯文字
+    # 去掉链接语法，保留链接文字（但不影响图片语法 ![...](...) ）
+    md_text = re.sub(r'(?<!!)\[([^\]]+)\]\([^)]+\)', r'\1', md_text)
 
     lines = md_text.split('\n')
     i = 0
@@ -114,7 +114,11 @@ def parse_md_to_blocks(md_text):
             i += 1
             continue
         if line.startswith('### '):
-            blocks.append({"type": "h2", "text": line[4:].strip()})
+            blocks.append({"type": "h3", "text": line[4:].strip()})
+            i += 1
+            continue
+        if line.startswith('#### '):
+            blocks.append({"type": "h3", "text": line[5:].strip()})
             i += 1
             continue
         if line.startswith('# '):
@@ -146,6 +150,35 @@ def parse_md_to_blocks(md_text):
                 i += 1
             continue
 
+        # 表格（| 开头的行）
+        if line.strip().startswith('|') and '|' in line[1:]:
+            table_rows = []
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                row = lines[i].strip()
+                # 跳过分隔行 |---|---|
+                if re.match(r'^\|[\s\-:|]+\|$', row):
+                    i += 1
+                    continue
+                cells = [c.strip() for c in row.strip('|').split('|')]
+                table_rows.append(cells)
+                i += 1
+            if table_rows:
+                blocks.append({"type": "table", "rows": table_rows})
+            continue
+
+        # 代码块（``` 开头）
+        if line.strip().startswith('```'):
+            code_lines = []
+            i += 1
+            while i < len(lines) and not lines[i].strip().startswith('```'):
+                code_lines.append(lines[i])
+                i += 1
+            if i < len(lines):
+                i += 1  # skip closing ```
+            if code_lines:
+                blocks.append({"type": "code_block", "text": '\n'.join(code_lines)})
+            continue
+
         # 图片
         img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)\s*$', line)
         if img_match:
@@ -156,7 +189,7 @@ def parse_md_to_blocks(md_text):
         # 普通段落（收集连续非空行）
         para_lines = []
         while i < len(lines) and lines[i].strip():
-            # 遇到标题、分隔线、列表项时停止
+            # 遇到标题、分隔线、列表项、表格、代码块时停止
             if re.match(r'^#{1,3}\s+', lines[i]):
                 break
             if re.match(r'^-{3,}\s*$', lines[i].strip()):
@@ -164,6 +197,12 @@ def parse_md_to_blocks(md_text):
             if re.match(r'^\*{3,}\s*$', lines[i].strip()):
                 break
             if re.match(r'^[-*]\s+', lines[i].strip()):
+                break
+            if lines[i].strip().startswith('|') and '|' in lines[i][1:]:
+                break
+            if lines[i].strip().startswith('```'):
+                break
+            if re.match(r'^!\[', lines[i].strip()):
                 break
             para_lines.append(lines[i].strip())
             i += 1
@@ -195,7 +234,7 @@ def wrap_text(text, font, max_width, draw):
     return lines
 
 
-BOLD_COLOR = "#c0392b"  # 加粗文字用深红色
+BOLD_COLOR = "#1e88e5"  # 加粗文字用棕色强调色（与微信版统一）
 CODE_COLOR = "#d14"    # inline code 用代码红色
 CODE_BG = "#f5f5f5"    # code 背景色
 
@@ -277,6 +316,10 @@ def estimate_block_height(block, fonts, draw, md_dir=None):
         text = re.sub(r'\*\*([^*]+)\*\*', r'\1', block["text"])
         lines = wrap_text(text, fonts["h2"], CONTENT_WIDTH, draw)
         return len(lines) * int(FONT_SIZE_H2 * LINE_SPACING) + 20
+    if block["type"] == "h3":
+        text = re.sub(r'\*\*([^*]+)\*\*', r'\1', block["text"])
+        lines = wrap_text(text, fonts["bold"], CONTENT_WIDTH - 20, draw)
+        return len(lines) * int(FONT_SIZE_BODY * LINE_SPACING) + 16
     if block["type"] == "paragraph":
         segments = parse_inline_segments(block["text"])
         lines = wrap_rich_text(segments, fonts, CONTENT_WIDTH, draw)
@@ -294,6 +337,13 @@ def estimate_block_height(block, fonts, draw, md_dir=None):
             scale = CONTENT_WIDTH / img.width
             return int(img.height * scale) + 30
         return 0
+    if block["type"] == "table":
+        row_h = int(FONT_SIZE_BODY * LINE_SPACING) + 10
+        return len(block["rows"]) * row_h + 20
+    if block["type"] == "code_block":
+        code_lines = block["text"].split('\n')
+        line_h = int(FONT_SIZE_BODY * 1.6)
+        return len(code_lines) * line_h + 40
     if block["type"] == "quote_line":
         # 去掉链接语法
         text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', block["text"])
@@ -330,6 +380,17 @@ def draw_block(block, fonts, draw, x, y, img_canvas=None, md_dir=None):
             draw.text((x, y + i * line_h), line, font=fonts["h2"], fill=HEADING_COLOR)
         return len(lines) * line_h + 20
 
+    if block["type"] == "h3":
+        text = re.sub(r'\*\*([^*]+)\*\*', r'\1', block["text"])
+        lines = wrap_text(text, fonts["bold"], CONTENT_WIDTH - 20, draw)
+        line_h = int(FONT_SIZE_BODY * LINE_SPACING)
+        total_h = len(lines) * line_h
+        # 左侧竖线
+        draw.rectangle([(x, y + 2), (x + 4, y + total_h - 2)], fill="#1e88e5")
+        for i, line in enumerate(lines):
+            draw.text((x + 16, y + i * line_h), line, font=fonts["bold"], fill=HEADING_COLOR)
+        return total_h + 16
+
     if block["type"] == "paragraph":
         segments = parse_inline_segments(block["text"])
         lines = wrap_rich_text(segments, fonts, CONTENT_WIDTH, draw)
@@ -359,6 +420,42 @@ def draw_block(block, fonts, draw, x, y, img_canvas=None, md_dir=None):
             img_canvas.paste(img_resized, (x, y + 15))
             return new_h + 30
         return 0
+
+    if block["type"] == "table":
+        rows = block["rows"]
+        if not rows:
+            return 0
+        num_cols = max(len(r) for r in rows)
+        col_w = CONTENT_WIDTH // max(num_cols, 1)
+        row_h = int(FONT_SIZE_BODY * LINE_SPACING) + 10
+        cy = y + 10
+        for ri, row in enumerate(rows):
+            for ci, cell in enumerate(row[:num_cols]):
+                cell_x = x + ci * col_w + 8
+                # 去掉 markdown 加粗
+                cell_text = re.sub(r'\*\*([^*]+)\*\*', r'\1', cell)
+                font = fonts["bold"] if ri == 0 else fonts["body"]
+                color = HEADING_COLOR if ri == 0 else TEXT_COLOR
+                # 截断过长文本
+                while draw.textbbox((0, 0), cell_text, font=font)[2] > col_w - 16 and len(cell_text) > 1:
+                    cell_text = cell_text[:-1]
+                draw.text((cell_x, cy), cell_text, font=font, fill=color)
+            # 行底线
+            draw.line([(x, cy + row_h - 5), (x + CONTENT_WIDTH, cy + row_h - 5)], fill=SEPARATOR_COLOR, width=1)
+            cy += row_h
+        return len(rows) * row_h + 20
+
+    if block["type"] == "code_block":
+        code_lines = block["text"].split('\n')
+        line_h = int(FONT_SIZE_BODY * 1.6)
+        total_h = len(code_lines) * line_h + 40
+        # 背景
+        draw.rectangle([(x, y), (x + CONTENT_WIDTH, y + total_h)], fill="#2d2d2d")
+        cy = y + 20
+        for cl in code_lines:
+            draw.text((x + 20, cy), cl, font=fonts["body"], fill="#e6e6e6")
+            cy += line_h
+        return total_h
 
     if block["type"] == "quote_line":
         text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', block["text"])
