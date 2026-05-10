@@ -1,0 +1,525 @@
+Detected language: English
+[00:00] Welcome to the Practical AI Podcast, where we break down the real world applications
+[00:08] of artificial intelligence and how it's shaping the way we live, work, and create.
+[00:14] Our goal is to help make AI technology practical, productive, and accessible to everyone.
+[00:19] Whether you're a developer, business leader, or just curious about the tech behind the
+[00:23] buzz, you're in the right place.
+[00:25] Be sure to connect with us on LinkedIn, X, or Blue Sky to stay up to date with episode
+[00:29] drops, behind the scenes content, and AI insights.
+[00:33] You can learn more at practicalai.fm.
+[00:35] Now, onto the show.
+[00:49] Welcome to another episode of the Practical AI Podcast.
+[00:52] This is Daniel Wightnack.
+[00:54] I am CEO at Prediction Guard, and I am joined as always by my co-host, Chris Benson, who
+[01:00] is a principal AI research engineer at Lockheed Martin.
+[01:04] How are you doing, Chris?
+[01:05] Hey, doing great today, Daniel.
+[01:06] How's it going?
+[01:07] It's going really good.
+[01:09] Lots of fun things in the news to follow and lots of fun things to work on.
+[01:14] By the way, for our listeners who might need a reminder about this, we are doing some webinars
+[01:21] on a variety of topics, some of which are maybe even related to some of the things we're
+[01:26] talking about today around security or safety.
+[01:30] If you want to find out about those, go to practicalai.fm slash webinars.
+[01:35] That's where we have some of those things listed out.
+[01:38] But I'm really excited today because I have an amazing set of things to talk about with
+[01:45] Sean McGregor, who is co-founder and lead research engineer at the AI Verification and
+[01:50] Evaluation Research Institute and also the founder of the AI Incident Database.
+[01:56] How are you doing, Sean?
+[01:57] Thanks for joining us.
+[01:58] I'm doing well.
+[01:59] Thanks for having me here.
+[02:00] Yeah, yeah, of course.
+[02:02] This is interesting to think about AI incidents, verification, evaluation.
+[02:09] How did you find your way into a day to day where you're thinking about and documenting
+[02:16] and studying AI incidents among other things?
+[02:19] How did I get to work on what you might call impractical AI?
+[02:24] Yeah, well, I guess where practical AI turns into problematic AI, let's say.
+[02:34] And really, practical AI is the AI that has consequences and matters in the world.
+[02:39] And those are the ones you actually care to look into where it goes wrong.
+[02:43] So the kind of really quickie professional tour of things is I'm about a 2017 vintage
+[02:51] PhD in machine learning.
+[02:53] I focused on reinforcement learning as applied to wildfire suppression policy.
+[02:57] So a fire starts in a forest, what do you do about it?
+[02:59] And how does that impact the development of the land and the values we get from it over
+[03:03] the course of 100 years?
+[03:05] Really in that setting, I had a very strong sense of the power of the technology that
+[03:11] we were developing, but also the brittleness of it and just how difficult it was to even
+[03:15] know whether the system was doing what you wanted to do, particularly in a reinforcement
+[03:19] learning system.
+[03:21] And I just never wanted to wander through a forest and have a sense of, you know, this
+[03:25] is a charred wasteland because of the forester took my simulation and didn't really realize
+[03:31] that he was doing his research code and that he should actually apply his own human expertise
+[03:37] about what is good fire and bad fire.
+[03:40] So I went from that.
+[03:41] Then I worked on energy efficient neural network processors, which that was a great effort.
+[03:49] The organization called Syntiant that had shipped when I was there millions and has
+[03:54] continued to ship many edge neural network processors.
+[03:58] And that gave me a really strong impression of the kind of power and brittleness once
+[04:03] again inside these consumer electronic devices, hearing aids and the like.
+[04:08] And so I left that.
+[04:11] I started a company dedicated to the test and evaluation of machine learning systems.
+[04:18] And when that happened, or when I started that, the kind of LLM explosion happened.
+[04:24] And, you know, that's the kind of Cambrian explosion of sorts of practical AI technologies
+[04:33] that I'm sure we were all still feeling.
+[04:35] And we sold the assets associated with that to a old safety organization called Underwriters
+[04:41] Laboratories and spent some time there doing safety stuff before leaving and starting up
+[04:49] the Avery, the AI verification, evaluation, research institute.
+[04:53] And during this whole time, I had a project that just kind of got away from me because
+[05:00] it filled a niche.
+[05:02] It served a need.
+[05:03] And that's the Aynson database that you really need to have systems that collect and produce
+[05:11] usable data sets motivating safety practice.
+[05:16] And you see this in aviation, a plane crashes, you record what happens and use that to make
+[05:20] sure effectively in the aviation industry, you have a form of regression test.
+[05:24] You don't want that that pass crash to happen again.
+[05:27] You also have similar things in food safety.
+[05:30] You have medical adverse event reporting.
+[05:32] These are this is the fundamental primitive that you need to make sure you have in safety
+[05:38] is a bad thing happens.
+[05:39] You make sure it doesn't happen again.
+[05:42] And so we've in that project collected more than 5000 human annotated reports of AI incidents.
+[05:49] Those are collected across more than 1000 discrete incident records at this point.
+[05:54] And we formed a lot of the training data of like what is an incident.
+[05:58] And we've been interacting with a lot of intergovernmental organizations and GRC community governance
+[06:04] risk and compliance community companies and like just trying to motivate what is how to
+[06:10] motivate safety and like why very often that can actually be a business imperative because
+[06:15] a lot of the incidents that we have in the database, you could actually look at the stock
+[06:19] price before and after and there's an impact.
+[06:23] Could you talk a little bit more kind of expand on what the nature of safety means in the
+[06:28] context of AI?
+[06:30] And because coming in as a as a neophyte on this, I don't know if there is kind of a standard
+[06:36] definition.
+[06:37] It seems to me there isn't at least not that I'm aware of.
+[06:40] So how do you define it?
+[06:41] You mentioned kind of defining an incident.
+[06:43] Could you define what you think an incident is and how these different concepts relate
+[06:48] together in a way that those of us who are not part of that kind of world, that specific
+[06:53] world can kind of adopt the ideas and understand what you're talking about?
+[06:58] Kind of give us a background on it.
+[07:00] So this is a three or a four hour podcast, right?
+[07:02] It's like that's like the question like used to always we would have the question like
+[07:08] is something AI or machine learning?
+[07:12] Eventually, you just learn that those words are completely meaningless in terms of the
+[07:16] way people apply them.
+[07:17] So yeah, we just need to treat them as like a pointer.
+[07:22] And you know, like the memory might be allocated differently with or the pointer can point
+[07:27] to different memory or maybe the memory swaps.
+[07:30] So like, there's a lot of safety terms out there.
+[07:34] And like I've actually had a poster for this at one point because this comes up so often.
+[07:39] You could have incident, accident, adverse event, you have vulnerability, exposure,
+[07:45] harm event, controversy issue.
+[07:48] Like each of these have like slightly different nuance to them.
+[07:52] But you can kind of bring it back to the concept of you don't want a bad thing to happen and
+[07:59] you don't want that bad thing to produce a harm.
+[08:01] You don't want someone to say like I've been impacted or some organization been impacted.
+[08:07] And so the intergovernmental definition of incident that developed was effectively an
+[08:14] event that a harm has taken place.
+[08:17] That's an incident.
+[08:18] Your mileage may vary in different contexts and like different communities.
+[08:21] There are different terms that resonate.
+[08:25] But the reason that we went with incident to begin with is basically it's sufficiently
+[08:29] vague while still meaning something because you can't say accident.
+[08:35] Some of these have intention.
+[08:37] You can't say exposure or compromise or the ones that are in the computer security world
+[08:44] because some of them don't have intention.
+[08:46] And so incident covers them all.
+[08:48] I could gesture and give you some Venn diagrams, but this is a podcast.
+[08:53] So we'll avoid that.
+[08:55] I'm wondering like in particular when you narrow it down to AI incident, obviously sort
+[09:03] of AI depending on your definition of AI kind of has existed for some time.
+[09:09] And so I guess like AI incidents have been happening for some time in the sense that
+[09:14] like you could have a computer vision model detecting maybe it's problems and things coming
+[09:20] off of a manufacturing line.
+[09:22] It misses one and that causes harm maybe downstream to someone who uses a product or something
+[09:28] like that.
+[09:29] How has this maybe, you talked about the shift to of course the kind of expansion of how
+[09:38] AI is impacting our life.
+[09:41] How from your perspective has that idea I guess been stressed in new ways in recent
+[09:48] years?
+[09:49] We have constant debates over what we would ingest into the AI incident database.
+[09:55] And we because we have to operate and it's a database that we have to make these decisions
+[09:59] day in day out have very difficult decisions.
+[10:02] And it's not just in our case, it's not just what should be considered an incident.
+[10:07] It's also if we start ingesting these, are we lassoing an infinity that's just going
+[10:15] to like pull us into some extreme direction.
+[10:18] And maybe we would like to index catalog and present to the world that infinity.
+[10:23] But there are these kind of like little harms that are repeated maybe millions of times
+[10:30] a day when you have these systems that indexing all of them isn't necessarily useful.
+[10:36] So we do have a little bit of a bent towards is this informing the production of a safer
+[10:42] AI or safer world for AI.
+[10:46] But a lot of things meet the fundamental criteria of involving AI and minor harms have taken
+[10:53] place.
+[10:54] There are also increasing number of high scaled harms that take place.
+[10:59] Like if you make a billion people slightly more depressed, non-zero number of people
+[11:04] probably have died as a result of that.
+[11:08] And that's where you know, it's not just you're building a bridge that needs to bear
+[11:14] weight, you're building a bridge that needs to bear the weight of all of humanity falling
+[11:18] over it.
+[11:19] I'm curious as you're kind of selecting things to go into the database, you know, per the
+[11:25] criteria that you just talked about, how are you sourcing that?
+[11:29] And especially when you consider the fact that, you know, so many AI things today are
+[11:34] proprietary and kept secret in organizations for obvious reasons.
+[11:39] You know, how is that sourced and how do you how does the different sourcing affect the
+[11:45] utility of the database and how you make those kind of selections?
+[11:49] Most of what we have at the moment is journalistic reporting.
+[11:53] The reason that we are living in that space at the moment is journalists actually put
+[11:57] in a tremendous amount of work to validate the base facts involved in it.
+[12:01] And that is where the degradation of the journalistic community or at least the ability for them
+[12:07] to make wages has actually been quite harmful.
+[12:12] We also do get direct reporting at times.
+[12:14] We do get people that email us or submit direct to our forms.
+[12:17] We get people that create blog posts and things like that and submit it to the incident database.
+[12:23] We do encourage people to submit to the incident database.
+[12:27] The simple matter of the fact, though, is the volume that we're dealing with is one
+[12:34] where eventually we do need to switch from this kind of voluntary reporting to more mandatory
+[12:40] form of reporting.
+[12:42] In the EU code of practice, there is a requirement for severe incidents to be reported.
+[12:48] It hasn't reached implementation as of yet.
+[12:51] There's a lot of back and forth on that front.
+[12:53] But the insight you can derive from mandatory reporting is greater than that of this voluntary reporting.
+[12:59] We can prove existence.
+[13:00] We can prove it's happening.
+[13:02] It's very difficult for us to assign a rate to incident events, though, particularly as
+[13:06] it becomes non-newsworthy through time.
+[13:09] We do have some works that we're trying to make the most of that.
+[13:13] This bears some resemblance to public health practices, where you don't have perfect insight
+[13:19] into disease spread, but you do have these indirect measures of doing tests in the sewers
+[13:26] and things to see how much of the viral particles are there and whatnot.
+[13:33] Well, Sean, I appreciate you taking us through this idea of AI incidents.
+[13:38] Obviously, we are practical AI.
+[13:41] In a practical way, we would very much like to prevent incidents or at least understand
+[13:48] the security implications of using certain AI models.
+[13:53] I know with Avery, the AI Verification and Evaluation Research Institute, in my looking
+[13:59] at that, you're talking a lot about third-party auditing of AI or frontier AI or foundational
+[14:08] AI, however you want to frame that.
+[14:10] Do you want to explain a little bit about how that side of things might fit in the landscape
+[14:17] and why it's important?
+[14:19] Certainly.
+[14:20] A fundamental problem that we have, particularly at the frontier model level with things like
+[14:25] OpenAI, Entropic, Google's Gemini, and so forth, is it's very difficult to even know
+[14:34] how safe your systems are because they're general purpose systems.
+[14:38] This basically broke the safety frame.
+[14:39] All the safety processes that we have are built around a starting presumption that there's
+[14:44] a specific context it's operating in and you reason about its safety within that context.
+[14:48] Well, if your context is just wild card star, everything, where does that leave you?
+[14:53] Do you need to verify across all circumstances that it's going to be safe?
+[14:58] Because the answer is going to be no.
+[15:00] How do you approach the task of verifying claims?
+[15:06] How do you encapsulate something that a customer or person or organization would rely upon
+[15:13] and say, okay, this has gotten this level of assurance applied to it, so I know I can
+[15:20] apply it within my college age student population, teaching them how to do the maths.
+[15:31] So, having that level of signal at this point, a real practical problem that you have is
+[15:37] no one's going to believe you when you say this is good for college age math remedial
+[15:44] level.
+[15:45] You have to run a pilot program and see how it works before you actually can believe the
+[15:52] representations being made by companies because they probably haven't evaluated in your exact
+[15:56] circumstances.
+[15:58] They might have something that's analogous to that, but they probably won't have it exactly
+[16:02] in your circumstances.
+[16:04] This is a problem on the practical AI side of things, but it's also a problem on just
+[16:09] the increasing power of these systems and the scale on which they operate.
+[16:15] You actually do want some really strong top level guarantees that the system is going
+[16:21] to try and steer away from catastrophe and doesn't actually have an active propensity
+[16:26] for doing the bad things.
+[16:30] The science of establishing that is actually still a work in progress.
+[16:35] There's a lot of work not just in establishing evaluation, but meta-evaluation, basically
+[16:39] deciding is this evaluation saying the thing that it says it says or not.
+[16:48] Avery, as an organization, is concerned with doing third party audits, basically saying
+[16:57] is this thing safe?
+[16:59] Is this thing doing the thing it should be doing?
+[17:04] There's a premise in there that a third party is better positioned to do that than a first
+[17:09] party.
+[17:11] We've all been on development teams and pushed to prod, pushed to the real world, pushed
+[17:18] to real world circumstances and found like, oh, I didn't think about that.
+[17:22] One of my favorite incidents in the AI and AI and SIN database is this gentleman who
+[17:28] got a traffic citation mailed to him.
+[17:32] He looked at the traffic citation and said, this isn't my car.
+[17:39] Not only isn't a car, it is a woman who's wearing a shirt that says knitter and there's
+[17:45] a purse strap going across it so it played with the letters.
+[17:52] It looked like KNI9TER or something like that.
+[17:59] I don't think the people making the traffic camera were thinking about a woman walking
+[18:04] through the field of view of the traffic camera with a shirt perturb in such a way that it
+[18:10] would catch it and register it as a license plate and then the traffic citation went out.
+[18:16] The world is hard.
+[18:17] The real world is real hard.
+[18:19] I'm curious.
+[18:20] I like that example.
+[18:22] It's a very personal example and I can certainly imagine that happening to me, actually, bizarre
+[18:27] as it is.
+[18:28] I'm curious as you are looking at applying this process that you're describing to maybe
+[18:37] a larger incident, is there an incident that comes to mind in the database where you could
+[18:44] kind of compare what your estimate relative to not having gone through third party process
+[18:52] versus if it had, how you might envision that playing out in a different way.
+[18:57] I'm kind of trying to get a sense and you can interpret it any way you want or find
+[19:02] whatever example but trying to get a sense like when organizations are listening, they
+[19:08] have employees and their leadership are listening to the podcast and they're trying to put this
+[19:12] in the context to their own operations.
+[19:17] What do you think is a kind of an aha moment potentially for the listener and maybe a Fortune
+[19:24] 500, maybe not that big.
+[19:26] Maybe a mid-sized company where this process will make a substantial difference to the
+[19:31] outcomes involved.
+[19:33] Probably a good way to work here is by analogy to other segments that have audit.
+[19:41] Audit is something that no one truly enjoys.
+[19:46] You don't necessarily want to be audited but you actually do.
+[19:49] You do want to be audited if you're an organization that wants to receive investments from other
+[19:54] organizations.
+[19:55] One of the most important financials is table stakes.
+[19:58] You're not going to put your money into an org that hasn't been audited.
+[20:00] Or actually, I should say there are famous instances in which an org has not been audited
+[20:05] and people subsequently regretted it because the reason they weren't audited is they were
+[20:10] improving disbursements by slack emojis.
+[20:15] It didn't go very well in those circumstances for anyone.
+[20:18] We do periodically get reminders that these processes are important and that audits solve
+[20:24] a problem and that's you need to be able to trust the fundamental representations about
+[20:29] the state of an organization.
+[20:31] It's the same thing for the model because the model is similar in a sense that it's
+[20:39] taking actions, it's doing things as impacts.
+[20:42] There's value to knowing when you should or should not trust information.
+[20:47] I'm looking through some of what the Avery Institute has been involved with and in particular
+[20:54] kind of recent work of this meta-evaluation of benchmarks, this sort of bench risk, which
+[21:01] is actually how we got connected through a colleague, Ashwarya.
+[21:06] I'm wondering, this is a meta-evaluation and I know a lot of people make decisions about
+[21:14] models based on benchmarks.
+[21:17] Could you maybe help us kind of walk through mentally what is the difference between maybe
+[21:24] like an audit and a benchmark and maybe like tying in some things that might make people
+[21:33] think about whether benchmarks as they look at them on leaderboards and that sort of thing
+[21:39] are really, yeah, if they're really relevant to the real world behavior of models.
+[21:47] I'll just be over-extending the financial metaphor on things.
+[21:50] When you audit a financial organization, you say, okay, I see that this organization has
+[21:58] a balance sheet indicating they have $10 million in the bank.
+[22:01] You're like, great.
+[22:03] Now as an auditor, I need to go and check the balance with the bank and see is this
+[22:07] money real?
+[22:08] Is it actually there?
+[22:10] Similarly, an audit is concerned with I've seen the balance.
+[22:16] I've seen the balance sheet and now I need to check the evidence and make sure that I
+[22:20] actually believe that representation in some form.
+[22:24] Where meta-evaluation or evaluating the evaluations or checking the benchmarks, evaluating the
+[22:29] benchmarks are useful is you're basically checking those receipts.
+[22:34] In the course of the Ventris project, we found that a lot of the receipts were just
+[22:40] kind of like, lol, trust me, bro, written on a piece of paper and that there were real
+[22:46] substantive issues of like, okay, maybe there's like an IOU and there's some gold buried out
+[22:52] in a field somewhere, but I have some doubts.
+[22:55] At the very least, I need to look into this a little bit more before I rely on it for
+[23:00] real-world purposes.
+[23:02] The dichotomy that we identified is a lot of the benchmarks that are produced are produced
+[23:10] for non-practical purposes.
+[23:12] They're produced for knowledge generation purposes.
+[23:14] They're produced for research purposes where people are wanting to understand systems that
+[23:20] are making sense of it, but it's not produced with the intent that someone's going to then
+[23:24] say, all right, I'm going to deploy this in my environment and I know now that it's unbiased
+[23:30] because it scored well on BBQ.
+[23:34] And BBQ is a great benchmark.
+[23:36] It was really foundational in the bias benchmarking community, but it's also not produced with
+[23:44] the intention that every time a frontier model is released, you say like, look, we've improved
+[23:50] on bias and it's 10 BBQ points better than the prior ones.
+[23:56] And like, that's a good thing.
+[23:57] We do want that, but it's not a practical AI purpose.
+[24:01] It's not saying like, it's unbiased for my specific application because there's a distribution
+[24:06] associated with BBQ.
+[24:07] There's characteristics that aren't necessarily generalizable to the environment to which
+[24:11] you're deploying it.
+[24:13] The prompts can be in like a very particular space for BBQ that you're just not operating
+[24:19] in.
+[24:20] And all these things are associated with, in this research work that we put out, they're
+[24:25] associated with failure modes that we identified.
+[24:28] We collected a list of failure modes and then we looked at how well benchmarks had expressed
+[24:36] mitigations against those failure modes.
+[24:38] And the results were mixed, like some did better than others, but by and large, most
+[24:42] benchmarks historically have been produced for research purposes, not for practical AI
+[24:47] purposes.
+[24:48] And this is a problem because this is what we're working with informationally and this
+[24:54] is why we're starting to see a valuation ecosystem pop up and that being a discrete task and
+[25:01] something that's supported by organizations separately.
+[25:04] I'm wondering as we're kind of going through this and discussing the process, if as you're
+[25:10] looking at some of the different risk categories that you guys outline on your website and
+[25:16] stuff, a couple of examples are misuse and unintended behavior and InfoSec and emergent
+[25:22] social effects.
+[25:24] Which of these do you think is kind of like maybe the most underestimated?
+[25:29] The thing that people aren't really expecting that has consequence that may be outsized
+[25:35] relative to what those of us not in this field would expect.
+[25:40] Do you have any sense of that in terms of like this kind of a little bit of the surprise
+[25:45] that people might not realize is there?
+[25:47] That's tough because I'm a little bit of the fish and water being told it's wet.
+[25:54] Fair enough.
+[25:55] I will say in like kind of rewriting my own experience on this is I feel like I'm a pretty
+[26:01] astute observer and I've been more predictive of what problems are coming around the corner
+[26:05] than I think most people have encountered.
+[26:08] But even with that, I still am regularly surprised and I wish we could be a little bit more predictive
+[26:14] about it.
+[26:15] I think we are going to get there and we're going to learn from the past and hopefully
+[26:20] push that into the future.
+[26:22] But this is a new thing.
+[26:24] We don't have a great operating history, particularly for the general purpose AI systems.
+[26:30] I think that the split in this community that you should probably think a little bit about
+[26:36] that question in terms of expectation is there's security and safety people and that there
+[26:41] is a little bit of difference between those.
+[26:43] Safety is safety.
+[26:45] Safety is security.
+[26:46] But what you care about tends to be slightly different than what you're expecting.
+[26:50] Security people have a much greater capacity for the presumption of bad actors doing bad
+[26:56] things and that producing bad outcomes.
+[27:01] And then the safety people have a much stronger presumption of just the world is its own adversary.
+[27:08] We're all in our own kind of game against nature and bad things will happen regardless.
+[27:13] Maybe in the bad actor side of things, they're a little bit more insistent upon it though,
+[27:16] particularly when the scalability of doing bad things is actually substantially increasing.
+[27:21] So we have to solve all these.
+[27:23] Well Sean, one of the things I wanted to ask you about, well in particular I'm a big fan
+[27:29] of the Darknet Diaries podcast and listen to that a lot and always love hearing stories
+[27:36] of hackers and the kind of world that is there and all of what people try to do at DEF CON
+[27:45] and other places.
+[27:46] I was really intrigued by your study titled To Error as AI.
+[27:52] I see in the description you kind of took some models to DEF CON and I'm reading your
+[27:59] description, had the pleasure of taunting a room of hackers with a declaration that
+[28:03] the model is flawless and obviously certain things happened after that.
+[28:10] So I would love to hear maybe how this came about or what the idea really was and then
+[28:16] would love to hear some of that story.
+[28:19] Sure.
+[28:20] So to set the stage a little bit, DEF CON is a hacker convention conference that's been
+[28:28] for a good number of years and it's, I don't know if listeners have seen the 1990s movie
+[28:36] Hackers which has like a very early like Angelie Jolie and some others in it and it's like
+[28:41] these young men and women like rollerblading everywhere, you know like that's just how
+[28:46] the future would be and talk about how risk architectures would change everything and
+[28:53] there's this kind of hacker aesthetic that kind of noisily was portraying of joyfully
+[29:00] compromising systems and in this particular instance having a mixture of people that are
+[29:06] doing that with good aims and bad aims.
+[29:10] But DEF CON is this community organized thing and you have villages and one of them is the
+[29:17] AI village that's been run for a few years now and in that village you have presentations
+[29:25] but there's also a section of it dedicated to some sort of a challenge that's conducted
+[29:31] over the course of the conference and people filter through and figure out how to break
+[29:35] things and they're treated to cash prizes in this case.
+[29:41] So this is something called the generative red team 2.
+[29:44] So it was a change from the prior year and form and we basically asked people there's
+[29:51] documentation for the open language model produced by the Allen Institute for AI.
+[29:56] So a seven billion parameter large language model along with its guard model put in front
+[30:01] of it and we said here's the documentation, here's the representations about what this
+[30:06] model is supposed to do and your job is to show how that's wrong.
+[30:11] That kind of unleashed a few days of chaos and like I don't know what else was happening
+[30:16] in the conference but like I was at the judging table for the entire time with reports flying
+[30:22] in and needing to decide you know like is this actually a violation of the documentation?
+[30:28] It did the thing we wrote which we did put some Easter eggs in there of like we expected
+[30:32] people to be able to break it but did they submit sufficient evidence of a violation
+[30:40] of that documentation and that is actually a surprisingly difficult thing.
+[30:44] We had all these people that were very good at the compromising systems and saying like
+[30:49] yeah I know how to prompt this LLM and get it to you know tell me how to burn down this
+[30:56] convention center violation of what the model should do and we kept on needing to say oh
+[31:01] that's great but like you haven't told us anything like a anecdote does not equal data
+[31:07] in this instance and we need you to show that it's systematically like pushing towards arson
+[31:13] that it's always fun to burn things down or that you can put some sort of more universal
+[31:18] jailbreak on it that makes it so that it under underperforms in that particular filter of
+[31:24] things and so what we basically had to bring to the security world with the security world
+[31:28] does not like this and I don't blame them for it is statistics.
+[31:32] We had to say like it's not just about the fact that there's an exploit it needs to be
+[31:37] it's systematically vulnerable in some form because it's always rolling dice that's just
+[31:44] the nature of it and that made for a while a few days paid out a good cash purse and
+[31:51] learned learned quite a lot about the the collision of disciplines that we need to foster
+[31:57] when it comes to security safety statistics machine learning the world the world's getting
+[32:05] more complicated.
+[32:06] Prior to kind of talking about some of the chaos that ensued at that point as you talk
+[32:12] about that that collision of of culture if you will you know with kind of kind of taking
+[32:20] the hacker out of their thing of thing hey I have an exploit you know look at me and
+[32:25] requiring that level of rigor first of all can you describe why you required that why
+[32:31] that level of rigor was important in this case and how did that force different behaviors
+[32:38] out of the hacker community that were applying themselves against the problem that you had
+[32:42] presented.
+[32:43] We had a few people that were unhappy initially and then we explained it and then they went
+[32:47] back and came back and then they started turning the crank and getting a lot a lot of payout
+[32:52] the people that really want to encamp and figure out the modality did very well.
+[32:57] The problem and the reason why like anecdote doesn't equal data here is if you say something
+[33:02] is you know 99 percent filters out 99 percent of the bad thing if they wanted to they could
+[33:08] roll up to one of those stations and you know just keep on issuing the same query or like
+[33:13] adding one period to to it dot dot dot dot and then one time out of 100 they'll get something
+[33:19] they'll be able to walk up and say money please.
+[33:21] The problem is that's not really useful if you're designing the system you need some
+[33:25] idea of what is the systemization here because you you know it's 99 percent.
+[33:34] You don't to some extent like you're going to keep on working to get 100 but you you
+[33:39] care about the cases where it's not 99 percent but you made a mistake and it's actually 70
+[33:43] percent or it's 1 percent or 0 percent.
+[33:46] And that's a statistical argument that's a here's a description a higher level description
+[33:53] then here's an example like this isn't me prompting it this is a description of a attack
+[33:58] that is not accounted for in your documentation that you're vulnerable for and you need to
+[34:02] solve this as a strategy like you you never solve talk like a pirate so anyone can talk
+[34:08] like a pirate to the system and get it to do bad things and that that's the thing you
+[34:12] than I asked it and pirate ease something 100 times in one time it gave me bad.
+[34:18] Were there certain modalities like you described of failure that were a surprise kind of to
+[34:25] to the judges in terms of like the or or maybe to like the like I don't know how much interaction
+[34:32] there was with the model building team you know at Allen Institute and that sort of thing
+[34:36] but you know any any kind of modes of failure that that weren't expected or just the ones
+[34:43] that were continuously problematic but even if they were known before someone unexpected
+[34:48] we characterize this in the research paper as well and I do recommend people take a look
+[34:53] at it because it's it's very practical in nature.
+[34:56] The biggest one and the one that I think the most people just instantly exploited and they
+[35:01] didn't they didn't have full information on this one like the we didn't give them full
+[35:05] information on the integration of the guard model and the foundation model or the chat model
+[35:09] underneath and there's multiple ways of configuring that handoff.
+[35:13] You can either do like a hard reject and say like this doesn't pass the guard model and we're
+[35:19] going to give you nothing or you can reprompt the underlying model and say like but don't here's
+[35:27] here's what you're being prompted but don't answer it or you know these variations of that
+[35:32] and then you can still get like a somewhat useful reply out of the system it just should
+[35:37] reject it. The configuration of that handoff was looser than it necessarily needed to be
+[35:43] and exploiting that handoff between the guard model and the underlying model was the kind of
+[35:49] you know big vector that you could use that to print cash over the course of the competition
+[35:54] and that's the perhaps the thing people need to think about you know particularly as deploying
+[35:59] these systems are very often a collection of multiple systems that present as one is the
+[36:07] interface between them is very often under tested it's very often difficult to know how those
+[36:12] systems will interact and particularly when the benchmarks are expressed at a lower level
+[36:18] than the than the whole system you don't know a lot about what will happen at that point you've
+[36:23] muddied the waters a little bit. I'm curious as you went through this exercise with the attendees
+[36:29] beyond just the specifics of this problem what was the value of going through the exercise and
+[36:36] what you know in terms of the outcome for you and what you got out of it beyond the immediate
+[36:42] guard model with the you know with the model it's protecting in that process like what was that like
+[36:48] and I'm also curious if you go and do a similar exercise in the future which I'm assuming there
+[36:55] will be some some variation of that what can you envision being a good next step to tackle in terms
+[37:04] of trying to secure value and get to a next level outcome you know have you thought about what you
+[37:11] would do as you came out of the previous event should you do it again? So I think one of the
+[37:17] really strong takeaways and there's actually been some some work since then was the need for tools
+[37:23] and to kind of scaffold this in some form and to make it where you have a clear form of expression
+[37:30] of what these things are called which is flaw reports because it's it's not an incident like
+[37:36] no one's harmed you're kind of you know testing things in a laboratory and so what you have in
+[37:43] classical computer security is you have bug bounty systems you have the ability to submit those there's
+[37:48] kind of clear adjudication processes that often lead to payouts to people and the extensions that
+[37:56] are necessary for machine learning based systems data-driven systems distributional systems
+[38:02] is I think clear as a result of the activity that we ran at DEFCON like that that's the kind of
+[38:08] research value that's that's produced by that. Allen's probably got some operational use as well
+[38:16] that they they learned a lot because they're at that judge table dealing with the thonslot as well
+[38:21] that's the vendor table for things and so I think if this is run again in the future
+[38:31] getting past those pain points of you know you're kind of rolling your own code and all that and
+[38:38] that's not not necessary for this scaffolding it a lot more will carry it a lot more distance
+[38:46] and then move this towards something where there's one or more companies that are operating a
+[38:53] flaw reporting business in the same way that there is a security bug reporting. Well Sean as we kind
+[38:58] of get close to the wrapping up point here on the podcast I'd love for you to share anything
+[39:05] that comes to mind in terms of like as you look out kind of at the next phase of maybe your own
+[39:11] work but maybe you know the ecosystem a little bit more broad in terms of the the area of research
+[39:18] in which you are involved. What are you what are those things that as you you know end your days
+[39:25] or or you're driving back to home or whatever what are those things that stick in your mind like
+[39:29] you're excited like what what if this happens or I'm really interested to see how this develops or
+[39:34] I'm encouraged by kind of this going into the future what what's kind of top of mind for you
+[39:40] in terms of the community that you're involved with coming into this next year.
+[39:44] There's an interesting phenomena that every time we pass a milestone in the Anson database and we're
+[39:48] like oh we've crossed a 500 or a thousand incidents we're like yay and then we're like but
+[39:53] it's not a it's not a great thing. Should you celebrate? Yeah should we celebrate and
+[40:00] I feel like my my dream utopia might be like I need to go do something else because the safety
+[40:08] problem has been solved and there's no more there's no more to do like the unfortunate
+[40:16] fact though is I this is only going to get more complicated and there's more to do there's more
+[40:21] to solve there there's not there's not going to be a perfect AI system out there. So you know what
+[40:30] I'm hoping for in the next year is to develop a greater sense of what institutions, what techniques,
+[40:40] what methods we need to develop and scale and apply so that we can have a safer AI ecosystem and
+[40:51] this is important not just from the perspective of wanting to prevent harm but you know you can't
+[40:58] deploy unsafe systems to clients that want safety that care about outcomes and so our ability to
+[41:08] make a safer system is very heavily involved in our ability to ship product to solve problems in
+[41:18] the real world and so I hope to highlight that I hope to have a greater accounting for the risks
+[41:27] and make it so that we have better and better measures of those risks because you you manage
+[41:32] what you measure and so let's measure these risks and then we can separate the actors that are
+[41:39] investing in safety and and stronger AI systems safer AI systems from the ones that aren't doing
+[41:47] that and right now that's that's not where we are. Well really appreciate that perspective and
+[41:52] appreciate the work that you continue to be engaged in. Sean thank you for that and from
+[41:57] the community it's really really important so appreciate that and thank you very much
+[42:02] for taking time to chat with us about it it's been great. It's been a lot of fun thank you for having me.
+[42:15] All right that's our show for this week if you haven't checked out our website
+[42:19] head to practicalai.fm and be sure to connect with us on LinkedIn, X, or Blue Sky. You'll see
+[42:25] us posting insights related to the latest AI developments and we would love for you to join
+[42:29] the conversation. Thanks to our partner Prediction Guard for providing operational support for the
+[42:34] show. Check them out at predictionguard.com. Also thanks to Brake Master Cylinder for the beats
+[42:40] and to you for listening. That's all for now but you'll hear from us again next week.
+[42:49] you

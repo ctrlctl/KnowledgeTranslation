@@ -1,0 +1,1602 @@
+Detected language: English
+[00:00] Today I'm interviewing Rainer Pope, who is CEO of Maddox, which is a new chip startup.
+[00:04] Previously, he was doing TPU architecture and many other things at Google.
+[00:08] This is a very different format from my usual interviews. This is going to be a blackboard
+[00:12] lecture. We're going to get up in a second. We, in fact, built this whole new studio with
+[00:15] specifically this format in mind. And so it's a pleasure to get to inaugurate it with you.
+[00:20] We're going to be talking about model architecture, MLN, for many other things.
+[00:24] And the reason I think it's an important topic is because once you actually understand how
+[00:29] training and inference actually work in a cluster, as we'll see a lot of things about why AI is the
+[00:35] way it is, why AI architectures are the way they are, why API prices are the way they are,
+[00:40] fundamentally also how why AI progress is the way it is, start making sense. And you need to
+[00:45] understand the details to get there and you need a blackboard to understand the details.
+[00:48] So Rainer, thank you so much for doing this. Yeah, very happy to be here.
+[00:52] Just a heads up, this is a lecture with graphs and equations and all that stuff. So if you can,
+[00:56] I would really recommend watching it on a video platform like YouTube.
+[01:01] Okay, full disclosure, I am an angel investor in MadEx, but that's unrelated to this podcast.
+[01:07] Rainer, maybe to kick us off, I'll ask this question. So we have a couple of companies
+[01:12] like Claude and Codex and Cursor are offering something like fast mode, where for six X the
+[01:18] price, they'll give you streaming tokens at 2.5 X the speed. Mechanically, I'm curious what's
+[01:22] going on here. Why is it the case that you can pay more to get the faster latency? And two,
+[01:28] could you keep going? Could you pay 100 X more and somehow get even faster speeds or much,
+[01:33] much faster speeds? And three, could you go the other way? Could you have something like
+[01:38] Claude Code slow mode, where if you are willing to wait for minutes on end, you could get even
+[01:44] cheaper prices. So maybe this will help motivate the kind of analysis that you'll be doing through
+[01:48] the lecture. Great. I mean, to jump to a little bit to jump to the conclusion,
+[01:52] the big effect is batch size. But what we're going to do now is quantify exactly what that
+[01:56] looks like and what its implications are on latency and cost. There's going to be another
+[02:01] effect, which is you can call it speculative decoding or multi-token prediction. We can maybe
+[02:05] come back to that later. But I think the first thing that we'll talk through is batch size.
+[02:09] So what I'd like to introduce is sort of the two principles of analysis. Firstly, we're going to
+[02:14] look at a roofline analysis of how we run a transformer model on a cluster of chips. We'll
+[02:19] take a sort of, let's say, a Blackwell NVL72 cluster, so a rack of 72 GPUs. And so the
+[02:28] roofline analysis means we look at memory bandwidth and compute performance. And then
+[02:34] the other side of that is that we're going to look at just two simple factors of the model, which are
+[02:39] the time to operate on the weights and then the time to operate on the context, the KB cache.
+[02:45] So let's jump in. What we're going to try and do is we're going to try and estimate the time
+[02:49] that it takes to run an inference of a certain shape. Now, we're not perfect here. We can't
+[02:56] exactly predict the time. And so instead we're going to approximate. And so we're going to say
+[03:00] that the time must be greater than or equal to a certain quantity. And so we're going to consider
+[03:05] two different aspects. We're going to look at the time for it takes to do the memory fetches
+[03:12] and then the time it takes to do the compute. And it'll turn out that this actually gives us
+[03:18] a very strong predictive power, even with a simple one. So one by one, what is the time that
+[03:22] it takes to do the compute? So there are really two things I need to do in the compute. I need to
+[03:32] multiply by all of the active parameters. And then I need to do some work on the attention.
+[03:37] So multiplying by all the active parameters, I have a certain batch size that I'm running.
+[03:41] And then I've got a number of active parameters in my model. And then
+[03:49] I'm just going to divide this by the compute throughput, which is the flops of the chip.
+[03:54] So this is a hardware. So this actually accounts for all of the compute time for
+[04:01] all of the weight matrix multiplies. There's a little caveat here. We've sort of ignored the
+[04:07] time to do any of the attention computation, but that in general will be quite small in
+[04:11] comparison to this. So we'll ignore this. Maybe I'll just interrupt from time to time to ask some
+[04:14] very nice questions or to clarify some basic points. But just for the audience,
+[04:19] you're not serving one user at a time. The batch refers to the fact that you're serving
+[04:23] many different users at the same time. And that's a whole batch.
+[04:26] Yeah. So I can motivate the batch at least a little bit. So I mean, we will see exactly why
+[04:31] batch is such a favorable optimization. But what will turn out to be the case is that if you do
+[04:36] not batch together many users, the cost and the economics you get can be like a thousand times
+[04:42] worse than if you do batch many two years together. And we'll be able to see that quite
+[04:46] explicitly. And then a number of active parameters. This is saying, like, if I look at it, for example,
+[04:51] a DeepSeq model, the DeepSeq v3 model has about 37 billion active parameters and then
+[04:59] 700 billion total parameters. So we're focusing on just the ones that are active
+[05:03] for a single token. Okay. So we're modeled to compute performance. I'm going to keep writing
+[05:08] equals, but in all of these cases, you can think of this time as being at least this much. And
+[05:12] maybe there'll be some terms we ignored. On the memory side, what do we need to do with memory?
+[05:19] We need to fetch all of the weights. And so there is some time to fetch all of the total
+[05:26] number of parameters, not just the active parameters. So there's weight fetch time.
+[05:32] And then in addition, there's a KV cache fetch time. So there is, this actually depends on batch
+[05:38] size. So for every element of the batch, we have to fetch an entire context length
+[05:46] worth of tokens. And then there's a size per token. So like bytes, bytes for one token.
+[05:55] And so there's a model parameter. And maybe just back in, let's just explain
+[05:59] what the KV cache is real quick. Yeah. So when I do a forward pass, let me draw actually a,
+[06:05] how the autoregressive inference works. So this is during decode. So if I think I have a bunch of
+[06:12] tokens of text, I'm growing a tensor because ultimately the tokens are represented as some
+[06:17] like tensor of, in some embedding dimension. And then in this direction, I have the sequence length.
+[06:23] And the work of running a decode is I have to run each token through a,
+[06:34] through a whole bunch of matrix multipliers over a bunch of different layers. And I have,
+[06:38] in general, I'm going to have to do that work over all of these tokens.
+[06:45] But then one step of decode is actually to produce just this one additional token out here.
+[06:51] And so what I'm going to do there is I'm going to run a full forwards pass of multiplying by all of
+[06:56] the weight matrices in the entire model. But then I've got this attention mechanism where this token
+[07:02] sort of, it's like looking at all of the past tokens in this way. And what is it looking at
+[07:09] specifically? It is looking at some internal representation that the model has produced of
+[07:13] the tokens. And we call that the KB cache. So this process of attending this single token
+[07:20] attending to all of the history of tokens, that's attention. It is mostly dominated by
+[07:24] memory fetches rather than matrix multipliers. So we've got the amount of memory that we're
+[07:30] fetching shown over here. And then there's of course just then divided by the memory bandwidth.
+[07:36] So the memory bytes per second. So in fact, these equations here are actually enough for
+[07:48] us to now draw some fit lines. And so the things that we'd like to look at are sensitivity to batch
+[07:54] and then also which we'll draw separately to context links.
+[08:00] So we said that the big effects you can get is like some trade-off in latency versus
+[08:06] cost in batch size. So let's draw them out. I think there's just really two graphs we want to
+[08:11] draw. We'll first just draw batch size versus time here. So when we look at the shape of this,
+[08:22] we've got a maximum of the sum and then another term. So let's look at these terms one by one and
+[08:30] how they scale the time for compute and memory and how they show up. So let's first look at this
+[08:38] compute time. This is just purely linear in batch size with no offset. So it is some kind of like
+[08:46] this. This is t compute. And then on the memory side, we've got some portion here that is just
+[08:57] this constant that is constant in some base offset here, which is the weight fetch.
+[09:09] And then finally, we have this term here, which is the KB fetch, which we're going to draw as
+[09:19] the KB fetch, which is linear in batch size. So it looks like that.
+[09:27] The sum of this plus this maxed with this. So let's at least first draw the sum.
+[09:38] So the two memory times in conjunction end up looking on this curved slope like this.
+[09:44] And then we get the overall maximum is, I'll draw a little thicker here,
+[09:50] is the maximum of these two curves. Makes sense.
+[09:53] Okay. So what does this mean actually? So this is a latency plot.
+[10:02] So if I grow my batch size, I get initially some not very strong dependence on batch size.
+[10:08] And so there's some lower bound on latency here, latency lower bound, lower bound.
+[10:15] So this already partially answers the question. For a given hardware configuration, and then we
+[10:21] can talk about varying hardware configuration, but for a given hardware configuration, there is a lower
+[10:25] bound on latency, which is simply the, I need to read all of my total parameters from memory into
+[10:34] the chips. And that takes a certain amount of time. If I use all of my memory bandwidth, I can't do
+[10:39] any better than that. It seems like the way you've drawn it, you're not going to be able to do that.
+[10:44] It seems like the way you've drawn the slopes for compute time and how the KB grows,
+[10:51] and what implication the KB has on memory time, that as a batch size-
+[10:57] What if this were above or below?
+[10:58] Yeah. Or is that necessarily the case? Because if this is always true, then as batch size grows,
+[11:04] compute always dominates KB, which suggests that if you have big enough batch size,
+[11:10] maybe memory is never an issue.
+[11:11] Yeah, this is really sensitive to the context length. So I think we should come back and
+[11:15] explore this. As you vary the context length, the KB fetch time will go up and up, and so that'll
+[11:21] cause a transition from compute limited to memory limited.
+[11:24] And is there something especially significant about the slope being exactly the slope of
+[11:32] the compute time?
+[11:34] Yeah, whenever we have balance points, it kind of says that you're getting it exactly right.
+[11:39] For the particular context length where the slopes match, that says I am equally memory bound
+[11:44] and compute bound, which is a really desirable place to be.
+[11:50] This is a very simple algebra problem, but suppose the optimal is 100K context length,
+[11:58] and you go to 200K context length, does your MFU go down to 50%? Does it have a humongous impact
+[12:05] on MFU to be slightly outside of context length optimal range, a Goldilocks zone?
+[12:11] That's right. So that is true as modeled here. There's a key point here that I'm modeling this
+[12:16] context length as, or I'm modeling the memory fetch as linear in context length. That actually
+[12:21] depends on model architecture. It is true for all of the model architectures with dense attention.
+[12:28] There's a sparse attention actually scales much better than that.
+[12:32] Is sparse attention what everybody uses in practice?
+[12:35] I'm pretty excited about sparse attention. It's hard to know what the labs are using. DeepSeq
+[12:38] has published a sparse attention mechanism. I'll just plug in that sparse attention,
+[12:44] some of the DeepSeq papers that have published sparse attention end up putting a square root
+[12:47] in this term. So far we've looked at the latency. It's kind of hard to read off cost from this.
+[12:54] So if I think, what does cost mean? To run this inference, I'm going to use the GPU for a certain
+[13:01] number of seconds, like one millisecond or 20 milliseconds or something like that.
+[13:06] I have to pay the rental time for that time. So it's $2 an hour per GPU or something like that.
+[13:14] So that's the cost of this inference, but how much value, how many tokens have I processed during that
+[13:18] inference? That is the batch size. What we actually want to plot is going to be the cost versus batch
+[13:26] size, which is like T over B versus batch size. This is the cost per token.
+[13:37] So we have to imagine dividing each of these three curves by B, so multiplying by this
+[13:45] reciprocal. And so what we end up with there is the compute curve is going to,
+[13:52] um, it was linear, we divide by B, that makes it a constant here. And this is T compute.
+[14:01] The, um, the KV fetch was linear. Now it becomes a constant as well. Um, uh, KV fetch.
+[14:10] And then the, um, the, the weight fetch, uh, was constant and now we're divided by B. And so it
+[14:18] becomes this, um, hyperbola. And so again, we're going to compute the, the max of the sum. Um,
+[14:32] the sum of these two terms shifts the, the, uh, the parabola up. Some of the KV fetch and the weight
+[14:38] fetch, um, gives us a sort of a, a higher parabola that's like this. And then we're going to take the
+[14:44] max with the compute, uh, here. So we end up with this, this being the overall shape that we care
+[14:52] about. So again, this is the, this is the, this is the, this is the, this is the, this is the, this
+[14:58] is.
+[15:01] So again, so like we see some limiting behavior. The cost initially starts very high at batch
+[15:07] size of one actually like, it almost goes to infinity. Like, uh, it's, um, because we've got
+[15:12] so many weight fetches, which are not amortized over a large batch size. Um, but then as we increase
+[15:17] the batch size, the weight fetches become amortized over so many different batch elements
+[15:22] that they, their cost grows very small. And eventually the compute time ends up driving
+[15:26] the cost. So there is a limiting like lower bound on cost, which is this one here.
+[15:39] Yeah. So Claude code slow or codex slow or whatever would just live on this line.
+[15:44] And it wouldn't help much because you're not able to amortize the KV values over a much bigger batch.
+[15:52] Yeah, they're unique per batch. The compute is also unique per batch. And so what is the
+[15:57] minimum work you can do per batch after amortizing everything else away.
+[15:59] So this point where you are no longer memory bandwidth bound, how big a batch do you need?
+[16:11] Like how big are the batches practically for frontier models?
+[16:16] You can just solve for that actually. And it's not even particularly sensitive to model architecture.
+[16:21] So let's go ahead and do that. So what we're talking about is we're going to say when the
+[16:26] memory time is equal to the compute time. That's what that question is. For now, I'm going to
+[16:33] discard the because we're focused on what the batch size is. And really there's a question of
+[16:40] when the weights are amortized over the multipliers. I'm going to focus on comparing the weight fetch
+[16:45] time to the weight multiply time. I'm going to disregard the KV fetch term just to simplify
+[16:52] the analysis so we can get a kind of a clean answer out. So we're going to equate this portion
+[17:01] with this with these two times. So writing that out, we get N number of total parameters
+[17:10] over memory bandwidth is equal to batch size times number of active parameters divided by the
+[17:27] compute performance. So looking over here, everything on the top, these are model parameters.
+[17:35] Everything on the bottom, these are hardware parameters. It turns out to be nice to rearrange
+[17:39] them such that we have the hardware parameters on one side. So this is equivalent to
+[17:50] memory bandwidth being equal to batch size times number of active parameters
+[18:01] divided by the number of total parameters. So this is a hardware parameter. Actually,
+[18:08] this actually ends up being a dimensionless constant. If you look in terms of flops,
+[18:13] what are the dimensions of this? This is multiplies per second. This is bytes per second. So that's
+[18:17] not quite dimensionless. But what you do is you say like multiplies per second times, let's say I'm
+[18:22] doing FP4. So I do like how many FP4 multiplies per second times the fact that each FP4 is half
+[18:32] a byte. And so I can actually make this end up being dimensionless. And this ends up being on
+[18:39] most GPUs around 300, somewhere around 300. Has that ratio changed over time as we've gone from
+[18:48] model generation to model generation where the flops keeps increasing? So this is a hardware
+[18:51] parameter. To what extent has the hardware changed? So from like A100 to A100 to B100,
+[18:58] the flops has increased substantially. The memory bandwidth has also increased substantially. And
+[19:03] it has remained reasonably stable. And we can express this one as well. This is a sparsity
+[19:08] parameter. And I might even phrase it slightly different. Let's solve for batch size in total.
+[19:13] We end up with, I'm sorry, just moving this back over to the other side. We end up with batch size
+[19:18] needs to be bigger than approximately 300 times sparsity. So for example, if I have 100, like,
+[19:27] I activate in DeepSec, I activate 32 out of 256 experts. So this would be like 8 for DeepSec.
+[19:35] Got it. OK. So this actually gives you a bullpuck, which is like remarkably accurate to practice.
+[19:40] Generally, people will go a little bit larger than this. They don't really want to be exactly
+[19:44] at the balance point because real world efficiencies aren't as good as a roofline
+[19:49] analysis would say. But like take this and maybe double it or triple it. OK. So basically, it's like
+[19:56] two to three thousand tokens per batch. But then if you included the KB cache, the implication would
+[20:03] be that the optimal batch size should grow larger. So this is good. Like we solve for the equivalence
+[20:11] between when compute time is equal to memory time. If I add in more memory bandwidth, like something
+[20:18] that consumes more memory bandwidth, then I have less available for the weight loads. And so I need
+[20:22] to grow the memory bandwidth more and therefore the batch size more. This seems incredibly small.
+[20:28] Like a batch. This would be like less than one sequence, right? Yeah. OK. So I guess this is,
+[20:33] keep in mind that I'm talking about the number of tokens that I'm generating one more token for.
+[20:38] So it's like it's actually two thousand unique sequences. Got it. OK. We're just talking about
+[20:45] a single forward pass on these sequences. This is like the batch. Do you think of it like the
+[20:49] batch as the number of sequences rather than like? That's right. OK. Cool. When I'm prepping
+[20:53] for interviews, I often talk to experts in the field. So for Reiner, I chatted with two of Jane
+[20:57] Street's engineers, Clark and Axel. Clark, who works on low latency trading systems, walked me
+[21:02] through why Jane Street uses FPGAs to make sure that they have predictable nanosecond latencies.
+[21:07] You can just build these like giant grids of compute very easily that do exactly what you need
+[21:11] to touch a hundred megabytes of SRAM and then get your response back in tens of nanoseconds very
+[21:16] easily. And that's basically impossible on CPU. He then went on to explain why CPUs just wouldn't
+[21:21] work for this kind of thing. And so if you have a clock that's going every three nanoseconds,
+[21:25] you actually have several bytes of information at a time to make your decision. That's as opposed
+[21:31] to a CPU where you'll just collect up a whole packet, you know, let's say a 1500 byte packet.
+[21:35] And then you say, OK, this packet is ready. Here you go, CPU. You can start thinking about it now.
+[21:38] FPGAs allow you to react to the earliest part of the packet as it arrives rather than having to wait
+[21:43] for the full thing. We also talked about liquid cooling, network design, and many other things.
+[21:47] If you're interested in this stuff, Jane Street is hiring. You can check out their open roles at
+[21:52] janestreet.com slash dworkash. And if you want to watch the full prep conversation,
+[21:57] we posted it there too. If you've got a Frontier model and you are actually doing inference,
+[22:04] surely they must have more than 2000 concurrent users. Yeah. Is there any added latency from the
+[22:09] fact that you need to have the whole batch fill up? Or is it if you have a reasonable amount of
+[22:14] users, it's so unlikely that you wouldn't, it would not take you 100 milliseconds to fill up
+[22:20] the next 2000 slots. Yeah. The way to think about this, I guess we think of it as like,
+[22:25] when does the train depart as a model? So let's say I've picked a batch size that I'm going to
+[22:29] run at. Maybe I pick this batch size. And so like, well, and by the way, this intersection
+[22:35] point is the same intersection point here. So I pick this batch size. I know that it's going
+[22:41] to take, for example, maybe it's something like 20 milliseconds is a common place this ends up
+[22:45] landing. What I'm going to produce is like, so this is a timeline of what is running on the GPU.
+[22:52] It's going to start a new batch every 20 milliseconds, regardless. And so, so each of
+[22:59] this is 20, this is 40. I guess. You can think of this as a schedule for the train, a new train
+[23:08] departs every 20 milliseconds. Any passengers who are ready board the train. If the train is full,
+[23:13] then they wait to the next train. If the train is not full, the train is going to go anyway.
+[23:18] And so in terms of what that means for queuing latency, it means that the worst case is that
+[23:23] you like a request arrives just after the train departed. It has to wait for the next train. So
+[23:29] that's up to 20 milliseconds. And then it has to wait for that train to complete. And so the worst
+[23:35] case latency is 40 milliseconds. Sure. How is it 20 milliseconds derived? I mean, rule of thumb,
+[23:40] but where it comes from is not fully explained yet, but so far we've focused on memory bandwidth
+[23:48] and compute time. When we look at memory, the other consideration is that we want to use all
+[23:52] of the memory capacity we have. And so generally we're going to use all of that memory capacity to
+[23:59] store the weights or the KBs. And so we just want to read, like in the time of doing a forward pass,
+[24:06] maybe we want to read all of the memory capacity into the chip. And so that is capacity divided
+[24:11] by bandwidth. That tends to be 20 milliseconds on many different generations of HPM. The units make
+[24:17] sense. You would have a byte divided by bytes per second. Yeah. So for example, I mean, on,
+[24:25] I think the Rubin generation, it is something like 288 gigabytes divided by 20 terabytes per second.
+[24:34] And this looks like it comes out to about 15 milliseconds.
+[24:42] Let me make sure I understand what this is saying. I mean, I understand why the units can't,
+[24:45] the sort of unit analysis. But what is it saying is
+[24:53] we can evacuate and replace the HBM in this amount of time. And so we don't want to be in a situation
+[25:01] where the HBM is not big enough that we're not actually able to keep right everything you want
+[25:10] to it or take everything out of it. Or we don't want to be in a situation where our ability to
+[25:14] write back and forth is so big or so small compared. Yeah. There's sort of two scenarios.
+[25:18] Why don't we pick a latency that is bigger than 15 milliseconds? And if I think what that means,
+[25:24] it means I actually have time to read the HBM like twice. By the way, most of HPM accesses is
+[25:30] reads, not writes. It's like almost all reads because the weight matrices are read-only. And
+[25:34] then almost all of the KB cache accesses are reads. So in like, let's say around 30 milliseconds,
+[25:40] I can read all of HPM twice. But what's the point of that? Like, I don't want to read the weight
+[25:45] matrices twice. I don't want to read the KBs twice. Yeah, makes sense. Makes a ton of sense. Okay.
+[25:49] So a couple of actually quick questions. One, if it is the case that the optimal batch size is
+[25:55] something like 2000, and that actually true, it's totally dependent on the sparsity. It's not
+[26:00] dependent on the model size or anything. I mean, sparsity shows up in model size, but beyond that,
+[26:04] it only depends on sparsity, not on scale. But that's a very interesting result. And that seems
+[26:08] to imply that you can... One question is how much of a Porsche Tour centralization is it that you
+[26:16] would have these economies of scale from inference for matching? But it seems like it's not that big
+[26:21] a deal. Like, I don't know. Is 2000 users at the same time a lot? It doesn't seem like a lot?
+[26:25] We can do a bit of analysis on this, which would be actually, it's like, you can think of it in
+[26:28] terms of number of users, but maybe a more productive way to think of it is in terms of
+[26:31] number of tokens per second. So what does this batch size mean in terms of tokens per second
+[26:38] of the system? So tokens per second, tokens per second is going to be equal to the batch size.
+[26:44] We run a batch many tokens, and then we do that every T. So every time in tools, which is,
+[26:51] let's say, which is this thing is equal to the 15 milliseconds, 20 milliseconds number. So
+[26:58] this ends up being batch size itself times
+[27:03] about 60. So like 64 times B. And so this ends up being around
+[27:11] 2000 times 64. So like 128, 128k tokens per second. So this is sort of in more digestible units.
+[27:21] It's hard to reason about concurrent users, but what is the global traffic for a system?
+[27:27] When you look at some of the announcements, sometimes the API providers will brag about how
+[27:34] much traffic they have. The numbers that I've remembered from some announcements of Gemini last
+[27:40] year were in the hundreds of millions of tokens per second worldwide. So about a thousand, like
+[27:46] this is one thousandth of that. But I mean, the Gemini is big. So that's actually one thousandth
+[27:52] of Gemini is a lot. To actually be like, to be competitive at scale, you need to be able to
+[27:58] serve at least one thousandth of Gemini. That's interesting. Cool. Okay. So
+[28:07] the more sparsity you have, the less compute you need.
+[28:13] And it does seem that as batch sizes get bigger, compute ends up being the bottleneck,
+[28:19] according to this analysis. So then the question is, how far can you take sparsity? That is to say,
+[28:24] as the sparsity ratio increases, as you have fewer and fewer active parameters relative to
+[28:29] total parameters, how much is performance of the model degrading? And is it degrading faster than
+[28:37] your saving compute by increasing the sparsity factor? Yeah. So performance, quality of the
+[28:42] model, rather than speed of the model. Yeah. Yeah. So unfortunately, we're not able to answer that
+[28:47] analytically. That is an empirical question of model quality. Best I can do is pull up a paper
+[28:54] and answer that empirically. Okay. Should we pull up the paper now? Or is it in the sense?
+[28:58] Yeah. So this paper, this is Unified Laws for Routed Language Models. It's a somewhat old
+[29:03] paper by this stage, but one of the things that they did is looked at, if I keep increasing
+[29:08] sparsity, what is the model quality impact? This answer is very sensitive to the actual choice of
+[29:13] mixture of experts. Mixture of experts has been around for a really long time, I think it was
+[29:17] maybe even back in 2017. But the techniques have changed a lot. DeepSeq mixture of experts was a
+[29:24] big change in how it worked. There have been older papers which are G-Charge, switch transformer. So
+[29:31] the actual empirical results are going to depend on all of that. But on one of the older techniques
+[29:35] that is shown here, you can see if I hold constant the number of active parameters at a certain size
+[29:41] and then I increase the sparsity, which they call expert count here, the quality keeps increasing.
+[29:46] And then if you imagine like drawing a horizontal line from 1.3b dense across, you end up seeing
+[29:53] that, for example, in this case, the 64 expert 370 million activated parameters model is as good as
+[29:59] a dense 1.3 billion model. So in some sense, it's actually not amazing returns where you need to
+[30:05] increase total parameters a hundredfold to get the equivalent of 10x as many active parameters.
+[30:13] Yeah, I mean, actually even more so. Yeah, it's a huge increase in parameter count for a modest
+[30:18] increase in. Yeah. So in this case, actually, it's what is it? 64x for 4x. Yeah. So while it is true,
+[30:26] I guess, that the you get this benefit of being able to economize on your compute time if you
+[30:35] increase sparsity. Naively, it would seem like, oh, that's a trade off worth making. But if this
+[30:42] is this you're decreasing this by 2x and then having this go up by 8x every time you double
+[30:50] the sparsity. So is that good or bad actually? Even from a memory point of view, keep in mind,
+[30:56] you are doubling this portion of the memory fetches, which is amortized by batch. And so
+[31:02] just keep running a larger batch size. From the point of view of the analysis we've done here,
+[31:08] this is pure win. Keep doing it. Keep doing it until you run out of available users, basically.
+[31:15] Mm-hmm. So there's actually this equivalence between if I want to go sparse or if I have a
+[31:22] lot of users, I can go to a much sparser model. So from that point of view, it's a reasonable trade
+[31:26] off. The other trade off that shows up here is that it also consumes memory capacity, which we've
+[31:33] only reasoned about memory bandwidth. So let me just make it understood. You're saying we want
+[31:41] bigger, we want to spend less time computing, therefore we do more sparsity. To make that work,
+[31:50] we need bigger batch sizes, which means we need more memory capacity. Yeah. So to have more
+[31:57] sparsity. Yeah. So I mean, maybe this would be a good point to actually talk about how a mixture
+[32:03] of experts layer is typically laid out on a rack of GPUs or something. Yeah. Yeah. Makes sense.
+[32:09] Yeah. Where were we? Sparse mixture of experts. Yes. Maybe how we lay that out on a GPU. Yep.
+[32:17] So let's zoom in on the mixture of experts layer first and sort of draw what that looks like.
+[32:22] So we typically will have some kind of a router layer, which is making the decision of where we
+[32:31] route the experts, the tokens too. So we have tokens coming in here. They go through a router
+[32:36] layer and then we have a bunch of different experts. I'll draw a few more to line them up.
+[32:47] And then the router will make a decision, which experts am I going to route to? And it'll be a
+[32:52] small fraction of them, maybe one in 32. So maybe it'll make a decision to route to this one,
+[32:57] maybe this one, and maybe this one. These experts, so each expert itself is a
+[33:08] normal MLP. It has an up projection and then a down projection with a nonlinearity in between.
+[33:13] And then finally, we sort of do the inverse operation. So where we were broadcasting things
+[33:18] out here, we're going to bring them back in and sum them up. So bringing them in like this.
+[33:27] And then finally, we have our residual connections. The token is also passed through here and it gets
+[33:34] added to the result of the MOE layer. So this is a normal MOE layer. What I want to talk through
+[33:41] is how this is mapped to a GPU rack and what this means for communication. Because I think this will
+[33:50] start to show some of the limits of how fast we can go. So the standard practice here,
+[33:57] the best solution is to use expert parallelism. So that means different experts go on different GPUs.
+[34:03] So if we take something like a DeepSeq model, they have 256 experts.
+[34:10] Let's say we want to run that on a Blackwell rack. So there are 72 GPUs. We have a divisibility
+[34:18] problem. This is not a power of two. So we'll just simplify and say we're only going to use
+[34:23] 64 of them. Just ignore the other eight. It's not a big deal. And so we have four experts per GPU.
+[34:33] For the sake of the diagram, I'll actually just say let's say we have two experts per GPU.
+[34:37] So we end up just putting these are the GPU boundaries. Every pair of experts is on its own
+[34:45] GPU. And then we can look at the communication cost. We had some experts stored, there's some
+[34:51] tokens stored centrally here. They get routed to all of these experts. And so there's some
+[34:58] communication cost paid here. There's the same communication cost paid on the output. And then
+[35:04] the hope is that this does not become communication limited. Now, what is the traffic pattern here?
+[35:12] The traffic pattern here is that any GPU in fact will be talking to any other GPU depending on
+[35:18] the decisions made by their model. So this is an all-to-all traffic pattern.
+[35:23] So when you say any GPU in the pretense, the router is more than one GPU?
+[35:28] Yeah. So I drew this as one router. In reality, you would actually have many copies of the router.
+[35:34] So you would have as many routers as GPUs in fact.
+[35:39] As the incoming traffic?
+[35:42] Yeah. So these are 64 GPUs. These are 64 GPUs. It's actually the same GPUs we just
+[35:48] draw them as separate because they're serving different purposes.
+[35:51] So at this point, any GPU can be sending to any GPU.
+[35:55] So this all-to-all pattern of communication that shows up and how the black wall racks are configured
+[36:03] is a perfect fit for the communication pattern that the MOE actually wants to do.
+[36:10] However, if you think maybe one rack is too slow when I want to do two racks,
+[36:17] then I have this challenge that maybe I've got some sort of rack boundary drawn outside here like
+[36:23] this. And I no longer in fact have all-to-all communication between all the GPUs in two racks.
+[36:32] And so the rack-to-rack communication ends up being a substantial bottleneck.
+[36:37] So the fundamental thing here is that one rack is actually the bounds the size of an expert layer
+[36:44] you can do. And so this has been part of what's been driving towards larger and larger interconnect
+[36:50] domains. Yeah. But before we... It may be worth explaining what exactly a rack is, the differences
+[36:57] in bandwidth between a rack and within a rack, and the all-to-all versus not all-to-all nature
+[37:03] of communication with it versus outside. Yeah. And this is a place where it's
+[37:06] just has to be very different in fact between Nvidia, for example, and Google, and then others,
+[37:10] including us. So generally, a rack is a... It is a physical structure. It's a few meters tall,
+[37:23] a meter or two wide, depends on configuration. And it stores some number of GPUs or XPUs,
+[37:30] which is typically about 64. What constrains it being a certain size is power delivery,
+[37:37] weight, and cooling ability. It ends up being about this size in many cases because of these
+[37:43] physical constraints. So then when I deploy a data center, a data center may have thousands
+[37:51] of these racks. So I've got one of these tall racks, it's got a bunch of GPUs in it,
+[37:54] and so on. And then I put in another rack. Next one. You make it sound so easy.
+[38:01] Yeah. Drop them in. In Nvidia's case, the communication topology is actually... They
+[38:13] put the GPUs on the outside of the rack, and then they put these switches on the inside of the rack.
+[38:19] What this ends up being is that there's a set of switches in here. These are the NV switches.
+[38:27] And then they run a bunch of cables. Every single GPU has cables going to the switches in the middle.
+[38:38] So every GPU goes to the switches in the middle, and then the switches have connections to all
+[38:43] the GPUs. So all of the GPUs connect to all the other GPUs in just like two hops. Going to switch,
+[38:49] going to the other GPU. Now, when I want to leave the rack, I end up going via a different path.
+[38:56] The GPUs have also a much slower connectivity, which is typically about eight times slower.
+[39:05] So the green that I drew here in GPU cases is the NVLink. More generally, it's called the scale up
+[39:10] network. This is the scale up network. You will typically also have a scale out network,
+[39:19] which allows you to connect to some data center switch. So data center switch.
+[39:27] And then all of the GPUs will have some connectivity up to some data center switch somewhere.
+[39:33] But this is about times, like this is the scale out.
+[39:40] And it tends to be about eight times slower in bandwidth. So the challenge, if you want to,
+[39:50] for example, lay out a mixture of expert layer across two racks, is that half of the GPUs here
+[39:57] are going to be wanting to talk to the GPUs here. And so, like, just on average, like,
+[40:05] when I look at where the tokens on these GPUs want to go, half of the tokens want to go inside
+[40:09] the rack. That's great. They can use the fast scale up network. But half the tokens are going
+[40:14] to want to leave the rack and go to the other rack. And that's not as good. They're going to
+[40:17] need to use a much slower network. And so that becomes the bottleneck on the all-to-all pattern.
+[40:24] And a different choice would be, well, why don't I, like, have a big switch here and sort of, like,
+[40:29] and connect everything to some big switching, like a much bigger switch that actually combines
+[40:35] the two racks together. There are many ideas in this direction, but in general, it becomes
+[40:40] the reason you have this sort of hierarchy of switches rather than one big switch
+[40:44] is to manage the cabling congestion. You just need to run a large number of cables.
+[40:48] Sorry, is this, is that question you just asked, basically, why isn't it a bigger scale up?
+[40:53] Yeah, exactly. Why not just, like, have, like, a million chips and scale up?
+[40:57] What has changed that has allowed anybody to go from Hopper was eight, then Blackwell is 72,
+[41:04] and now Rubin will be 500 something?
+[41:09] 500 something, yeah.
+[41:10] What has allowed that to happen?
+[41:12] From Hopper to Blackwell is mostly just the decision to switch from
+[41:18] trays as the form factor, one of these is a tray, to switching to racks as the form factor.
+[41:24] That's a product decision. There wasn't a substantial technical barrier there.
+[41:31] Switching from the, like, 64 to 500 or so, there's a bit of chance in math there, but
+[41:40] there is at least a genuine Forex increase, which is coming from a much more complicated
+[41:47] and difficult rack design, so that is actually, like, new physical design to run more cables.
+[41:51] And the cable complication is just the cost of figuring out which cable hops to which,
+[41:58] or, like, which signal.
+[42:01] Let's sort of zoom in on this and look at the wire density.
+[42:03] I'll draw this diagram just once more so we have a bit of a cleaner version to work with,
+[42:10] and a larger version.
+[42:12] Let's say I have some switches in the middle.
+[42:16] Initially I'm going to start with just two GPUs on each side, or two trays of GPUs on each side,
+[42:21] and let's say maybe each tray wants to have two cables coming out of it.
+[42:28] So I get some kind of, I physically run vertical cables that look like this running
+[42:33] onto the switches.
+[42:35] Now if I want to double the number of GPUs in a rack,
+[42:40] I need to run, like, literally twice the density of cables, so I need to run these as well.
+[42:51] Extruding to your question, but if you look at a physical data center,
+[42:55] it seems like there's a lot of space within a rack.
+[42:58] I don't know, just like the cables are, like, really big.
+[43:01] Yeah, so there is space outside the rack.
+[43:03] Inside the rack, like, these racks are, like, I mean,
+[43:07] as they become more optimized, these racks are very tight.
+[43:09] So there's connector density going from the tray into the rack, and the rack's backplane,
+[43:19] and then the backplane itself has a really high density.
+[43:22] There are other physical constraints, including, like, bend radius of cables,
+[43:26] like, you don't want to snap them and so on.
+[43:28] Okay, so it's literally the physical space to put a cable that's constraining it.
+[43:31] Yeah.
+[43:31] I had no idea. Interesting.
+[43:34] That seems surprising, but, like, the rack is so big, and we can't just stuff more cables in there.
+[43:40] Yeah, so, I mean, rack design is not my expertise, but, like, when I talk to folks
+[43:43] and what are the constraints they're up against, it's a combination of,
+[43:48] so what are the big physical things you're optimizing for?
+[43:51] Space, weight of the rack, like, it's actually really heavy,
+[43:55] and so, like, you need enough metal top to not sag and fall,
+[43:59] but then you add more metal and it's heavier, and then power and cooling,
+[44:03] and so all of those are competing for, like,
+[44:06] modern racks are pushing all of those to very extreme physical limits.
+[44:09] Deep work is by its nature quite aversive, so even things which seem like work,
+[44:13] like Slack and email, can be easy ways to distract yourself.
+[44:17] So I often wish that I could just turn the internet off.
+[44:20] But if I'm prepping for an interview, even if I have the papers and books on hand,
+[44:24] it's still super useful to be able to do a back and forth on the LLM so I can
+[44:27] break down concepts and research follow-ups.
+[44:29] Google's new Gemma 4 is the first open model that allows me to have this kind of
+[44:34] fully disconnected focus machine.
+[44:36] It's small enough to run on my laptop, but good enough to actually be useful.
+[44:39] So to prep for this episode, I downloaded Reiner's scaling book and showed off the internet.
+[44:42] I was able to have Gemma help me understand the material and answer my questions.
+[44:45] If you want an LLM that you can run locally on your laptop or even your phone,
+[44:49] you should check out Gemma 4.
+[44:55] When was GPT-4 released again?
+[44:56] It was 2022 or 2023?
+[44:58] Three.
+[44:58] Three, yeah.
+[44:59] And it was rumored to be over one trillion parameters.
+[45:02] And it seems like only now, and within the last six months, have models been getting
+[45:07] released that are significantly more parameters than the model released three years ago.
+[45:10] Yeah.
+[45:11] When supposedly there should have been this scaling in the meantime,
+[45:16] is the reason that we were just waiting for racks with enough memory to hold a
+[45:23] five trillion parameter model along with its KV cache for enough users for a lot of sequences,
+[45:31] or if you're doing RL, kind of a similar consideration of actually holding the KV
+[45:35] cache for all the batch of problems you're trying to solve.
+[45:41] So if you look at Hopper, you had eight Hoppers, and I think that's 640 gigabytes as of 2022.
+[45:47] Yeah.
+[45:48] With Blackwell finally, which was deployed, what, 2020?
+[45:51] Very recently.
+[45:52] Maybe last year.
+[45:53] Last year?
+[45:53] You finally have a scale-up on the order of 10, 20 terabytes,
+[45:58] which is enough for a 5T model plus KV cache.
+[46:02] Yeah.
+[46:02] Deploying in larger scale-up domains is a huge unlock.
+[46:07] I've drawn here the NVIDIA Blackwell deployment.
+[46:11] The Google deployment has actually had very large scale-up domains.
+[46:14] And that also explains why Gemini seemed to be ahead.
+[46:18] Gemini 2.5 was a successful...
+[46:20] Or it just seems like Gemini has that successful pre-trained
+[46:23] for longer than some of the other labs.
+[46:24] Not having been there at the time, I'm not sure how much is coming from
+[46:27] successfully deploying higher sparsity ratios, which could be.
+[46:31] It could also be...
+[46:32] I mean, there's a whole bunch of actual modeling things of like...
+[46:36] Specifically, how do you do the mixture of experts?
+[46:39] We've seen the DeepSeq mixture of experts has said,
+[46:45] actually activate more experts, but finer-grained experts was a big innovation.
+[46:48] Yeah.
+[46:49] I'm sure that there are many other innovations on the model architecture,
+[46:52] as well as on the training data.
+[46:53] It's kind of hard to disentangle all of them.
+[46:56] But what shows up in terms of the limits of what you can do,
+[47:02] the active parameters, as we saw, is limited by the compute cost.
+[47:07] And then the total parameters is limited by the scale-up size.
+[47:11] When you're operating within a single scale-up domain,
+[47:15] is that a consideration specifically for either forward or backward?
+[47:21] Or specifically for pre-fill versus decode?
+[47:26] Or is it preferred to always be within a scale-up?
+[47:32] Whatever kind of workload you have, whether you're doing a pre-training run,
+[47:37] or whether you're doing RL generation, or whether you're doing inference for users.
+[47:41] Yeah, really interesting.
+[47:43] So, okay, so to answer that question, we're going to need to talk about the
+[47:48] communication patterns that, so we've talked about the mixture of expert
+[47:52] communication pattern, that is this all-to-all.
+[47:56] This is all-to-all.
+[48:00] All-to-all.
+[48:02] All-to-all very strongly favors full connectivity, which is what we've kind
+[48:08] of just shown here, and favors being within one rack.
+[48:12] There are other kinds of parallelism besides expert parallelism,
+[48:15] which we just showed here.
+[48:18] In the literature is tensor parallelism.
+[48:20] This is with the trend towards smaller experts, this has become much less relevant,
+[48:25] so we can ignore that.
+[48:27] But the other two things that we have available are data parallelism and
+[48:30] pipeline parallelism.
+[48:32] And they are actually much, they can be a much better fit for using multiple racks.
+[48:37] So let's focus on pipeline parallelism specifically.
+[48:40] So this is one layer of MOE.
+[48:44] I'm going to have like 100 more layers up above.
+[48:48] I could decide at this point, for example, to move to a different rack, a change rack.
+[48:59] Now, is that going to become a communication bottleneck?
+[49:02] So we can actually just solve for when this becomes a communication bottleneck.
+[49:07] But before we do that algebraically, let's just sort of visualize it out and sketch the path.
+[49:11] So we're going to have a bunch, this is another MOE layer,
+[49:14] and we're going to have another MOE layer here, and so on.
+[49:18] So let's say I change rack here, and then some number of layers later,
+[49:21] I change rack here as well.
+[49:28] So our methodology that we're going to use to determine whether we have a communication
+[49:33] bottleneck in this point where we change rack is we're going to compare the,
+[49:40] this is the scale out bandwidth requirements to the scale up bandwidth requirements.
+[49:52] So let's write this.
+[49:54] The hint is going to be that there's a lot more transcends here,
+[49:58] like we're sending many things here, whereas we're only sending one thing here.
+[50:01] And then we're also maybe doing it many times.
+[50:03] So that's going to be what makes the difference.
+[50:07] Can I try to guess?
+[50:11] It seems like you're sending batch size into the rack.
+[50:16] In here?
+[50:17] Yes.
+[50:19] But the communication within a rack is batch size times number of GPUs.
+[50:26] Yeah, so number of activated GPUs, right?
+[50:29] So I don't send to this GPU at all, right?
+[50:32] So there's an explosion from one to like three times larger here in this diagram.
+[50:39] The key thing is that I didn't even need to send to this GPU at all,
+[50:41] and so that's a big saving.
+[50:43] I see, yeah.
+[50:44] Okay, so we're going to talk through sort of how much more,
+[50:50] what is the slowdown of, to what extent is scale up a bottleneck over scale out?
+[50:56] So we will directly jump to the ratio of the time spent on scale up,
+[51:06] time on scale up, over the time spent on scale out.
+[51:14] This is the quantity we're talking about.
+[51:18] And the first consideration is that the scale up is like,
+[51:23] scale up is eight times faster than scale out generally.
+[51:26] And so at a baseline, if the bandwidths were the same, we would have this
+[51:31] one over eight, which is coming from bandwidth,
+[51:34] bandwidth.
+[51:37] But then we have some amount of expansion in how much data we're sending.
+[51:43] So if one token comes in here, then this one token gets routed to,
+[51:49] in the DeepSea case, it'll get routed to maybe 32 experts or 16 experts,
+[51:54] gets routed to some number of experts.
+[51:56] So this is the number of activated experts, number of activated experts.
+[52:08] And then it also, the same thing applies on multiple different layers.
+[52:15] So maybe I'm going to run two layers.
+[52:17] So there's also multiple times number of layers per stage.
+[52:28] And there's a need to multiply the whole thing by two for the,
+[52:31] for the up and down.
+[52:32] Yes, yes.
+[52:33] And there's a factor of two.
+[52:34] Thank you.
+[52:37] So what we would like is for the scale up time to be greater than the scale out time,
+[52:44] because the scale up time is the more important and precious resource.
+[52:47] And so we just, we want this one, we would like this number to be greater than or equal to one.
+[52:52] And this really doesn't seem hard.
+[52:54] There's just a factor of eight that we need to overcome.
+[52:56] So we need the product of these three things to be bigger than eight.
+[53:00] Typically, we have a fairly large number of activated experts.
+[53:02] It could be eight by itself.
+[53:04] And then we can increase the number of layers per stage a lot until we satisfy this.
+[53:10] So what this ends up looking like is that I can in fact have an entire pipeline of racks,
+[53:15] where one rack does one layer and then I move on to the next rack and I do another layer and then
+[53:18] I move on to the next rack and do another layer.
+[53:20] It's interesting to me that the best parallelism
+[53:25] strategy in practice ends up being one which physically resembles the actual architecture.
+[53:33] It's not some galaxy brain thing.
+[53:34] It's like, oh, we have experts, we're going to put them on different GPUs.
+[53:37] Oh, we have different layers, we're going to put them on different racks.
+[53:39] Isn't that, I feel that's interesting that the physical and...
+[53:42] The model architecture matches, like the cutting matches the model architecture.
+[53:46] Yeah, exactly.
+[53:46] Yeah.
+[53:47] I mean, it could have been something wackier with tensor parallelism and whatever.
+[53:50] Yeah. So I mean, I think a way to think of it is, I mean, okay, the galaxy brain way to think of it is
+[53:58] what are all the different dimensions in which a model is scaled up?
+[54:02] And so it is scaled up by layers, it is scaled up by the demodeled dimension,
+[54:07] it is scaled up by the DFF dimension, it is scaled up by the number of experts.
+[54:11] Every single one of those numbers you can choose to cut along.
+[54:15] And if those numbers are big enough, it eventually becomes profitable to cut along there.
+[54:20] And we have selected two of them.
+[54:21] The other two, in the way models are typically sized, are not profitable.
+[54:27] So there's a talk by Ilya where he says, today we know not to do pipeline parallelism.
+[54:33] And Horace gave my friends and me, I hate that it sounds like a Dr. Seuss quote.
+[54:40] But he gave us a lecture on these different kinds of parallelisms and he said,
+[54:46] the problem with pipeline parallelism is that it, other than the bubbles, it constraints,
+[54:49] it creates these architectural constraints.
+[54:51] Yes.
+[54:54] Like Kimi, for example, has these residuals where attention attends to the...
+[54:59] A few are back or something.
+[55:00] Yeah, layers a few back and so that becomes hard to implement in this way.
+[55:04] Yeah. And I guess we didn't really fully articulate even what is the benefit that
+[55:09] we're getting from pipelining.
+[55:10] Yeah.
+[55:13] And so these complexities are real.
+[55:16] Pipelining is a massive hassle, but it does give you some benefits.
+[55:24] And then you can then decide whether those benefits are worth the costs.
+[55:29] The biggest benefit that shows up, so it has some benefits in inference,
+[55:33] maybe bigger benefits in training.
+[55:35] In inference, what are we saving on?
+[55:37] Are we saving on memory time or compute time?
+[55:41] Not really, we're just moving the memory time from one chip to another chip,
+[55:45] or one rack to a different rack.
+[55:46] There's no actual benefit in runtime.
+[55:50] However, what we are saving on is that the memory capacity is,
+[55:56] the amount of memory used per rack.
+[55:57] If we think that the memory in a rack is a bottleneck,
+[56:00] then there's a constraint on how fast we can go.
+[56:03] And pipelining allows us to massively reduce that bottleneck.
+[56:07] I guess the opposite connotation to this,
+[56:12] which actually before this interview I was chatting with Axel,
+[56:17] who's a GPU performance engineer at Jane's Street,
+[56:20] and he was explaining, well, to do pipelining,
+[56:22] you had to do micro batches rather than full batches.
+[56:25] And if you do micro batches, then you're by definition not able to amortize
+[56:31] the weight, loading the weights across all the users or all the sequences.
+[56:38] And so the positive connotation on that is you don't have to use that much memory.
+[56:41] The negative connotation of that is that we can't amortize
+[56:45] loading the weights across all those users.
+[56:47] Maybe it's worth explaining why you had to do micro batches because you can't.
+[56:49] So we draw the pipeline bubble.
+[56:52] Okay, so why do we do,
+[56:56] what is this micro batching that shows up in pipeline parallelism?
+[56:59] So I'll focus on inference first.
+[57:04] It's just a slightly simpler problem.
+[57:07] So and I'm gonna draw, so this is time,
+[57:11] and then this is which rack we're on.
+[57:16] And so the idea is that maybe I'll have like four racks.
+[57:19] So I've got an inference that is gonna like step through these four racks
+[57:24] in some time like this.
+[57:25] So this is inference number zero.
+[57:32] It runs at a certain batch size, and it steps through all the pipeline stages like this.
+[57:37] Now, if we were to say, well, we're gonna run inference number one here,
+[57:40] like this is clearly like a massive waste, right?
+[57:44] Like three quarters of the time each of the racks is doing nothing.
+[57:50] So we don't actually run inference one here.
+[57:51] We run it as soon as we can, which is immediately after
+[57:55] inference zero finishes like this.
+[57:59] So and we keep going.
+[58:01] So if we hadn't filled this in, we would call this the pipeline bubble.
+[58:05] When I've drawn it in this inference context,
+[58:06] where we're only going in a forwards pass, it's like obvious,
+[58:09] like why would you do the stupid thing?
+[58:11] But in a training context, it's maybe less obvious.
+[58:14] But in the inference context, it's sort of really natural to make this change.
+[58:19] Oh, interesting.
+[58:19] So this sort of obvious, but the difference between micro-batch and batch
+[58:25] doesn't matter at all in inference because you can just call whatever you want, whatever.
+[58:30] Yeah.
+[58:31] It only matters in training because there is an optimal batch size.
+[58:37] Yes.
+[58:37] And before you do the backwards step, you want to have accumulated,
+[58:42] before you do a full backwards step, you want to have accumulated
+[58:45] all the sequences in that batch.
+[58:47] And if you want to do pipeline and training, in order to avoid that bubble, you need to-
+[58:52] Should we draw the training diagram?
+[58:54] Yeah, let's do that.
+[58:55] Let's do that.
+[58:57] So this is the inference diagram, and I'll call this four,
+[58:59] so we don't have the wrong thing showing up there.
+[59:02] So let's do the same thing for training now.
+[59:04] We've got a forwards pass, but at some stage,
+[59:06] we're going to have to transition to a backwards pass.
+[59:08] So we'll do some number of batches in the forwards pass.
+[59:14] And then we're going to transition to the backwards pass for everyone all at one go.
+[59:33] So the inference part is the same here, but then we do a hard stop at this point,
+[59:38] and then transition everyone to backwards pass.
+[59:41] Similar numbering like this.
+[59:42] It may be worth clarifying, the reason there is that hard stop is because
+[59:46] you want to do a whole batch at once for the backwards step.
+[59:49] And then there is an optimal size for how big that batch should be.
+[59:53] Yeah, I mean, smaller is always better, actually, is a way to put it.
+[59:58] From a ML convergence rate perspective, smaller is always better,
+[01:00:02] because basically you're getting the freshest information from the gradient descent.
+[01:00:06] But total training time perspective.
+[01:00:08] Total training time perspective, smaller is worse from a systems perspective.
+[01:00:11] And so the optimum is the tradeoff between these two.
+[01:00:14] So you pick a batch size, and then for that batch size,
+[01:00:20] you do some amount forwards and then some amount backwards.
+[01:00:23] You asked why is there even a hard stop?
+[01:00:26] Pipeline parallelism, because of the fact that you've got this idle time here,
+[01:00:31] which is the bubble, there are so many techniques in the literature for how to
+[01:00:38] lay this out differently and avoid that.
+[01:00:40] There are more complicated schemes called zero bubble or one forward, one backward,
+[01:00:45] which interleave the forwards and the backwards in complicated ways.
+[01:00:49] You can mine Bitcoin in that.
+[01:00:50] Yeah, right, right.
+[01:00:52] More usefully, you can do the weight gradient step, but you can also make it.
+[01:00:57] So in inference, actually, the effect of pipelining on anything you care about,
+[01:01:05] like batch size or latency, actually is neutral.
+[01:01:07] It doesn't improve it, it doesn't make it worse.
+[01:01:09] So if you look at the latency of this inference, running it if it were pipelined,
+[01:01:12] versus if it were all on one rack, if it were all on one rack,
+[01:01:15] we would just slide all of the boxes down and still put them in a row,
+[01:01:19] and the latency would be the same.
+[01:01:21] So pipelining is neither better nor worse for latency,
+[01:01:26] but it does mean that you just use less memory per rack, like memory capacity.
+[01:01:32] Because now instead of needing the whole model, you only need a quarter of the model.
+[01:01:35] Makes 10 cents.
+[01:01:36] So basically, no brainer to use pipelining during inference,
+[01:01:42] but there is this harder trade-off during training.
+[01:01:45] So even in inference, in fact, it is not used a ton.
+[01:01:49] It reduces your memory capacity requirements.
+[01:01:52] There's actually a huge surplus.
+[01:01:54] I think you're saying that a rack of Blackwell has many terabytes, maybe tens of terabytes.
+[01:02:01] If that's much bigger than a trillion parameter model,
+[01:02:05] a trillion parameter model only needs one terabyte.
+[01:02:07] And so it already fits, in fact.
+[01:02:09] And so there's not a huge benefit from pipelining,
+[01:02:13] because you're reducing a number that's already pretty small.
+[01:02:16] But it does say that theoretically maybe you had too much memory there,
+[01:02:19] and maybe you could have done a different,
+[01:02:23] build a different hardware that has less memory, in fact.
+[01:02:26] If you were designing your hardware, and you said,
+[01:02:28] I actually didn't need that much memory,
+[01:02:29] because I don't need the weights to fit in one rack.
+[01:02:32] I can fit the weights in eight racks.
+[01:02:34] Then I could have maybe built a hardware that didn't have so much HPM per GPU.
+[01:02:39] Last week, Horace was kind enough to give me and my friends
+[01:02:43] a great lecture on large-scale pre-training systems.
+[01:02:46] And there were some concepts that I wanted to animate for a write-up on my blog,
+[01:02:49] like how weight shard and gradients flow,
+[01:02:51] depending on the parallelism that you're using.
+[01:02:54] So I gave Cursor my lecture notes and a sketch that I'd made during the lecture.
+[01:02:58] And I asked it to visualize a specific hierarchical collective that Horace had explained.
+[01:03:04] The first version was already pretty good,
+[01:03:05] and then I was able to use design mode to select and tweak any specific components from there.
+[01:03:10] I was able to do all of this without a clear end state in mind.
+[01:03:13] Cursor's Composer2Fast model was quick enough
+[01:03:15] that I was able to iterate almost instantaneously.
+[01:03:17] I could try an idea, test the results in the built-in browser,
+[01:03:20] and immediately make any changes.
+[01:03:22] I went through 10 different versions in under 20 minutes.
+[01:03:24] If you want to check out this animation,
+[01:03:26] I published it along with the lecture notes in a blog post.
+[01:03:29] The link is in the description.
+[01:03:30] And if you want to try this kind of iterative design flow for yourself,
+[01:03:33] go to cursor.com slash loracache to get started.
+[01:03:37] So macro question.
+[01:03:40] Everybody's talking about the memory wall right now.
+[01:03:43] Memory's getting super expensive.
+[01:03:44] There's not enough memory.
+[01:03:45] Smartphone volume will go down 30% because there's not enough memory.
+[01:03:48] Hyperscalers are spending...
+[01:03:50] This is shocking.
+[01:03:52] Dylan said they're spending 50% of their capex this year.
+[01:03:57] On memory.
+[01:03:57] That's believable.
+[01:03:59] What is hyperscaler capex?
+[01:04:01] It's like high hundreds of billions, maybe a trillion.
+[01:04:03] And they're spending half of that on memory.
+[01:04:05] Okay, so that is a huge constraint.
+[01:04:07] That's why we're not going to get new laptops and phones this year.
+[01:04:11] But at the same time, we have too much memory?
+[01:04:14] Like people are willing to put too much memory into these systems?
+[01:04:16] Right.
+[01:04:18] Why is JetSense shoving all this memory into these racks if you don't need it?
+[01:04:23] In the equations we had here before we raised them, we were doing memory time.
+[01:04:27] So memory bandwidth and compute bandwidth.
+[01:04:29] Let's now start looking at memory capacity.
+[01:04:31] Yeah.
+[01:04:33] We'll start off with just memory capacity without even thinking about parallelism scheme.
+[01:04:41] The capacity of memory or the demand on memory is the number of total parameters.
+[01:04:49] So this is what we need to fit the weights in some system that we are using.
+[01:04:57] And then we need to fit the KVs as well.
+[01:05:00] So KVs go as batch size times the length of the context
+[01:05:06] times the bytes per check.
+[01:05:10] Okay, so what I was arguing about in this context and the case I was making for pipelining
+[01:05:21] is that we will actually, there are some techniques that allow us to solve this.
+[01:05:25] Are there techniques that allow us to solve this?
+[01:05:27] So let's consider, so we're going to run this on some number of GPUs and we're going to say
+[01:05:33] we're going to have one extender which is E is going to be the expert parallelism.
+[01:05:41] So how many, when we had this charting of expert layer across many GPUs, how much of that,
+[01:05:47] to what extent do we do that, how many GPUs?
+[01:05:51] So we're going to say that this is for example 64.
+[01:05:55] And then P is going to be the extent of pipelining.
+[01:06:02] And so this is the number of racks, which who knows maybe we'll pick four or something like that.
+[01:06:07] So what we want to calculate, so this is like the total memory requirement across the system.
+[01:06:17] But now I'm going to calculate a memory requirement per GPU.
+[01:06:23] So per GPU memory requirement, we're going to have, I guess I'll use a lowercase C mem.
+[01:06:32] And well, obviously we just take all of these numbers and divide it by E and P, really easy.
+[01:06:37] So it's this N total plus the batch times length of context times bytes per toque.
+[01:06:52] All of this is divided by E times P.
+[01:06:56] So this is like, why is this correct divided this way?
+[01:06:59] Why is this divided this way?
+[01:07:01] Well, we're saying we knew that the parameters were perfectly divided amongst all the
+[01:07:07] GPUs in a rack.
+[01:07:09] The layers are perfectly divided amongst the different racks.
+[01:07:13] So that works here.
+[01:07:14] And somehow we're going to arrange, I'll hand wave exactly how, somehow we can arrange the
+[01:07:19] same perfect charting of the contexts across GPUs in a rack and then based on layer across racks.
+[01:07:27] Sorry, four is the number of racks.
+[01:07:29] Yeah, for example.
+[01:07:33] So this is the place where we actually need to go back and analyze this batch size B.
+[01:07:39] And you were making this comment that there's micro batching versus global batching.
+[01:07:43] So let's come back to this pipelining diagram here.
+[01:07:48] We've got one batch going forward here.
+[01:07:50] And then as I drew it, it kind of just like disappeared.
+[01:07:53] That's not really correct.
+[01:07:54] If you think about how decode is working, I have a bunch of tokens that I have generated already.
+[01:08:02] I do one forwards pass where I generate a new token.
+[01:08:05] And then I write that to my KB cache and then I do another forwards pass that generates the
+[01:08:11] next token.
+[01:08:12] So I'm actually going to be running this batch zero in a loop.
+[01:08:16] So in fact, I go forwards.
+[01:08:19] Once I finish, I can start the next iteration of the loop up here.
+[01:08:22] Yeah.
+[01:08:24] So we'll just fill this in.
+[01:08:27] We'll have the...
+[01:08:35] Nice.
+[01:08:38] Yeah, so we've got the two or three.
+[01:08:45] So let's split this batch.
+[01:08:47] This batch will be the global batch size.
+[01:08:49] So B is going to be the number of micro batches times the batch size per micro batch.
+[01:09:02] So how many micro batches do we need?
+[01:09:05] So the number of micro batches in this diagram is four.
+[01:09:07] Zero, one, two, three.
+[01:09:09] And then the batch size per...
+[01:09:13] The micro batch size, this is still this 2,000-dish number.
+[01:09:18] This is the one that is like...
+[01:09:21] This is the like 2,000 times sparsity.
+[01:09:25] Sorry, no, this is the 300 times sparsity.
+[01:09:28] 300 times sparsity.
+[01:09:30] This is how big the train that takes up every 20 milliseconds is.
+[01:09:34] Right, yes.
+[01:09:35] This is going to be the 20 milliseconds train.
+[01:09:39] So the global batch size is the number of micro batches times the local batch size.
+[01:09:42] Local batch size is set by this hardware parameter.
+[01:09:45] The number of micro batches...
+[01:09:47] Well, the number of micro batches is as small as possible such that we can wrap around
+[01:09:53] and not leave any idle time when we wrap around.
+[01:09:56] So if we had fewer, we would have this idle time when we wrap around.
+[01:10:00] And so you can sort of just visually see that it is equal to the number of pipeline stages.
+[01:10:04] I mean, sort of proof by visual here.
+[01:10:05] Like it is four and it's four this way as well.
+[01:10:08] But you can sort of look and see that it goes along here
+[01:10:11] and then it wraps around number of pipeline stages.
+[01:10:14] Yeah, and sorry, very basic question.
+[01:10:16] This is what is actually done?
+[01:10:18] Okay, as in a frontier model today will actually have during inference have pipeline.
+[01:10:24] For sure during massive scale training, this is done.
+[01:10:29] It can be done for inference.
+[01:10:31] I'm actually going to make the case for why it is less attractive.
+[01:10:34] It is useful for weights, but not so useful for KVs.
+[01:10:37] Okay, yeah.
+[01:10:40] The big challenge is...
+[01:10:41] So let's fill this in.
+[01:10:43] The micro batch size here ends up being equal to the number of pipeline stages.
+[01:10:49] When we go back and substitute all of that into here,
+[01:10:58] we get a number of pipeline stages times this little b showing up in here.
+[01:11:08] And then when we factor this out, I'm going to split this into like this plus into two terms.
+[01:11:13] So we get the full division by e times p over here.
+[01:11:21] We still have division by e times p over here, but the p's cancel.
+[01:11:25] This p and this p.
+[01:11:29] They cancel.
+[01:11:31] And so what we find, if you increase the number of pipeline stages,
+[01:11:36] the memory footprint for the number of weights keeps going down and down and down.
+[01:11:39] But the memory footprint for the number of activations stays constant.
+[01:11:43] So it doesn't actually work.
+[01:11:46] Most of your memory ends up...
+[01:11:49] Once you do enough pipelining and it's really not much, even two is often enough,
+[01:11:56] this term becomes very small, this becomes the dominant term.
+[01:11:59] The KV cache becomes the dominant term.
+[01:12:01] I know this is wrong.
+[01:12:02] I'm just trying to think out why my training logic here is wrong.
+[01:12:05] If you have many different...
+[01:12:09] You're pipelining through many different stages.
+[01:12:10] The KV values are not shared between layers.
+[01:12:13] Why would it not help to be pipelining across multiple layers?
+[01:12:16] Because then you don't have to store...
+[01:12:17] Yeah, you only need to store one layer rather than two layers of KVs.
+[01:12:21] It helps from that perspective.
+[01:12:23] You're right.
+[01:12:25] What's competing with that, though, is that you need to be keeping all of the racks
+[01:12:29] usefully busy at a time.
+[01:12:31] And so the number of sequences that are in flight simultaneously has gone up.
+[01:12:35] Yeah, makes sense.
+[01:12:36] Makes sense.
+[01:12:37] So those exactly cancel and you end up not getting a saving per GP.
+[01:12:40] Right.
+[01:12:41] This is going back fundamentally to the point of you're not able to amortize across KV caches.
+[01:12:46] Well, so first we did you can't amortize KV caches across batch size.
+[01:12:51] And now we're saying you also can't shard it across pipeline stages.
+[01:12:56] It sucks from both of those points of view.
+[01:12:58] Yeah, yeah, yeah.
+[01:12:59] Interesting.
+[01:12:59] Okay, so then what is done during inference?
+[01:13:02] So, I mean, A, like DeepStake Paper reports what they do, which is like...
+[01:13:07] They just do a lot of expert parallelism.
+[01:13:08] You should, in effect, you should increase your expert parallelism
+[01:13:12] up to your scale up domain size and then do very little pipelining.
+[01:13:18] Maybe not at all, maybe two, just enough to make the weight storage not too big of an issue.
+[01:13:25] Those are the only two parallelisms that really make sense.
+[01:13:27] In the past, there was tensor parallelism, which was cutting up within an expert.
+[01:13:33] But the experts are so small now that that is not a profitable optimization.
+[01:13:38] So this goes back to the question, does that mean that frontier labs,
+[01:13:41] when they're doing inference, are just basically within a single scale up?
+[01:13:45] Yes.
+[01:13:45] Yeah, I mean, you can look at how it depends on model size.
+[01:13:49] Like, you could have a very large model, like one that exceeds the memory of a rack.
+[01:13:58] And there you should be doing a bit of pipelining.
+[01:14:01] Maybe it's extremely sparse, for example, and that would be a reason to do it.
+[01:14:05] So I guess this goes back to the question about,
+[01:14:07] this goes back to the promise at the beginning of the lecture, which was,
+[01:14:10] this will actually tell you about AI progress as well.
+[01:14:13] To the extent it is the case that model size scaling has been slow until recently, because,
+[01:14:20] let me make sure I understand the claim.
+[01:14:21] The claim would not be, you could have trained across more racks.
+[01:14:26] It was just that it would not have made sense before.
+[01:14:28] Like, we didn't have the ability to do inference for a bigger model easily.
+[01:14:33] Actually, I made the claim.
+[01:14:34] So pipelining doesn't help with context length.
+[01:14:38] It totally helps with model size.
+[01:14:39] And so because of the ability to do pipelining,
+[01:14:45] at least a rack should not be a constraint on your ability to fit the model parameters.
+[01:14:49] I guess the other consideration you're asking, like,
+[01:14:51] why hasn't it scaled up more and why did bigger scale up domains help?
+[01:14:55] So we talked through one aspect of that, which is, we kind of said,
+[01:14:59] it's not because of memory capacity.
+[01:15:01] We have a solution to the memory capacity, at least with respect to model size.
+[01:15:05] Not with respect to KV cache size, but at least with respect to model size,
+[01:15:09] we have a solution to memory capacity.
+[01:15:12] The other issue that shows up is latency.
+[01:15:15] I was just about to ask, so what is the going from rack to rack?
+[01:15:20] What is the latency cost per hop?
+[01:15:23] This is very much dependent on the hardware.
+[01:15:25] It's...
+[01:15:28] I would...
+[01:15:29] I can't say with a lot of authority.
+[01:15:31] I think it's probably on the order of a few milliseconds,
+[01:15:33] but it could be off by an order of a few milliseconds.
+[01:15:35] Is 4 a realistic number of how many pipelining stages you might have?
+[01:15:38] Yeah.
+[01:15:38] Yeah.
+[01:15:38] Okay, so that's not that much.
+[01:15:40] It's not...
+[01:15:41] On a small number of pipelining stages, this is not a huge latency impact.
+[01:15:45] Wait, I guess it's 10 milliseconds per token.
+[01:15:48] That's right.
+[01:15:49] 2 times 4-ish...
+[01:15:52] Or I don't know how many you said, but...
+[01:15:53] Yeah, yeah.
+[01:15:54] 10 milliseconds per token is actually a lot.
+[01:15:55] Yeah, if it goes from 20 to 30, right?
+[01:15:57] Or something like that, yeah.
+[01:15:59] So just to chart the path that it goes through,
+[01:16:03] here you're going from your GPU or TPU or whatever to a network card,
+[01:16:13] which then goes to a top of rack switch,
+[01:16:18] and then hops over to the other rack and does the same thing in reverse.
+[01:16:21] So you sort of have to sum up the latencies of these different things.
+[01:16:24] This is the same thing as the DC...
+[01:16:27] It may in fact go up to a day's end, so switching back
+[01:16:30] depends on deployment configuration.
+[01:16:32] Right, yeah.
+[01:16:33] And because it's decode-insequential,
+[01:16:37] it's also not the...
+[01:16:39] Like, they stack up across the stages.
+[01:16:41] Yes, they do.
+[01:16:42] You can't do them at the same time.
+[01:16:43] That's right.
+[01:16:43] Yeah.
+[01:16:44] Okay, so I guess this brings us back to the question then.
+[01:16:46] And is the size of the scaleup at all relevant to why AI model sizes or whatever have been
+[01:16:53] what they have been over the last few years, whether through training or through inference?
+[01:16:57] Yeah, so I mean, we talked about latency of the hop, of this hop.
+[01:17:02] There is also just the same TMem latency, the memory time latency,
+[01:17:08] is actually substantially, like massively improved by larger scaleup domains.
+[01:17:13] So I'll recall TMem down here.
+[01:17:18] TMem for the weights, TMem of weights.
+[01:17:27] This was equal to the number of total parameters
+[01:17:33] divided by the memory bandwidth.
+[01:17:38] Which memory bandwidth are we talking about here?
+[01:17:39] Is it just one GPU or it's in fact, it is the number of GPUs that I can use in parallel
+[01:17:46] to load these weights.
+[01:17:48] So I can't use different pipeline stages in parallel because they're not running at the
+[01:17:53] same time, but I can use all the GPUs in my scaleup domain in parallel to load the weights.
+[01:17:57] Yeah.
+[01:17:57] And so this is actually extremely effective.
+[01:18:02] So basically, I end up with a term here.
+[01:18:06] This memory bandwidth term itself is equal to scaleup size.
+[01:18:12] Times memory bandwidth per GPU.
+[01:18:13] Yeah, times GPU bandwidth.
+[01:18:18] And so this term doesn't increase a lot.
+[01:18:20] It maybe increases 1.5 or 2x per generation, but this one increased by a factor of eight.
+[01:18:26] So the reason the bigger scaleup matter is not the memory capacity of the whole scaleup,
+[01:18:29] but really the memory bandwidth.
+[01:18:31] Yeah.
+[01:18:31] Pipelining totally solves the capacity problem, but scaleup size helps solve the bandwidth
+[01:18:39] problem.
+[01:18:39] And the bandwidth problem helps you do longer context lengths, which is more and more
+[01:18:45] relevant as these models get more authentic.
+[01:18:46] Yeah.
+[01:18:47] It lets you just run the model at lower latency as a first thing.
+[01:18:51] If I just do a very sparse model and it's on a little H100 box, the latency will be
+[01:18:58] really high.
+[01:18:58] Yeah.
+[01:18:59] Okay.
+[01:19:00] A super tangential question.
+[01:19:03] There's chinchilla scaling, which tells you how big should a model be relative to the
+[01:19:07] amount of data you're going to train it on.
+[01:19:11] But now, obviously, you're not just trying to optimize for the highest quality model
+[01:19:16] you could get with training compute.
+[01:19:18] You want the best results a user can get as a mixture of training and inference compute.
+[01:19:23] So then there's a question of how much should you over train a model such that
+[01:19:28] compute amortized over training and inferences minimize to get a certain performance.
+[01:19:33] But now with RL inference, there's another consideration, which is you're going to do
+[01:19:40] some amount of pre-training.
+[01:19:41] That pre-training will be used both for RL generation and then for inference for the
+[01:19:47] final user.
+[01:19:48] And by over training here, I mean while it would have been more efficient just from a
+[01:19:51] training compute perspective to have a bigger model that you train for less time because
+[01:19:56] it can learn faster.
+[01:19:57] Maybe you get a smaller model, you spend more time training it than you otherwise would
+[01:20:00] have, but now it's cheaper to give it to users.
+[01:20:04] But let me give a question more concrete.
+[01:20:06] How much more than chinchilla optimal are models over trained?
+[01:20:10] And has that changed as a result of RL generation?
+[01:20:12] This is a place where we have to do a bit of guesswork because the updated scaling laws
+[01:20:17] and the model traffic are not reported.
+[01:20:20] And so we have to guess there.
+[01:20:21] But one way to look at it, let me first just make a sort of a general heuristic claim.
+[01:20:33] If I have some cost and I've got a total cost, which is a sum of cost A and cost B, like
+[01:20:42] maybe this is the training cost and this is the inference cost.
+[01:20:44] And so I want to minimize this sum.
+[01:20:47] For many curves that tend up being the case, the minimum tends to be where the costs are
+[01:20:56] equalized.
+[01:20:56] That's something of a heuristic claim, but there are many examples where it's true, like
+[01:21:03] where one is one over X and the other one is X, for example.
+[01:21:07] They tend to be minimized at the point where they equal each other.
+[01:21:11] It's also true for each of the X and each of the minus X and all kinds of other things.
+[01:21:19] So basically I've got some curve that's going down, some other curve that's going up,
+[01:21:24] and they tend to be minimized up at this equal point.
+[01:21:30] Heuristically, I will conjecture that that is true for the setup you described as well.
+[01:21:37] Actually showing that that would be true would require looking at the scaling laws
+[01:21:40] and fitting these weird exponents, but things that do follow power laws tend to have this
+[01:21:48] property.
+[01:21:48] So I'll just make that claim and move on.
+[01:21:51] So we're going to say that the cost of training plus the cost of inference, we want to equalize
+[01:21:59] these.
+[01:22:03] We'll do pre-training only first because it's a little...
+[01:22:05] Well, actually we can do all of it in general, so actually we'll cost of those.
+[01:22:09] Cost of pre-training, so number of active params times the data on pre-training.
+[01:22:21] So that's the cost of pre-training.
+[01:22:22] There's a factor of six out here, which is the number of flops.
+[01:22:26] There's the famous 6ND formula.
+[01:22:29] And then in RL, we have approximately the same thing.
+[01:22:33] We've got the same number of active parameters, but now the amount of data is
+[01:22:39] the RL data.
+[01:22:40] There's this extra efficiency multiplier, or inefficiency, like the inefficiency.
+[01:22:51] Which is the fact that you're not training on all your rollouts.
+[01:22:55] Well, yeah, there's that.
+[01:22:57] And then the other, perhaps even bigger inefficiency is that
+[01:23:02] this involves a substantial amount of decode, and often decode runs at less MFU than training.
+[01:23:09] So if you're doing a backward pass on every single generation in RL, it would be 6ND.
+[01:23:15] So this could be a smaller number, right?
+[01:23:16] This could be somewhere.
+[01:23:19] It would at least be two.
+[01:23:20] Yeah, somewhere in the range of two to six.
+[01:23:22] So we'll say somewhere in the range of two to six.
+[01:23:24] And then we can add in the inference cost.
+[01:23:29] The inference cost is two number of active times the data in inference.
+[01:23:36] And so I think the way I said it was super garbled, just for the audience, maybe.
+[01:23:43] Forward plus backwards per parameter is six.
+[01:23:47] Forward alone is two.
+[01:23:49] That's why RL where you might, you're definitely going to generate all the trajectories,
+[01:23:53] but you might or might not train on all the trajectories is two to six.
+[01:23:55] Yes.
+[01:23:56] Yeah.
+[01:23:56] Thank you.
+[01:23:57] And then inference is just two.
+[01:23:59] So we're going to solve for essentially maybe a quality of all three of these terms.
+[01:24:04] That is bullpuck where people are going to be.
+[01:24:06] Like labs have more information on what is productive in doing more RL, for example,
+[01:24:12] than versus doing more pre-training.
+[01:24:14] I don't have that information, but I think a good bullpuck is 33% split between each of them.
+[01:24:20] Actually, I'm not sure there's any intuition for that.
+[01:24:24] Another naive model could have been that RL plus pre-training would be 50%.
+[01:24:28] And inference would be 50%.
+[01:24:30] That's also a valid answer as well.
+[01:24:32] The, because this is heuristic, I can't really argue for one versus the other.
+[01:24:36] They don't differ by that much.
+[01:24:37] Like 33 versus 25 is on the ASMR trough.
+[01:24:44] So let's pick one of them.
+[01:24:47] All equal seems simple enough.
+[01:24:52] And so we're just going to solve for equality of them.
+[01:24:53] It's pretty straightforward.
+[01:24:54] We can immediately see that the number of activated parameters totally disappears.
+[01:24:57] And so let's factor that out.
+[01:24:58] And we're going to just say that data in pre-training.
+[01:25:04] I decided to do it your way.
+[01:25:05] It's a little bit nicer actually.
+[01:25:06] So data in pre-training plus this.
+[01:25:12] Oh, I didn't have the inefficiency over here.
+[01:25:14] I had an inefficiency.
+[01:25:17] Data in pre-training plus some multiple of like alpha times the data in RL
+[01:25:25] is just going to be and up equal to the some beta times the data in inference.
+[01:25:36] So, and then let's just roughly size the alpha.
+[01:25:40] This alpha, it's going to be, this is like the,
+[01:25:46] it's maybe somewhere in the range of two to six.
+[01:25:49] Two to six over six from this term compared to this term.
+[01:25:54] And then we've got an inefficiency term,
+[01:25:55] which I would say is maybe in the range of like 30%.
+[01:25:58] It's something like that.
+[01:26:00] So this alpha is going to be something like one and 10.
+[01:26:06] One over 10.
+[01:26:09] Then this beta here is actually the same.
+[01:26:11] It's a third.
+[01:26:12] It's one third times 33, 30%.
+[01:26:15] So it's also equals one and 10.
+[01:26:18] Something like that.
+[01:26:18] If both of them are one and 10, that kind of implies that there's never a backward pass on RL.
+[01:26:24] Yeah, okay.
+[01:26:25] We can make this like two and 10.
+[01:26:26] Make it a bit bigger.
+[01:26:27] Yeah.
+[01:26:28] So yeah, like just write it out once more.
+[01:26:31] Like this is two over 10.
+[01:26:33] This is one over 10.
+[01:26:35] So the number of inference tokens you have,
+[01:26:38] and this is just a function of like I've got hundreds of millions of tokens per second
+[01:26:43] times my model is deployed for, I don't know,
+[01:26:46] two months before I shift to the next version.
+[01:26:50] That should determine the number of tokens in RL and pre-training.
+[01:26:58] And then I guess we didn't do the equivalence between pre-training and RL.
+[01:27:01] So we'll do that here.
+[01:27:02] Data pre-training should be equal to like two over 10 times data in RL.
+[01:27:06] We want them to be cost equivalent.
+[01:27:09] So sorry, this one over, I got it backwards.
+[01:27:15] Like we pay more cost when it's inefficient.
+[01:27:18] So this needs to be one over.
+[01:27:23] So this tracing this backward.
+[01:27:25] Oh, five X.
+[01:27:28] This thing ends up actually being as written here.
+[01:27:30] It's like, yeah, so this is like 1.5 and this is one.
+[01:27:37] Billions of dollars of the compute just flowed the other direction.
+[01:27:40] Yeah, right.
+[01:27:40] I think if you do it with a spreadsheet and actually model it out,
+[01:27:45] you might notice when the money's going down the drain.
+[01:27:50] So I think all of these end up being close as modeled here.
+[01:27:54] This 30% may have been a little bit too generous.
+[01:27:57] So let's say something like 1.5 here and leave this as a one here.
+[01:28:04] At this point, you can almost read it off.
+[01:28:05] The number of inference tokens should be about the same as the number of pre-training tokens
+[01:28:09] should be about the same as the number of RL tokens within
+[01:28:12] like factors that we're not able to reason about.
+[01:28:15] But then it looks that sort of making a basic algebra mistake.
+[01:28:18] It sounds seems like there should be less RL tokens than pre-training tokens.
+[01:28:21] Yes, that's in general, right?
+[01:28:23] Because RL is less efficient in terms of machine time.
+[01:28:27] And so if you're trying to equalize the RL and pre-training time,
+[01:28:34] then you should have fewer tokens in order to have the same wall time.
+[01:28:36] This is quite interesting that I never thought about it in terms of how much equalizing in terms of data.
+[01:28:44] I think starting with equalizing in cost is right, but depending on how you model the cost,
+[01:28:49] this becomes close to equalizing in data.
+[01:28:51] That if every single user who uses, basically if you for GPT to be trained optimally,
+[01:28:57] every single user who uses GPT-5, the total amount of tokens that they stream
+[01:29:01] should equal the total amount that have gone into pre-training.
+[01:29:03] Yeah.
+[01:29:05] And the total amount of tokens that have gone into pre-training is the sum of all human knowledge.
+[01:29:09] So each model should generate the sum of human knowledge on the output that it gets on the input.
+[01:29:16] Which way are people going to err?
+[01:29:19] If you think that people's power of prediction is not perfect, and also you run the risk that you
+[01:29:26] make a model that is not a frontier model, and then you just throw it away, then that kind of
+[01:29:32] changes the trade-off because there's some probability that applies to the inference,
+[01:29:37] and you should derate the inference tokens by some amount.
+[01:29:39] Right. And then can we back out how much more compute than should be optimal for a given sized
+[01:29:48] model?
+[01:29:49] So I think we just have to make some real world assumptions here in order to do that.
+[01:29:55] So the inference tokens we should totally be able to count, right?
+[01:29:57] So let's say a few hundred million, I don't know, maybe it's like 500 million tokens a second now.
+[01:30:03] I don't really know. 500 million tokens a second times a model is deployed for
+[01:30:09] two months before it becomes obsolete. I don't really know.
+[01:30:14] I can't do this in my head. Can you type it into a computer?
+[01:30:21] 2.6 times 10 to the 15th.
+[01:30:24] Okay. 2.6 times 10 to the 15th.
+[01:30:27] Okay. This number is probably too large. Because this is going to be multiple models in a family.
+[01:30:36] Let's make it like five times smaller or 10 times smaller or something like that.
+[01:30:44] Okay. So we're estimating maybe 50 million tokens per second per specific model.
+[01:30:51] The model is live for two months. And so this comes out to around 200 trillion tokens.
+[01:31:00] And then we want to compare that to active parameters on a
+[01:31:03] frontier model. I don't actually know the latest rumors, but some...
+[01:31:09] Do you know?
+[01:31:10] Somebody told me 150 trillion.
+[01:31:12] Active parameters?
+[01:31:13] Sorry, I meant tokens.
+[01:31:15] Trained on 150 trillion tokens. Interesting.
+[01:31:17] Which is similar.
+[01:31:18] Yeah. That's actually similar. So data on pre-training.
+[01:31:22] This is not well cited, but...
+[01:31:23] You want me to not remove this?
+[01:31:26] And I think often active parameters, number of active parameters could be in the range of like
+[01:31:32] 100 billion something like that. Maybe a little larger.
+[01:31:38] So I'm assuming active parameters are about 100 billion. And so multiply by 20 to get the
+[01:31:42] token count. So chinchilla, dchinchilla would be around two trillion.
+[01:31:52] And yeah, and we see like we're at 100 times larger than that.
+[01:31:56] What does dchinchilla actually mean?
+[01:31:59] The token count for pre-training for the chinchilla scaling model would recommend, I guess.
+[01:32:05] Oh, I see. So how much is it over trained?
+[01:32:08] Got it.
+[01:32:09] The ratio of this 200 trillion or 100 trillion parameters over the chinchilla optimal of two
+[01:32:18] trillion. That's the amount it's over trained, which is like a factor of 100 over trained.
+[01:32:21] 100. That's what I mean.
+[01:32:23] Okay. So if you consider this right here, to the extent this is in the right ballpark,
+[01:32:27] just by thinking about, okay, you kind of want everything to be equal in terms of compute.
+[01:32:33] Here's if that OpenAI also realizes that and they're serving a certain amount of tokens per
+[01:32:38] second, that tells you how much data went into the pre-training of GBD5. Even if it's like 50%
+[01:32:45] off or something, that is sort of wild that you can sort of first principles these kinds of numbers.
+[01:32:51] This is why you should just approximate everywhere because there's so big error miles on this.
+[01:32:54] But yeah, it's kind of empowering to just set A equal to B and figure it out.
+[01:32:59] Yeah, yeah. That's super cool. Okay. So in the spirit of trying to deduce things,
+[01:33:04] we can publicly look up the prices of the APIs of these models. And maybe you can learn something
+[01:33:11] from that. So first, with a longer context, Gemini 3.1 is 50% more expensive if you go over 200k
+[01:33:24] tokens than if you're billed 200k tokens. I mean, at a high level, I understand why that might that
+[01:33:32] be. But why specifically 50%? Yeah. So I mean, why specifically 50%? Let's sort of,
+[01:33:40] so the high level, even in the first place is there is some amount of increasing cost with
+[01:33:47] context links. And we can bring that back up. That was the memory time versus the compute time.
+[01:33:57] So, okay, so we've put up the same equations from before of the time for memory fetches,
+[01:34:03] which is the weights and the KB cache. And then the time for the compute, which is just the
+[01:34:09] matrix multiplication for the weights. I will also draw the cost curve.
+[01:34:22] But this time I'll do it as a function of context length instead of as a function of batch size.
+[01:34:27] So this is time over, yeah, just time. So this is the cost curve as a function of context length.
+[01:34:36] We'll draw the compute. The cost of the compute is actually constant as a function of context
+[01:34:40] length. There's no dependence here on context length. In reality, there is some dependence,
+[01:34:44] but it is very mild dependence, so we'll ignore it. So this is the time for the compute.
+[01:34:50] This one. And then we'll also draw the dependence of the memory fetch on context length. And this
+[01:35:03] starts at a large number for the weights and then grows gradually with the context length. So maybe
+[01:35:10] here and then grow gradually with context length. And so you take the maximum and you see there is
+[01:35:20] this inflection point here. So this is the costs that, for example, Gemini might be paying.
+[01:35:27] And then you think, how might you put a pricing structure on top of that?
+[01:35:32] You would like to ensure that no matter what the context length is, you are still profitable.
+[01:35:38] Interesting.
+[01:35:39] And so we've got a two tier pricing structure. Maybe we've got something that looks like this
+[01:35:42] up to some next context. Fascinating.
+[01:35:45] So I think it says something about, given that the bump is at 200k, it probably means that this is
+[01:35:51] somewhat aligned with this crossover point, maybe not exactly aligned with. Fascinating.
+[01:35:57] So we can actually probably even complete that calculation just to see where it lands out.
+[01:36:03] We can solve for the number of bytes per token if we sort of make some assumptions about the
+[01:36:08] number of active parameters. So solving for the number of bytes per token,
+[01:36:13] we're going to assume the point where we equalize the time of memory and the time of compute is at,
+[01:36:18] let's say, 200k tokens. So we equalize these two. We're also going to just assume that the
+[01:36:25] batch size is large enough that the memory time spent on weights is negligible. So we'll forget
+[01:36:32] about this and we'll focus on the actual memory time spent on KBcache. So that ends up saying,
+[01:36:39] copying this term over, batch times land context, times bytes per token over memory bandwidth
+[01:36:54] is going to be equal to number of activated parameters over our flops.
+[01:37:03] And then we're going to solve for bytes per token.
+[01:37:09] So batch size was missing here. It shows up here and then it cancels out by the time we get to here.
+[01:37:32] And I dropped the land context.
+[01:37:44] So we can plug in numbers. This number, this is the reciprocal of the number that we saw before.
+[01:37:49] Yeah, this is like 1 over 300, which is reasonably stable across many different hardware platforms.
+[01:37:57] We conjecturally said that maybe number of activated tokens is like 100 billion.
+[01:38:03] And length of the context we said was 200k.
+[01:38:09] Something is wrong here. The length of the context should be on the denominator, not the numerator.
+[01:38:12] 1667, make about one kilo, almost two kilobytes. That is plausible actually. So you said around
+[01:38:38] two kilobytes. So let's just do a sanity check for this, for what this could be.
+[01:38:48] There are two mechanisms that people do attention with a small number of bytes per token.
+[01:38:54] One is dense attention with a lot of reuse across layers. So Character AI has a blog post talking
+[01:39:01] about that, alternating long and short context. And like in the Character AI kind of model,
+[01:39:07] which also showed up in the Gemma models, the global context, which is really what we're talking
+[01:39:12] about here, global context, was shared across all the layers. And so to get this two kilobytes,
+[01:39:17] you could get that, for example, as a d-head of 128 is typical. And then like the number of bytes
+[01:39:27] is typically number of attention layers times two times d-head times number of queue heads.
+[01:39:48] So this is the number of unique contexts per layer. Do you share the context across many layers,
+[01:39:55] or do you use it only once? So in Character AI like models, this number is one. We said this is
+[01:40:04] 128. And this is a choice which typically ranges from one, sorry, this is kv-heads I meant.
+[01:40:16] There was written a head and a kv-head is that?
+[01:40:18] The kv-heads are the heads that are stored in memory, like store the contents of the
+[01:40:22] previous tokens. The queue heads are the retrieval heads there. They're only used temporarily and
+[01:40:29] they're used by the attending tokens. So in this order aggressive context, I've got kv-heads
+[01:40:35] associated with all of the context and then queue heads associated with this new token here.
+[01:40:39] But this had the 128?
+[01:40:41] Oh, this number is actually the same for, oh, so this d-head is the dimension of the vector.
+[01:40:48] I see.
+[01:40:50] And number of kv-heads is typically in the range of one to eight. So it is totally plausible to
+[01:40:57] get this by, for example, having eight kv-heads and a d-head of 128. That gives you exactly this
+[01:41:03] number. Or you could have fewer kv-heads but more layers. So this is one way to get there
+[01:41:10] via dense attention. There's also a way to get there via sparse attention where you
+[01:41:14] increase all of these numbers, but then you have a lot of sparsity term.
+[01:41:19] So yeah, I mean, I think this number is plausible if maybe a little bit small.
+[01:41:24] It's funny that they would leak so much information through their API pricing.
+[01:41:27] I mean, you are incentivized to price close to your costs because otherwise someone could
+[01:41:32] script you. Maybe we can learn something about the difference in input versus output prices.
+[01:41:37] Yeah. And what that tells us about decode versus pre-fill in these models.
+[01:41:43] And I think last I checked it's like 50% more expensive or something like that.
+[01:41:47] I don't remember. What I've seen in the past is like three or five times more expensive.
+[01:41:52] Let's say it's five times more expensive. Okay. This is the compute to process the next
+[01:41:58] token in decode. Suppose you're doing pre-fill, but you're not just processing
+[01:42:03] the most recent token. You're processing all the tokens in parallel. So I want to say
+[01:42:08] that it would be this times len pre-fill. Sure. Lens of the past in general. Yeah.
+[01:42:18] If we say like, if we can think of decode as being a past with one and then pre-fill being
+[01:42:23] a past with many. Okay. Yeah. Yeah. So maybe like pre-fix. Sure. Whatever. Okay. Memory.
+[01:42:30] So you're not storing the KV cache for the tokens that are the pre-fill tokens.
+[01:42:36] I think maybe, maybe sort of let's draw actually how pre-fill shows up here.
+[01:42:41] If I may clarify. So we do a bit of decode like this. Yeah. We may actually come back
+[01:42:47] and do more pre-fill. Like, like if you think this is a chat session, the user says something,
+[01:42:53] the AI generates response, and then the user says something else. Yeah. We pre-fill this.
+[01:42:56] So like, maybe this is the more common, like this is the general case rather than this.
+[01:43:01] In fact, this is like you read a file or something. Read a file or just like the AI is responding to
+[01:43:06] user input or tool call or anything that's not generated. Yeah. Okay. Okay. Suppose we're here.
+[01:43:13] So you will need to load basically the, you will have calculated all of this previously.
+[01:43:23] So just the KV of everything that came before.
+[01:43:25] But what is the memory cost of this? Well,
+[01:43:32] memory bandwidth cost of this. If you're doing flash attention, it would. Yeah. It's basically
+[01:43:38] temporary. It doesn't even go to main memory. Just ignore it. Okay. So then it would just be
+[01:43:43] everything that came before. So is it not just that then? Yeah. There's actually no adjustment
+[01:43:48] at all to the memory time. Okay. Great. Oh, it's a very trivial change.
+[01:43:52] Yeah. To accommodate. So this term is making it 5X more expensive. Now, why would that be?
+[01:43:59] Or what does that tell us about? What are we trying to learn here? What does that actually tell us?
+[01:44:04] What variable does it help us clamp? Well, the compute has presumably gotten five,
+[01:44:11] like the only thing that could have changed is the compute is 5X more expensive as a result.
+[01:44:15] So yeah, that has the time for one pass, but actually the amount of token that's being used
+[01:44:19] is that much larger. So I guess we want the cost per token in fact, or the time per token.
+[01:44:28] So I'm not sure I understood. This is for processing the next token and prefix.
+[01:44:36] Well, actually for processing the entire batch. So at this cost, we have processed this many
+[01:44:43] tokens like LEN or PREFILL. Yeah. Well, I guess PREFILL, yeah, like all the paths.
+[01:44:50] Not this prefix, but it's this cost. Okay. Let's just use the paths.
+[01:45:00] This is 5X more expensive. Input is 5X more expensive. No, output is more expensive.
+[01:45:05] Output is 5X more expensive. So the result we want to work towards is that PREFILL is compute
+[01:45:12] limited and decode is memory bandwidth limited. Why don't we do this? Why don't we just chart it
+[01:45:19] with LEN paths on the X-axis? Yeah. T on the Y-axis. T, we want the cost per token. So it'll be T over
+[01:45:30] some stuff. T over length of the paths. Yeah, that'll be right.
+[01:45:38] Okay. So.
+[01:45:53] Okay. I guess what I'm confused about is the LEN paths is the, it seems like this should be higher
+[01:46:01] when you're doing PREFILL. PREFILL has a bigger length paths. Yeah. Right.
+[01:46:05] But then why is it cheaper? Why does it cost higher? Yeah. So, I mean, we're going to,
+[01:46:12] it's this division by length paths that actually makes it all. So, okay. Yeah. This is going to
+[01:46:18] divide out. This is going to divide out, but then we're going to get a divi, all of this is going to
+[01:46:22] divide by length of paths and it's going to make the memory costs cheaper. Okay. Yeah. Let me,
+[01:46:27] let me think about this then. Okay. So let's do one line for, basically we'll have four different
+[01:46:32] lines. Let's do the, let's do PREFILL first. And so, actually let's do decode first. Oh,
+[01:46:43] sorry. Actually, length of the paths, when it's one, that is decode. When it is bigger, that is
+[01:46:50] PREFILL. Okay. I see, I see, I see. That makes sense. Okay. Getting back to it. So T compute,
+[01:46:54] if you have, basically just this divided by length paths, you have a, you have a, you have a
+[01:47:00] basically just this divided by length paths is just this amount. So this actually does not vary
+[01:47:05] based on T. So it'll just be some flat value like this. And this is T compute.
+[01:47:18] And then this is like, this is, that's decode, decode. Right. Now, team M, if you have this
+[01:47:26] whole thing divided by length paths, well, it doesn't really matter what's up there.
+[01:47:30] It'll just be something that looks like this. Right. Yeah. Let's say this is T mem.
+[01:47:40] This is decode again. So as the length of the prefix goes up or pass, your memory bandwidth
+[01:47:54] time declines. And that means that to the extent that you were bottlenecked on memory bandwidth
+[01:48:01] before, you can avoid being bottlenecked on memory bandwidth. The fact that they are charging 5x less
+[01:48:09] for PREFILL than decode does suggest that they are bottlenecked on memory bandwidth
+[01:48:15] to quite a degree such that for them, at least, because T is equivalent to cost, right? It's the
+[01:48:20] cost of writing a compute. This is actually like, this would be at 1 and this would be at 5.
+[01:48:27] That's right. That's right. Yeah. So it is in fact, tremendously memory bandwidth bottlenecked.
+[01:48:33] The real graph looks something like, the real graph looks something like that.
+[01:48:40] Yeah. I mean, still crosses, but yeah. Yeah. Exactly. So yeah.
+[01:48:45] Yeah, that's right.
+[01:48:51] And then this is the gap on decode between the memory and the compute time. Yeah. Yeah.
+[01:49:00] Interesting. Another interesting one would be why cache hits are so much cheaper.
+[01:49:05] Yeah. Okay. So I think if I remember correctly, cache hits are like 10x. It's more expensive to
+[01:49:11] write to cache according to the pricing on all these models. But if you do hit a cache, it's 10x
+[01:49:18] cheaper. So what is going on with, presumably this is the cost of keeping something in HBM
+[01:49:29] rather than just evacuating it. But if you do keep it in HBM, then it's cheaper to load again.
+[01:49:34] Right. So there's two ways you can produce tokens or the KV cache for a token. You can just produce
+[01:49:42] it from scratch by computing it from the underlying token IDs, which are tiny. Or you can
+[01:49:50] previously have produced and stored it in a memory somewhere. So the cost ratio is really talking
+[01:49:56] about the ratio between those two mechanisms of producing it. A cache miss means you've deleted
+[01:50:01] it from all your memories and you have to recompute it from the tokens directly. In fact, you can
+[01:50:06] maybe even take that a step further and think about which memory tier do you store it in. So
+[01:50:11] you can store it in HBM. There are other slower and cheaper memories than HBM like
+[01:50:16] DDR on your host or Flash as well. And so one of the things you can do is a calculation of
+[01:50:25] where it makes sense to be in each memory tier. And this is related to how long you're going to
+[01:50:32] store for. So we wanted to look at the cost of storage in a few different memory tiers and also
+[01:50:37] the cost of rematerialization. So remat means the cost to rebuild all of the KV cache from scratch
+[01:50:47] having after you deleted it. So we rematerialize it. And so basically this is going to cost the
+[01:50:54] length of the context. Actually, we'll look at cost per token so that we don't need to carry
+[01:51:01] around this length of context everywhere. So to rematerialize one token of KV cache,
+[01:51:09] I just need to run a forward pass on the whole model. And then so this is going to be the
+[01:51:17] compute time. I have to rerun the compute at whatever speed my GPU does it. And then I multiply
+[01:51:23] it by my GPU dollars per second. I was very extremely naive question. Why is there not a
+[01:51:31] quadratic term? Yeah, so there is a quadratic term in it shows up in the compute.
+[01:51:44] As an approximation, I chose to remove it. I'll just show you sort of quickly what that looks like.
+[01:51:51] It's because so you have the if you look at the cost per token or the number of flops per token,
+[01:52:00] there is the flops that are coming from doing the weight matrix multipliers as a function of
+[01:52:06] context length. And then there is the number of multipliers that comes from doing the KV cache,
+[01:52:12] which goes up linearly with the amount of stuff you attend to. The slope on this is so low that
+[01:52:19] when you draw it like this, it's very well approximated by a flat line. So you start to
+[01:52:24] notice the effect of the quadratic or the linear term up in the millions of tokens or so. So
+[01:52:30] just not super relevant. So what is the reason that there's no company which has over a million
+[01:52:35] token context length? If this is true? Yeah, so there are two costs of long context. One is
+[01:52:41] the memory bandwidth cost, which we've spent a lot of time analyzing. That's this thing.
+[01:52:46] And then the other one is the compute cost. The compute cost is almost always
+[01:52:50] and sort of actually forced by fundamental principles to be a much smaller slope than
+[01:52:59] the memory bandwidth cost. And so the primary thing that limits you to have really large contexts
+[01:53:05] are memory bandwidth and memory capacity, which is exactly this effect. And so there's this idea
+[01:53:11] that Dario said on the podcast and others have said, which is we don't need continual learning
+[01:53:16] for AGI in context learning is enough. And if you believe that, then you have to think that we had
+[01:53:21] to get to 100 million billion context length to have an employee that is the equivalent of working
+[01:53:27] with you for a month. Now, maybe that's no longer true as far as attention or something. Yeah, if
+[01:53:35] you think that then as some ML infrared thing would have to change to allow for 100 million,
+[01:53:41] like the memory bandwidth to allow for 100 million. Yeah. In context lengths. I mean,
+[01:53:45] sparse attention gives you a get out for sure because you get this square root, like gives you
+[01:53:51] a big improvement. But I think it's like, if you look at the history of context lengths of models,
+[01:54:04] from like earlier models like GPT-3, maybe to GPT-4, I don't remember when the transition
+[01:54:08] happened exactly. Like they shot up from like about 8K to 100K, 200K. And then for the last
+[01:54:15] year or two, they've all been hovering around there. I think that actually indicates that
+[01:54:20] that's sort of the reasonably balanced cost point and going massively beyond that would be cost
+[01:54:25] prohibitive. Not because of the compute cost because of the memory bandwidth cost. Yeah.
+[01:54:30] Yeah. Yeah. So I actually don't see a very good path to solving that. Like the
+[01:54:40] HBM is where it is. It's at where it is. It's not getting hugely better.
+[01:54:45] And why doesn't sparse attention solve it? Sparse attention is a big improvement.
+[01:54:50] Maybe that is priced in already, perhaps. It's not an infinite improvement because if you go too
+[01:54:56] sparse, you lose too much quality. But yeah, I mean, the empirical result is that the context
+[01:55:01] lengths haven't been increasing that much. And I think it's because there is no solution to the
+[01:55:06] memory wall here. Like, so going too sparse just means like you're attending to a very small subset
+[01:55:12] of the tokens and the quality will get worse. So what is the cost of these different ways of producing,
+[01:55:21] resynthesizing the KV cache? Computing it from scratch is based on my GPU time. I have to do
+[01:55:25] a certain amount of multiplies in order to, of GPU time that I spend in order to produce it.
+[01:55:34] Storing HBM, this really goes as my, I think I had a number here, which was the bytes per token.
+[01:55:49] So I need to, I need to have some number of bytes per token. And then I need to store this in the
+[01:55:55] HBM. So it's going to use up some of my HBM capacity. So a way to think of this is that like,
+[01:56:03] if I have too many of these things sitting in my HBM, like if I fill up my HBM with just KV caches
+[01:56:09] that I'm not using, I can't use that GPU. And so how do I price that? Maybe I say that the cost of
+[01:56:14] it is proportional to the fraction of the HBM I'm using. So there's also times GPU dollars.
+[01:56:18] And then let's just do one more memory tier and say something like a DDR, storing DDR instead.
+[01:56:33] The same kind of thing goes up for flash and for DDR. I put these in the wrong columns, actually.
+[01:56:39] I meant to make two columns. The distinction I want to make is that there is the time to, cost
+[01:56:46] to retrieve. And then there's a cost, cost to store costs to hold, hold on. And so this is like,
+[01:56:59] there's a cost per second, whereas this is like an instantaneous cost. So rematerialization has
+[01:57:05] a cost to retrieve and has zero cost to store it because we've deleted it. This is the one that I
+[01:57:12] put in the wrong location. This is actually the cost to hold on, so I will rewrite it.
+[01:57:33] Okay. So we have, this is the, like if we're just storing it in HBM, it has this sort of cost profile.
+[01:57:42] And then if we store in DDR, it's actually going to take some time. So it's like,
+[01:57:47] we get the same thing here, bytes per token over a DDR capacity times DDR cost per second. But now
+[01:58:04] this has a cost to retrieve that is higher than the HBM because we need to copy it into the HBM.
+[01:58:09] So this is bytes per token over DDR bandwidth. And then this consumes some amount of the
+[01:58:23] DDR as well. And every scale up has DDR and flash? There's really a deployment question. And so you
+[01:58:29] can choose that. Nvidia does deploy in this form. It has both. Why isn't the cost to retrieve HBM
+[01:58:35] the memory bandwidth or the bytes divided by memory bandwidth? Yeah. I mean, it depends what
+[01:58:40] you define a retrieve to be here. I'm defining retrieve to be, move it into HBM so that you can
+[01:58:46] start actually doing inference on it. And so sort of by definition, because if it's already in HBM,
+[01:58:50] you can be doing compute while you're getting it from HBM. Yeah, for example. So these are
+[01:58:56] three things and I guess I ordered them wrong. In general, if you're balancing two costs and you've
+[01:59:01] got different memory, different tiers in the memory hierarchy, you should expect as this cost
+[01:59:07] goes up, this cost should go down. So you can kind of see where the zeros are. And like, I should
+[01:59:15] have ordered them. This one first, this one second, and this one third. So if you're going to hold on
+[01:59:23] for a very short amount of time, then all of this is like multiplied by the hold time.
+[01:59:31] This one is and so is this one.
+[01:59:38] Interestingly, they have different prices to write for. And as you specify this in the API,
+[01:59:45] for five minutes versus an hour. Yeah, right. Which suggests that the five minutes is HBM and the
+[01:59:49] hour is DDR. I think that's a pretty good assumption. If you look at the numbers,
+[01:59:55] it might also turn out that it's one tier down and it's DDR versus flash. Yeah, okay, interesting.
+[02:00:00] And the price difference, I think was I look it up. Okay, so the base
+[02:00:08] base input tokens is five per million tokens. Base, which means rebound. Yeah, that's five.
+[02:00:16] This is five. To like, retrieve, quote unquote. And then the to write to
+[02:00:30] presumably HBM, write for five minutes is 6.25. So actually, we might actually be able to determine
+[02:00:37] the which memory tier it is by the durations actually. The durations probably tells it to you.
+[02:00:45] Five minutes versus one hour. Yeah, exactly. I think this will probably end up being,
+[02:00:51] it's going to be the drain time of the memory tier that you're in. And so what that means is like,
+[02:00:55] like, given that I know I'm going to be holding something for five minutes, I would like to
+[02:01:04] have, pick a memory that I can read every five minutes. Like I can read the whole memory once
+[02:01:08] by five minutes ballpark. So that is the drain time of the memory. So if I take the, like,
+[02:01:13] the storage capacity over storage bandwidths, I would like this to be like equal to five minutes
+[02:01:22] or something like that. And so actually, we did this calculation for HBM. For HBM, we know that
+[02:01:28] this number is 20 milliseconds. So HBM is much too short, like much too small. DDR could be about
+[02:01:37] an order of magnitude or too off from this. And so this is probably in the order of like, actually,
+[02:01:42] I think it might even be in the seconds, like one to 10 seconds. And then this is really, I don't
+[02:01:50] have these numbers memorized. But generally, as you go to slower tiers, flash is plausibly in the
+[02:01:54] order of one minute. And then like spinning disk, which is massively different, I think is on the
+[02:02:00] order of one hour. So this might actually identify that the tiers are probably flash and spinning
+[02:02:05] disk. Sorry, why is this the calculations and the storage cap divided by the bandwidth?
+[02:02:10] So you've got a bunch of different memory tiers, like we've listed four of them.
+[02:02:14] And your choice of which memory tier is, like you want to minimize the cost. And so you are,
+[02:02:24] like what fraction of the device are you using? You're using some fraction of the device for the
+[02:02:29] holding onto it, and then you're using some fraction of the device to retrieve it. And so
+[02:02:36] let's say I'm using like 10% of the device, and I want to equalize those two fractions. That's
+[02:02:42] a sign that I've hit the right thing. So let's say I've got some runtime here, like I'm going
+[02:02:49] to hold on for all of this time. And then, so this is the time hold. And then there's going to be
+[02:02:58] some amount of time here, which is time retrieve. And I want, I mean, basically to equalize the
+[02:03:05] costs, these two costs, I want the retrieval time to be equal to the hold time
+[02:03:15] times the fraction of capacity. Because this is the retrieval time. Yeah, I mean, this is
+[02:03:27] how many other things I can hold simultaneously. Basically, just like, hey, you want to store
+[02:03:33] things in there for so long, such that the amount of time it's in there is kind of the time to get
+[02:03:40] all your things in there and out. Yeah, basically. I think that probably indicates that this is the
+[02:03:45] two tiers of flash and spinning disk. I'm kind of shocked to see spinning disk being used at all,
+[02:03:50] because it's such an old technology. Yeah. I mean, it's also crazy that it's so slow that
+[02:03:55] it takes an hour to load its full capacity into it. And like, it's a really unattractive technology,
+[02:03:59] but it's useful in some places. So we're sitting down because I want to ask you some questions
+[02:04:03] that I guess don't need a blackboard. You have this extremely interesting blog post where you
+[02:04:08] talk about how at a high level, the architecture of different cryptographic protocols looks a lot
+[02:04:15] like neural networks. And there's this conversion evolution where they both need to jumble
+[02:04:21] information across all their inputs for cryptographic protocols. It's to make sure that
+[02:04:25] there's like each new input into a hash function will totally scramble what happens
+[02:04:30] for neural networks. Of course, they need to consider how this piece of information changes
+[02:04:36] what you should make of this other piece of information. And that has an extremely
+[02:04:39] interesting point. I guess at a high level, the difference in what they're trying to do,
+[02:04:43] in some sense, they're trying to do the inverse thing, which is cryptographic protocols are trying
+[02:04:49] to take information which has structure and make it look indistinguishable from randomness.
+[02:04:55] And neural networks are trying to take things which are look like random protein sequences,
+[02:05:01] DNA, garbled text, and extract higher level structure from it. So they have similar high
+[02:05:09] level mechanisms, but they're actually kind of trying to do the opposite things.
+[02:05:12] Yeah, so I mean, like the mixing, like, I tried to look for other examples where mixing, like
+[02:05:21] scrambling mixing shows up as well. There's actually almost even like a physical example where,
+[02:05:26] like, you're stirring something, you're making a cake, and you want to stir the batter. And like,
+[02:05:30] literally the idea like first stir it this way, and then stir it this way is like actually not
+[02:05:34] too bad of an approach. But beyond that, like in back to the digital world,
+[02:05:38] there are some differences. And the one you call out is a pretty strong difference.
+[02:05:46] The way it shows up, like, what makes neural nets, like if you just randomly initialize a neural
+[02:05:54] network, actually, maybe it's a reasonable cryptography, like a cipher as well, because
+[02:05:58] like the random initialization is going to jumble stuff in a complicated way. It may even like do
+[02:06:02] what you want, who knows. The thing that makes it interoperable is the gradient descent. So you
+[02:06:08] can differentiate a neural network and get a meaningful derivative. And we do a lot of work to
+[02:06:16] like not over complicate the derivative. So the residual connection keeps it like contained and
+[02:06:21] simple. And so does like the layer norm stuff that we do. One of the biggest attacks against
+[02:06:30] cryptographic ciphers is also to differentiate the cipher. Ciphers run in a different number
+[02:06:36] field. They run in the field of two elements. So just binary, whereas neural nets run like in
+[02:06:44] theory in the field of real numbers. And so you have to differentiate with respect to like binary
+[02:06:49] numbers. But you can absolutely differentiate a cipher. And this is called differential crypt
+[02:06:57] analysis. And basically what it says is that if you take a small difference of the input, how
+[02:07:02] like it's quite difficult to make the difference of the output be small. Like the whole job of a
+[02:07:09] well-designed cipher is to make the difference in output pretty large. So I guess the distinction
+[02:07:14] is that the optimization goals at that point are about complexifying. They don't have the same
+[02:07:19] residual connections or like layer norms. Yeah. I mean, I guess a place where the two merge
+[02:07:27] is backdoors. Okay. So with a backdoor NLLM, you're trying to hide,
+[02:07:36] would you consider an input? It's not an input into the forward pass, or it's an input into
+[02:07:40] the backward pass, but you're trying to hide an input into the backward pass.
+[02:07:43] Like this is like an adversarial. Yeah. So yeah, I mean, in fact, this is like, this is actually
+[02:07:50] a place where you get exactly the sort of avalanche property that ciphers have as well.
+[02:07:58] Like adversarial attacks on typically like image classification models, right?
+[02:08:02] Or can I find a perturbation of the image that a very, very small perturbation of the image that
+[02:08:07] totally changes the classification, totally changes the output. That is the common case in
+[02:08:11] ciphers, whereas that's the like undesired case in neural nets for sure. Okay. So I was asking you,
+[02:08:19] has having neural networks actually been used for cryptography? And you realize it might be
+[02:08:24] better to just do this in the backward. Yeah. So I'm curious, are they actually being used for
+[02:08:28] cryptography? Yeah. So using neural nets for cryptography, well, in general, cryptography,
+[02:08:34] like creating a new cipher is a very, very dangerous proposition. Like almost all of them
+[02:08:38] are broken, like 99% of them are broken. So probably a bad place to start, but the other
+[02:08:44] direction has been very, like in at least one very clear case, quite productive. So there's
+[02:08:51] this construction in, so a construction that exists in ciphers and then was imported into
+[02:08:56] neural nets called a phystal cipher, phystal network. So the idea is that you may have some
+[02:09:03] function f, which is not invertible, but you like the function because it like does interesting
+[02:09:12] things. Like it does an MLP, for example, or it mixes in an interesting way. You'd like to
+[02:09:18] build something out of this that is invertible. So the construction we're going to make is going
+[02:09:21] to actually be a two input function rather than a one input function. And we're going to apply
+[02:09:31] f of x. We need to actually remember what x was. So we're going to stick x over here so that we can
+[02:09:40] work backwards. And then we also can't drop y. So we're going to remember y
+[02:09:44] and we're going to add them together. And so we form this top.
+[02:09:49] So the way to invert this, like if you think I have this out porch and I want to recover x and y,
+[02:09:55] well, I can easily recover x. That's right there. I just read it off. And then to recover y,
+[02:09:59] I like if this thing was called z, I can recover y by z minus f of x because I've already recovered
+[02:10:08] x. So that means that this construction is invertible. This was used in ciphers like a ton.
+[02:10:17] Still is used. It's one of the main mechanisms of constructing ciphers. Often you want ciphers to be
+[02:10:21] invertible, especially the layers of ciphers you want to be invertible because that has been
+[02:10:26] her cryptographic properties. This is actually being plotted over into neural nets. There's a
+[02:10:36] 2017-18 paper called Rev Nets, Reversible Networks. And what it does is it actually makes the entire,
+[02:10:44] like you can apply it to any network, like a transformer network. You can make, I do a
+[02:10:48] forwards pass, but then I can actually run the entire pass backwards as well. So the whole neural
+[02:10:52] network is invertible with exactly this construction. And so this paper, Reversible Networks,
+[02:11:00] apply it to some layer like a transformer layer, for example. We've got this function f, which is
+[02:11:04] our transformer layer. Now, normally we would have just an input and then a residual connection
+[02:11:11] coming out. And it gets added like this over here. But now the variation of this is going to be,
+[02:11:20] we've got two inputs, x and y. So we've got x and y inputs. x goes through the function, gets added
+[02:11:32] to y. And then this becomes the new x, the output x. And then this x becomes the output y.
+[02:11:49] So really what this is doing, this is like, this is actually sort of doing, if you think of two
+[02:11:54] layers back, this is actually the thing you mentioned before. It's actually doing the
+[02:11:58] residual connection from two layers back. Like this y came from the previous layer and was the
+[02:12:03] residual connection there. But because of this construction, the whole thing is invertible.
+[02:12:09] Why do I care? What does invertible matter for? The big thing that it can be interesting for is
+[02:12:14] for training. If I think of a forward passive training, so I will, let's say I have four layers,
+[02:12:20] I run them in the 0, 1, 2, 3 order. I have to write all of the activations to HBM.
+[02:12:28] And so I get an HBM footprint here that is kind of like linear in a number of layers.
+[02:12:39] So this actually can be the largest memory footprint during training. And so this is normal
+[02:12:45] training. And then I run the backwards pass and I read it kind of in reverse. Like I run them,
+[02:12:50] sort of forward pass goes forward, backward pass goes backwards. And I have to read them back out.
+[02:12:54] The idea of this Revenets paper is that because it's invertible, I don't need to store this at
+[02:13:02] all. I can completely rematerialize it when I'm running my backwards pass. So I run my forwards
+[02:13:06] pass and then when I'm running my backwards pass, I'm simultaneously in lockstep undoing all of the
+[02:13:12] forwards pass steps that I did in order to have the activations that I need here. So this ends up
+[02:13:18] being a memory saving, which is a nice idea. Interesting. And in some sense, you're spending
+[02:13:24] more compute to save memory. That's right. Interesting. Actually, it's kind of the opposite
+[02:13:28] of what you're doing with the KV cache. The KV cache, you're spending more memory to save compute.
+[02:13:33] Yeah. Spending more memory to save compute is generally profitable given where
+[02:13:38] hardware is out. Yeah, interesting. Cool. That was super fun. Thank you so much for doing it. I feel
+[02:13:43] like it really vindicated the vision behind the studio and the blackboard. Cool. Thanks so much
+[02:13:48] for doing it. Thanks.
