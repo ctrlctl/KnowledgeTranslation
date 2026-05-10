@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantifying Infrastructure Noise in Agentic Coding Evals：量化 Agentic 编码评估中的基础设施噪声</title>
+<style>
+body{background:#faf8f5;margin:0;padding:20px}
+.back{display:inline-block;font-size:13px;color:#a0220d;text-decoration:none;margin-bottom:16px;font-family:"Noto Serif SC",Georgia,serif}
+.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div style="max-width:578px;margin:0 auto;">
+<a class="back" href="index.html">← 返回索引</a>
+</div>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Quantifying Infrastructure Noise in Agentic Coding Evals：量化 Agentic 编码评估中的基础设施噪声</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a href="https://www.anthropic.com/engineering/quantifying-infrastructure-noise-in-agentic-coding-evals" target="_blank" style="color:#a0220d;font-weight:bold;text-decoration:none;">Quantifying infrastructure noise in agentic coding evals</a> 来源：Anthropic Engineering | 2026-02-05 作者：Anthropic</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-0" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">目录</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-1" style="color:#a0220d;font-weight:bold;text-decoration:none;">核心发现</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-2" style="color:#a0220d;font-weight:bold;text-decoration:none;">为什么 Agentic 评估不同于静态评估</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-3" style="color:#a0220d;font-weight:bold;text-decoration:none;">实验设计</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-4" style="color:#a0220d;font-weight:bold;text-decoration:none;">关键变量及其影响</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-5" style="color:#a0220d;font-weight:bold;text-decoration:none;">对排行榜的影响</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-6" style="color:#a0220d;font-weight:bold;text-decoration:none;">建议</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-1" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心发现</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">基础设施配置可以使 agentic 编码基准测试波动数个百分点——有时<strong style="color:#a0220d;font-weight:bold;">超过排行榜上顶级模型之间的差距</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在内部实验中，Terminal-Bench 2.0 上资源最多和最少的配置之间差距为 <strong style="color:#a0220d;font-weight:bold;">6 个百分点</strong>（p < 0.01）。这意味着：如果模型 A 在配置 X 上得分 72%，模型 B 在配置 Y 上得分 68%，你无法确定 A 真的比 B 好——差距可能完全由基础设施差异解释。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-2" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么 Agentic 评估不同于静态评估</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">静态基准测试</strong>（如 MMLU、HumanEval）直接评分模型输出——给一个 prompt，检查 response。运行时环境不影响结果。模型要么知道答案，要么不知道。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Agentic 编码评估</strong>根本不同：模型被给予一个完整环境，在其中编写程序、运行测试、安装依赖、多轮迭代。运行时不再是被动容器，而是<strong style="color:#a0220d;font-weight:bold;">问题解决过程的组成部分</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这个区别至关重要：两个资源预算和时间限制不同的 agent <strong style="color:#a0220d;font-weight:bold;">不是在做同一份考试</strong>。一个有 16 核 CPU 和 30 分钟超时的 agent，与一个有 2 核 CPU 和 5 分钟超时的 agent，面对的是本质不同的任务——前者可以尝试更多策略、运行更多测试、编译更快。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-3" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">实验设计</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了量化基础设施噪声，我们在 Terminal-Bench 2.0 上用同一个模型（控制变量）运行多组实验，每组只改变一个基础设施参数。每个配置运行足够多次以获得统计显著性。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们测试的变量包括：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">CPU 核数和 RAM 大小</li><li style="margin-bottom:0.5em;line-height:2;">执行时间限制</li><li style="margin-bottom:0.5em;line-height:2;">网络访问权限</li><li style="margin-bottom:0.5em;line-height:2;">磁盘 I/O 速度</li><li style="margin-bottom:0.5em;line-height:2;">容器启动状态（冷启动 vs 热缓存）</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-4" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">关键变量及其影响</h2>
+<h3 id="s-100" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">CPU 和 RAM</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">更多资源 = 更快的编译和测试 = 在相同时间限制内更多迭代机会。对于需要编译大型项目的任务（如 C++ 代码库），CPU 差异的影响尤为显著。一个需要 3 分钟编译的项目，在 2 核机器上可能只允许 agent 尝试 2 次，而在 16 核机器上可以尝试 8 次。</p>
+<h3 id="s-101" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">时间限制</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">更长的超时让 agent 可以尝试更多策略。我们观察到一个有趣的模式：<strong style="color:#a0220d;font-weight:bold;">agent 的成功率不是随时间线性增长的</strong>。很多任务要么在前几分钟解决，要么需要大量额外时间来尝试不同方法。这意味着时间限制的选择会不成比例地影响某些类型的任务。</p>
+<h3 id="s-102" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">网络访问</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">能否安装额外依赖直接影响解题策略。一些任务如果 agent 可以 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">pip install</code> 一个特定库就变得简单，但在离线环境中需要从头实现。这不是在测量模型能力的差异，而是在测量环境约束的差异。</p>
+<h3 id="s-103" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">磁盘 I/O</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">影响大型项目的构建速度和日志读取速度。在 I/O 密集型任务上，SSD vs HDD 的差异可以改变 agent 的有效迭代次数。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-5" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">对排行榜的影响</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些发现对公开基准排行榜有严重影响：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">几个百分点的差距可能完全由基础设施差异解释</strong>。当排行榜上前三名模型的差距在 2-3% 时，如果它们使用了不同的基础设施配置，排名可能毫无意义。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2. <strong style="color:#a0220d;font-weight:bold;">不同提交者可能使用不同配置</strong>。即使基准测试规定了"推荐配置"，实际执行中的差异（云提供商、实例类型、网络条件）仍然引入噪声。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">3. <strong style="color:#a0220d;font-weight:bold;">同一模型在不同日期的得分可能不同</strong>。如果评估基础设施有波动（共享资源、网络拥塞），即使模型没变，分数也会变。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-6" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">建议</h2>
+<h3 id="s-104" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">对基准测试设计者</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">标准化并强制执行基础设施配置</strong>——不仅指定资源，还要强制执行。使用容器化确保一致性。 2. <strong style="color:#a0220d;font-weight:bold;">报告基础设施配置细节</strong>——CPU、RAM、超时、网络访问、磁盘类型都应该是评估报告的一部分。 3. <strong style="color:#a0220d;font-weight:bold;">量化你自己的基础设施噪声</strong>——在发布基准之前，用同一模型在不同配置上运行，报告方差。 4. <strong style="color:#a0220d;font-weight:bold;">考虑归一化</strong>——如果可能，将分数归一化到标准配置，或报告置信区间。</p>
+<h3 id="s-105" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">对基准测试消费者</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">谨慎解读小差距</strong>——如果两个模型差距在基础设施噪声范围内，它们可能实际上没有区别。 2. <strong style="color:#a0220d;font-weight:bold;">关注趋势而非绝对值</strong>——同一配置上的相对变化比跨配置的绝对分数更有意义。 3. <strong style="color:#a0220d;font-weight:bold;">要求透明度</strong>——如果排行榜不报告基础设施配置，其结果的可信度应该打折扣。</p>
+<h3 id="s-106" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">更深层的问题</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">强制方法论本身会改变基准测试实际测量的内容。</strong> 如果你限制 CPU 到 2 核来"公平"，你实际上在测量"在资源受限环境中的表现"——这可能不是你想测量的。如果你给无限资源，你在测量"给定无限重试的最终能力"——这也可能不是你想测量的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">没有"正确"的配置——只有明确你在测量什么，并确保所有参与者在相同条件下被测量。</p>
+</section></body>
+</html>

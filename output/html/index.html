@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>知识翻译 · 文章索引</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Serif SC","Source Han Serif CN",Georgia,serif;background:#faf8f5;color:#2c2c2c;padding:20px;max-width:800px;margin:0 auto}
+h1{font-size:22px;margin-bottom:16px;border-bottom:1px solid #ddd;padding-bottom:12px}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+select{font-size:14px;padding:6px 12px;border:1px solid #ccc;border-radius:4px;background:#fff;font-family:inherit}
+.count{font-size:13px;color:#888;margin-bottom:16px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{padding:12px 16px;background:#fff;border:1px solid #eee;border-radius:6px;text-decoration:none;color:#2c2c2c;transition:border-color .2s}
+.item:hover{border-color:#a0220d}
+.item-title{font-size:15px;font-weight:bold;color:#1a1a1a}
+.item-meta{font-size:12px;color:#888;margin-top:4px}
+.item-meta span{margin-right:12px}
+.tag{display:inline-block;font-size:11px;background:#f0ebe4;color:#6b5b4f;padding:2px 6px;border-radius:3px;margin-right:4px}
+</style>
+</head>
+<body>
+<h1>知识翻译 · 文章索引</h1>
+<div class="filters">
+<select id="pub"><option value="">全部来源</option></select>
+<select id="topic"><option value="">全部主题</option></select>
+</div>
+<div class="count" id="count"></div>
+<div class="list" id="list"></div>
+<script>
+const articles=[
+{p:"AnthropicEngineering",d:"20241219",t:"构建有效的Agent",tp:["Agents"],f:"AnthropicEngineering_20241219_构建有效的Agent.html"},
+{p:"AnthropicEngineering",d:"20250320",t:"Think工具-让Claude在复杂工具使用中停下来思考",tp:["Tooling & Infra"],f:"AnthropicEngineering_20250320_Think工具-让Claude在复杂工具使用中停下来思考.html"},
+{p:"AnthropicEngineering",d:"20250613",t:"构建Multi-Agent研究系统",tp:["Agents"],f:"AnthropicEngineering_20250613_构建Multi-Agent研究系统.html"},
+{p:"AnthropicEngineering",d:"20250911",t:"用Agent为Agent编写有效工具",tp:["Agents","Tooling & Infra"],f:"AnthropicEngineering_20250911_用Agent为Agent编写有效工具.html"},
+{p:"AnthropicEngineering",d:"20250917",t:"三个近期问题的事后分析",tp:["Other"],f:"AnthropicEngineering_20250917_三个近期问题的事后分析.html"},
+{p:"AnthropicEngineering",d:"20250929",t:"AI-Agent的有效上下文工程",tp:["Agents"],f:"AnthropicEngineering_20250929_AI-Agent的有效上下文工程.html"},
+{p:"AnthropicEngineering",d:"20250929",t:"Claude-Code-Agentic编码最佳实践",tp:["Agents","Coding"],f:"AnthropicEngineering_20250929_Claude-Code-Agentic编码最佳实践.html"},
+{p:"AnthropicEngineering",d:"20251016",t:"用Agent-Skills装备Agent应对真实世界",tp:["Agents"],f:"AnthropicEngineering_20251016_用Agent-Skills装备Agent应对真实世界.html"},
+{p:"AnthropicEngineering",d:"20251020",t:"超越权限弹窗-让Claude-Code更安全更自主",tp:["Coding","Alignment & Safety"],f:"AnthropicEngineering_20251020_超越权限弹窗-让Claude-Code更安全更自主.html"},
+{p:"AnthropicEngineering",d:"20251104",t:"用MCP实现代码执行-构建更高效的Agent",tp:["Agents","Coding","Tooling & Infra"],f:"AnthropicEngineering_20251104_用MCP实现代码执行-构建更高效的Agent.html"},
+{p:"AnthropicEngineering",d:"20251124",t:"Claude开发者平台的高级工具使用",tp:["Tooling & Infra"],f:"AnthropicEngineering_20251124_Claude开发者平台的高级工具使用.html"},
+{p:"AnthropicEngineering",d:"20251126",t:"长时间运行Agent的有效Harness",tp:["Agents","Tooling & Infra"],f:"AnthropicEngineering_20251126_长时间运行Agent的有效Harness.html"},
+{p:"AnthropicEngineering",d:"20260109",t:"揭秘AI-Agent评估",tp:["Agents","Evaluation"],f:"AnthropicEngineering_20260109_揭秘AI-Agent评估.html"},
+{p:"AnthropicEngineering",d:"20260121",t:"设计AI无法攻破的技术评估",tp:["Evaluation"],f:"AnthropicEngineering_20260121_设计AI无法攻破的技术评估.html"},
+{p:"AnthropicEngineering",d:"20260205",t:"用并行Claude团队构建C编译器",tp:["Coding"],f:"AnthropicEngineering_20260205_用并行Claude团队构建C编译器.html"},
+{p:"AnthropicEngineering",d:"20260205",t:"量化Agentic编码评估中的基础设施噪声",tp:["Agents","Coding","Evaluation"],f:"AnthropicEngineering_20260205_量化Agentic编码评估中的基础设施噪声.html"},
+{p:"AnthropicEngineering",d:"20260306",t:"Eval意识-Claude-Opus-4.6的BrowseComp表现",tp:["Evaluation"],f:"AnthropicEngineering_20260306_Eval意识-Claude-Opus-4.6的BrowseComp表现.html"},
+{p:"AnthropicEngineering",d:"20260324",t:"长时间运行应用开发的Harness设计",tp:["Tooling & Infra"],f:"AnthropicEngineering_20260324_长时间运行应用开发的Harness设计.html"},
+{p:"AnthropicEngineering",d:"20260325",t:"Claude-Code-Auto-Mode更安全地跳过权限",tp:["Coding","Alignment & Safety"],f:"AnthropicEngineering_20260325_Claude-Code-Auto-Mode更安全地跳过权限.html"},
+{p:"AnthropicEngineering",d:"20260408",t:"解耦大脑与双手-扩展托管Agent",tp:["Agents","Inference & Scaling"],f:"AnthropicEngineering_20260408_解耦大脑与双手-扩展托管Agent.html"},
+{p:"AnthropicEngineering",d:"20260423",t:"近期Claude-Code质量问题更新",tp:["Coding"],f:"AnthropicEngineering_20260423_近期Claude-Code质量问题更新.html"},
+{p:"AnthropicResearch",d:"20260409",t:"可信赖Agent的实践",tp:["Agents","Alignment & Safety"],f:"AnthropicResearch_20260409_可信赖Agent的实践.html"},
+{p:"AnthropicResearch",d:"20260508",t:"教Claude为什么-减少Agentic错位",tp:["Agents","Alignment & Safety"],f:"AnthropicResearch_20260508_教Claude为什么-减少Agentic错位.html"},
+{p:"Dwarkesh",d:"20260510",t:"LLM训练与推理背后的数学",tp:["Training","Inference & Scaling","LLM Fundamentals"],f:"Dwarkesh_20260510_LLM训练与推理背后的数学.html"},
+{p:"LangChainBlog",d:"20260310",t:"Agent-Harness解剖学",tp:["Agents","Tooling & Infra"],f:"LangChainBlog_20260310_Agent-Harness解剖学.html"},
+{p:"LangChainBlog",d:"20260401",t:"Agent可观测性需要反馈来驱动学习",tp:["Agents"],f:"LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习.html"},
+{p:"LangChainBlog",d:"20260409",t:"Agent改进循环中的人类判断",tp:["Agents"],f:"LangChainBlog_20260409_Agent改进循环中的人类判断.html"},
+{p:"LangChainBlog",d:"20260411",t:"你的Harness就是你的记忆",tp:["Tooling & Infra"],f:"LangChainBlog_20260411_你的Harness就是你的记忆.html"},
+{p:"LangChainBlog",d:"20260416",t:"在后台运行Subagent",tp:["Agents"],f:"LangChainBlog_20260416_在后台运行Subagent.html"},
+{p:"LangChainBlog",d:"20260420",t:"生产级Deep-Agent背后的运行时",tp:["Agents","Tooling & Infra"],f:"LangChainBlog_20260420_生产级Deep-Agent背后的运行时.html"},
+{p:"LangChainBlog",d:"20260430",t:"为不同模型调优深度Agent",tp:["Agents","LLM Fundamentals"],f:"LangChainBlog_20260430_为不同模型调优深度Agent.html"},
+{p:"LangChainBlog",d:"20260502",t:"用深度Agent构建公司尽调系统",tp:["Agents"],f:"LangChainBlog_20260502_用深度Agent构建公司尽调系统.html"},
+{p:"LexFridman",d:"20260510",t:"2026年AI现状",tp:["Industry & Trends"],f:"LexFridman_20260510_2026年AI现状.html"},
+{p:"LexFridman",d:"20260510",t:"OpenClaw-病毒式传播的AI-Agent",tp:["Agents","Open Source"],f:"LexFridman_20260510_OpenClaw-病毒式传播的AI-Agent.html"},
+{p:"LilianWengBlog",d:"20230623",t:"LLM驱动的自主Agent",tp:["Agents","LLM Fundamentals"],f:"LilianWengBlog_20230623_LLM驱动的自主Agent.html"},
+{p:"LilianWengBlog",d:"20240707",t:"LLM的外在幻觉",tp:["LLM Fundamentals"],f:"LilianWengBlog_20240707_LLM的外在幻觉.html"},
+{p:"LilianWengBlog",d:"20250501",t:"我们为什么思考",tp:["Other"],f:"LilianWengBlog_20250501_我们为什么思考.html"},
+{p:"MLST",d:"20251218",t:"重新思考Agentic-AI的预训练",tp:["Agents","Training"],f:"MLST_20251218_重新思考Agentic-AI的预训练.html"},
+{p:"MLST",d:"20260311",t:"Agent-Swarm与知识图谱驱动自主软件开发",tp:["Agents"],f:"MLST_20260311_Agent-Swarm与知识图谱驱动自主软件开发.html"},
+{p:"MLST",d:"20260417",t:"Capital-One如何交付Multi-Agent系统",tp:["Agents"],f:"MLST_20260417_Capital-One如何交付Multi-Agent系统.html"},
+{p:"MLST",d:"20260510",t:"AI-Trends-2026-OpenClaw-Agents",tp:["Agents","Open Source","Industry & Trends"],f:"MLST_20260510_AI-Trends-2026-OpenClaw-Agents.html"},
+{p:"MLST",d:"20260528",t:"如何构建AI推理系统",tp:["Inference & Scaling"],f:"MLST_20260528_如何构建AI推理系统.html"},
+{p:"NoPriors",d:"20260505",t:"Karpathy谈Code-Agent与AutoResearch",tp:["Agents","Coding"],f:"NoPriors_20260505_Karpathy谈Code-Agent与AutoResearch.html"},
+{p:"NoPriors",d:"20260510",t:"Baseten-CEO谈AI推理瓶颈",tp:["Inference & Scaling","Industry & Trends"],f:"NoPriors_20260510_Baseten-CEO谈AI推理瓶颈.html"},
+{p:"NoPriors",d:"20260510",t:"从程序员到管理者-Notion的Agentic转型",tp:["Agents"],f:"NoPriors_20260510_从程序员到管理者-Notion的Agentic转型.html"},
+{p:"OpenAIAlignment",d:"20251201",t:"大规模代码验证的实用方法",tp:["Coding"],f:"OpenAIAlignment_20251201_大规模代码验证的实用方法.html"},
+{p:"OpenAIAlignment",d:"20251218",t:"绕过Eval意识与预测错位",tp:["Evaluation","Alignment & Safety"],f:"OpenAIAlignment_20251218_绕过Eval意识与预测错位.html"},
+{p:"OpenAIAlignment",d:"20260206",t:"发现真实使用中的未知AI错位",tp:["Alignment & Safety"],f:"OpenAIAlignment_20260206_发现真实使用中的未知AI错位.html"},
+{p:"OpenAIAlignment",d:"20260301",t:"如何监控内部编码Agent的错位",tp:["Agents","Coding","Alignment & Safety"],f:"OpenAIAlignment_20260301_如何监控内部编码Agent的错位.html"},
+{p:"OpenAIAlignment",d:"20260316",t:"Metagaming对训练评估和监督的影响",tp:["Evaluation","Training","Open Source"],f:"OpenAIAlignment_20260316_Metagaming对训练评估和监督的影响.html"},
+{p:"OpenAIAlignment",d:"20260321",t:"训练Agent自我报告不当行为",tp:["Agents","Training"],f:"OpenAIAlignment_20260321_训练Agent自我报告不当行为.html"},
+{p:"OpenAIAlignment",d:"20260327",t:"对齐中训练能泛化多远",tp:["Alignment & Safety","Training"],f:"OpenAIAlignment_20260327_对齐中训练能泛化多远.html"},
+{p:"OpenAIAlignment",d:"20260423",t:"开源可监控性评估",tp:["Evaluation","Alignment & Safety","Open Source"],f:"OpenAIAlignment_20260423_开源可监控性评估.html"},
+{p:"OpenAIAlignment",d:"20260430",t:"无需同步人类监督的Agent行为自动审查",tp:["Agents"],f:"OpenAIAlignment_20260430_无需同步人类监督的Agent行为自动审查.html"},
+{p:"OpenAIAlignment",d:"20260507",t:"调查RL中意外评分CoT的后果",tp:["Training"],f:"OpenAIAlignment_20260507_调查RL中意外评分CoT的后果.html"},
+{p:"OpenAIDevelopers",d:"20260211",t:"Shell-Skills-Compaction长时间运行Agent技巧",tp:["Agents"],f:"OpenAIDevelopers_20260211_Shell-Skills-Compaction长时间运行Agent技巧.html"},
+{p:"OpenAIDevelopers",d:"20260223",t:"用Codex运行长周期任务",tp:["Coding"],f:"OpenAIDevelopers_20260223_用Codex运行长周期任务.html"},
+{p:"OpenAIDevelopers",d:"20260301",t:"用Eval系统化测试Agent技能",tp:["Agents","Evaluation"],f:"OpenAIDevelopers_20260301_用Eval系统化测试Agent技能.html"},
+{p:"OpenAIDevelopers",d:"20260430",t:"用Skills加速开源维护",tp:["Open Source"],f:"OpenAIDevelopers_20260430_用Skills加速开源维护.html"},
+{p:"PracticalAI",d:"20260510",t:"AI事故-审计与Benchmark的局限",tp:["Evaluation"],f:"PracticalAI_20260510_AI事故-审计与Benchmark的局限.html"},
+{p:"SimonWillison",d:"20260506",t:"Vibe-Coding与Agentic-Engineering正在趋同",tp:["Agents","Coding"],f:"SimonWillison_20260506_Vibe-Coding与Agentic-Engineering正在趋同.html"},
+{p:"SimonWillison",d:"20260508",t:"用Claude-Code-HTML的不合理有效性",tp:["Coding"],f:"SimonWillison_20260508_用Claude-Code-HTML的不合理有效性.html"},
+{p:"TWIML",d:"20260503",t:"如何发现Eval遗漏的Agent失败",tp:["Agents","Evaluation"],f:"TWIML_20260503_如何发现Eval遗漏的Agent失败.html"},
+].sort((a,b)=>b.d.localeCompare(a.d));
+
+const pubNames={"AnthropicEngineering":"Anthropic Engineering","AnthropicResearch":"Anthropic Research","Dwarkesh":"Dwarkesh Podcast","LangChainBlog":"LangChain Blog","LexFridman":"Lex Fridman","LilianWengBlog":"Lilian Weng Blog","MLST":"ML Street Talk","NoPriors":"No Priors","OpenAIAlignment":"OpenAI Alignment","OpenAIDevelopers":"OpenAI Developers","PracticalAI":"Practical AI","SimonWillison":"Simon Willison","TWIML":"TWIML"};
+
+const pubs=[...new Set(articles.map(a=>a.p))].sort();
+const topics=[...new Set(articles.flatMap(a=>a.tp))].sort();
+const pubSel=document.getElementById('pub');
+const topicSel=document.getElementById('topic');
+pubs.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=pubNames[p]||p;pubSel.appendChild(o)});
+topics.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;topicSel.appendChild(o)});
+
+function render(){
+  const p=pubSel.value,t=topicSel.value;
+  const filtered=articles.filter(a=>(!p||a.p===p)&&(!t||a.tp.includes(t)));
+  document.getElementById('count').textContent=`共 ${filtered.length} 篇`;
+  document.getElementById('list').innerHTML=filtered.map(a=>{
+    const dateStr=a.d.slice(0,4)+'-'+a.d.slice(4,6)+'-'+a.d.slice(6,8);
+    const tags=a.tp.map(x=>`<span class="tag">${x}</span>`).join('');
+    return `<a class="item" href="${a.f}"><div class="item-title">${a.t}</div><div class="item-meta"><span>${pubNames[a.p]||a.p}</span><span>${dateStr}</span>${tags}</div></a>`;
+  }).join('');
+}
+pubSel.onchange=topicSel.onchange=render;
+render();
+</script>
+</body>
+</html>

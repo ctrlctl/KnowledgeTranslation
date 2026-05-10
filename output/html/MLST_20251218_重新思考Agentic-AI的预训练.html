@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>重新思考 Agentic AI 的预训练</title>
+<style>
+body{background:#faf8f5;margin:0;padding:20px}
+.back{display:inline-block;font-size:13px;color:#a0220d;text-decoration:none;margin-bottom:16px;font-family:"Noto Serif SC",Georgia,serif}
+.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div style="max-width:578px;margin:0 auto;">
+<a class="back" href="index.html">← 返回索引</a>
+</div>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">重新思考 Agentic AI 的预训练</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a href="https://twimlai.com/podcast/twimlai/rethinking-pretraining-for-agentic-ai/" target="_blank" style="color:#a0220d;font-weight:bold;text-decoration:none;">Rethinking Pre-Training for Agentic AI with Aakanksha Chowdhery - #759</a> 来源：Machine Learning Street Talk (TWIML) | 2025-12-18 嘉宾：Aakanksha Chowdhery（Reflection AI，曾主导 PaLM、Gemini 1.0/1.5 预训练）</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-0" style="color:#a0220d;font-weight:bold;text-decoration:none;">核心论点：预训练需要为 Agent 重新设计</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-1" style="color:#a0220d;font-weight:bold;text-decoration:none;">Agent 需要什么能力</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-2" style="color:#a0220d;font-weight:bold;text-decoration:none;">注意力机制的演进方向</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-3" style="color:#a0220d;font-weight:bold;text-decoration:none;">损失函数的重新设计</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-4" style="color:#a0220d;font-weight:bold;text-decoration:none;">训练数据：推理轨迹的规模化</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-5" style="color:#a0220d;font-weight:bold;text-decoration:none;">长程推理：两种含义</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-6" style="color:#a0220d;font-weight:bold;text-decoration:none;">从失败中恢复</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-7" style="color:#a0220d;font-weight:bold;text-decoration:none;">学习使用新工具</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-8" style="color:#a0220d;font-weight:bold;text-decoration:none;">评估基准的缺失</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-9" style="color:#a0220d;font-weight:bold;text-decoration:none;">规模与能力涌现</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-0" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心论点：预训练需要为 Agent 重新设计 [02:54]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Aakanksha 的核心观点：过去三年的进步（推理、tool use）几乎全部来自 post-training（RLHF、RL），预训练本身没有根本性变化。但这种方式<strong style="color:#a0220d;font-weight:bold;">从根本上限制了模型能达到的能力上限</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果我们希望模型成为真正的 agent——能与环境交互、执行多步目标导向任务——预训练就需要从基础重新思考。这不仅仅是 post-training 能解决的问题。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-1" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent 需要什么能力 [05:46]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 需要的核心能力清单：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">规划（planning）</strong>：能预判多步之后的状态 2. <strong style="color:#a0220d;font-weight:bold;">长上下文推理</strong>：在很长的上下文中推理，而不仅仅是检索 3. <strong style="color:#a0220d;font-weight:bold;">从失败轨迹中学习</strong>：遇到短期挫折后能纠正方向 4. <strong style="color:#a0220d;font-weight:bold;">动态学习新工具</strong>：探索未知环境中的工具并学会使用</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当前的限制：企业构建 agentic 系统时，本质上受限于"能塞进 context length 的东西"——context engineering 就是在这个约束下做文章。agent 的边界就是 context 的边界，超出的部分只能交给下一个 sub-agent。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-2" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">注意力机制的演进方向 [11:26]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Aakanksha 对架构变革持<strong style="color:#a0220d;font-weight:bold;">极度保守</strong>态度——她训练过 5 个大规模模型，每次都要在 war room 里 debug。经验教训：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">在规模上，看起来无害的改动经常失效</li><li style="margin-bottom:0.5em;line-height:2;">每个 bet 都必须经过极其严格的验证</li><li style="margin-bottom:0.5em;line-height:2;">Transformer 相对于"下一个最好的东西"已经被充分验证</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但注意力机制确实需要演进：模型需要能<strong style="color:#a0220d;font-weight:bold;">引用上下文中很远处的信息</strong>，而不仅仅是局部注意。例如深度研究 agent 收集了 100 篇文章后，需要将它们组织成主题——这对注意力机制的要求远超简单检索。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键区分：<strong style="color:#a0220d;font-weight:bold;">长上下文检索</strong>（needle in a haystack）已经解决了；<strong style="color:#a0220d;font-weight:bold;">长上下文推理</strong>（multi-hop reasoning，如 MRCR V2、Loft 基准）才是真正的难题。即使有百万 token 的 context length，模型也不一定能对所有内容进行综合推理。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-3" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">损失函数的重新设计 [16:08]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Next-token prediction 作为损失函数，意外地产生了强大的推理能力。但它是最优的吗？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">已有的损失函数技巧：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Fill-in-the-middle</strong>：打乱代码文件顺序，让模型预测中间部分</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Masking</strong>：训练 tool use 时，mask 掉特定部分（如搜索查询、工具选择），让模型学习预测这些关键决策点</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">核心思路：<strong style="color:#a0220d;font-weight:bold;">把 post-training 中有效的东西拉回到预训练阶段</strong>，统一两个范式。问题不再是"推理能力应该在最后阶段赋予还是前移"，而是"我们是否需要严格区分 pre 和 post"。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-4" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">训练数据：推理轨迹的规模化 [19:36]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">预训练数据的三个演进方向：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">数据质量 > 数据规模</strong>：来自中国实验室（Qwen、DeepSeek、Kimi）的经验表明，精心策划的高质量数据能显著提升计算效率 2. <strong style="color:#a0220d;font-weight:bold;">推理轨迹（reasoning traces）</strong>：如何获取各领域专家解决问题的过程记录？目前通过 RL 环境让模型自己探索生成，但规模有限 3. <strong style="color:#a0220d;font-weight:bold;">合成数据增强</strong>：用互联网文章作为基础，转化为 QA 对、对话形式、问题求解任务——关键是<strong style="color:#a0220d;font-weight:bold;">不能改变底层数据分布</strong>，否则模型会退化</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">成本问题：如果预训练用了数十万亿 token，对其中一部分做推理增强（每百万 token 不到一美元），总成本其实可控。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"smoking your own exhaust"问题的应对：保持合成数据的分布与自然数据分布高度一致，不能让合成数据主导。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-5" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">长程推理：两种含义 [33:33]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">含义一：跨距离的信息综合</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">例子：理解整个代码库，包括其他团队写的部分。模型需要将位置上相距很远的信息关联起来推理——这不是检索问题，是推理问题。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">含义二：轨迹层面的前瞻规划</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">像下棋一样，当前动作需要考虑它会把你带向目标的哪个方向。但 next-token prediction 天然是局部的——模型不知道"这组 token 会把我带到哪里"。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当前的失败模式：模型陷入重复循环，因为它<strong style="color:#a0220d;font-weight:bold;">不知道自己之前失败过</strong>——最高概率的下一步仍然是重复同样的动作。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-6" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从失败中恢复 [38:09]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">轨迹（trajectory）的定义：计划 → 执行 → 验证 → 根据反馈调整。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">恢复能力需要两个层面的支持：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">RL 层面</strong>：模型需要选择新的动作空间（不重复失败动作） 2. <strong style="color:#a0220d;font-weight:bold;">预训练层面</strong>：模型是否注意到了哪些是失败步骤？轨迹的格式是否让模型能识别出需要纠正的部分？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这不是幻觉问题的简单翻版。Aakanksha 将幻觉重新定义为"概率上最高的下一组 token"——问题是：<strong style="color:#a0220d;font-weight:bold;">是否有额外的上下文或工具反馈能改变这个概率分布？</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">目标：让模型学会"学习如何学习"和"学习如何自我纠正"。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-7" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">学习使用新工具 [44:01]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当前状态：模型只知道放进 context 里的工具。MCP 的困境——工具描述撑爆 context，但不放又不知道有什么工具可用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">理想状态：模型通过<strong style="color:#a0220d;font-weight:bold;">探索和交互反馈</strong>学习新工具，类似机器人领域的"观察模仿学习"。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有前景的方向：统一的领域特定语言（可能是代码格式），让模型通过这种语言来推理和探索工具。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这比当前的三种方案都更灵活：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">全部塞进 context（太贵）</li><li style="margin-bottom:0.5em;line-height:2;">用正确轨迹微调（不够通用）</li><li style="margin-bottom:0.5em;line-height:2;">精心工程化的工具系统（太脆弱）</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但这还远未解决——"不是现成可用的"。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-8" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">评估基准的缺失 [26:01]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当前状态：每年出新基准，很快被刷满，再出新的。前沿实验室都在内部构建自己的基准。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">需要的基准特征：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">变化的复杂度</strong>：从简单到多步</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">变化的能力维度</strong>：规划、推理、恢复、工具学习</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">真实工作流的分解</strong>：把一天的工作拆成子问题，找到模型做不好的部分</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有前景的方向：METR 的 Software Atomic Actions（变长任务）、SWE-bench 风格的编码任务。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键洞察：<strong style="color:#a0220d;font-weight:bold;">好的基准是发现能力的前提</strong>。PaLM 训练到一半时，在一个众包推理基准上发现了 step change——如果没有那个基准，就不会注意到模型已经开始展现推理能力。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-9" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">规模与能力涌现 [31:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Aakanksha 的立场：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">能力涌现需要规模</strong>：很多能力只在大模型中首先出现</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">发现后可以蒸馏</strong>：一旦在大模型中发现了某种能力并理解了 recipe，下一代小模型就能获得同样能力</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">小实验室不能只做小模型</strong>：必须先做到足够大的规模来发现能力，然后再做成本优化</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">路径：最强大的模型 → 发现能力 → 理解 recipe → 蒸馏到小模型 → 成本效率。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这也是 Reflection 的策略：先追求最强能力，再追求最高性价比。</p>
+</section></body>
+</html>

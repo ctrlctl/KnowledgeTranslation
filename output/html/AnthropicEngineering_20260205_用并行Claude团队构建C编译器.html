@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>文章</title>
+<style>
+body{background:#faf8f5;margin:0;padding:20px}
+.back{display:inline-block;font-size:13px;color:#a0220d;text-decoration:none;margin-bottom:16px;font-family:"Noto Serif SC",Georgia,serif}
+.back:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div style="max-width:578px;margin:0 auto;">
+<a class="back" href="index.html">← 返回索引</a>
+</div>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a href="https://www.anthropic.com/engineering/building-c-compiler" target="_blank" style="color:#a0220d;font-weight:bold;text-decoration:none;">Building a C compiler with a team of parallel Claudes</a> 来源：Anthropic Engineering | 2026-02-05 作者：Nicholas Carlini</p></blockquote>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-0" style="color:#a0220d;font-weight:bold;text-decoration:none;">概述</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-1" style="color:#a0220d;font-weight:bold;text-decoration:none;">让 Claude 持续运行</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-2" style="color:#a0220d;font-weight:bold;text-decoration:none;">并行运行 Claude</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-3" style="color:#a0220d;font-weight:bold;text-decoration:none;">经验教训</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-4" style="color:#a0220d;font-weight:bold;text-decoration:none;">评估结果</a></li><li style="margin-bottom:0.5em;line-height:2;"><a href="#s-5" style="color:#a0220d;font-weight:bold;text-decoration:none;">展望</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-0" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">概述</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">作者用 16 个并行 agent 从零开始编写一个基于 Rust 的 C 编译器，能够编译 Linux 内核。经过近 2,000 次 Claude Code 会话和 $20,000 的 API 成本，agent 团队产出了一个 10 万行的编译器，可以在 x86、ARM 和 RISC-V 上构建 Linux 6.9。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">编译器本身是有趣的产物，但文章重点在于<strong style="color:#a0220d;font-weight:bold;">为长时间运行的自主 agent 团队设计 harness</strong> 的经验：如何编写让 agent 在无人监督下保持正轨的测试，如何组织工作使多个 agent 能并行推进，以及这种方法的天花板在哪里。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-1" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">让 Claude 持续运行</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">现有的 agent 脚手架（如 Claude Code）需要操作者在线协作。如果你要求解决一个长而复杂的问题，模型可能解决一部分就停下来等待输入。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了引出持续、自主的进展，作者构建了一个简单循环的 harness：</p>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #616e87; font-style: italic">#!/bin/bash</span>
+<span style="color: #81a1c1; font-weight: bold">while</span><span style="color: #d8dee9"> </span>true<span style="color: #eceff4">;</span><span style="color: #d8dee9"> </span><span style="color: #81a1c1; font-weight: bold">do</span>
+<span style="color: #d8dee9">  COMMIT</span><span style="color: #81a1c1; font-weight: bold">=$(</span>git<span style="color: #d8dee9"> </span>rev-parse<span style="color: #d8dee9"> </span>--short<span style="color: #81a1c1; font-weight: bold">=</span><span style="color: #b48ead">6</span><span style="color: #d8dee9"> </span>HEAD<span style="color: #81a1c1; font-weight: bold">)</span>
+<span style="color: #d8dee9">  LOGFILE</span><span style="color: #81a1c1; font-weight: bold">=</span><span style="color: #a3be8c">&quot;agent_logs/agent_${</span><span style="color: #d8dee9">COMMIT</span><span style="color: #a3be8c">}.log&quot;</span>
+<span style="color: #d8dee9">  </span>claude<span style="color: #d8dee9"> </span>--dangerously-skip-permissions<span style="color: #d8dee9"> </span><span style="color: #ebcb8b">\</span>
+<span style="color: #d8dee9">    </span>-p<span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;</span><span style="color: #81a1c1; font-weight: bold">$(</span>cat<span style="color: #d8dee9"> </span>AGENT_PROMPT.md<span style="color: #81a1c1; font-weight: bold">)</span><span style="color: #a3be8c">&quot;</span><span style="color: #d8dee9"> </span><span style="color: #ebcb8b">\</span>
+<span style="color: #d8dee9">    </span>--model<span style="color: #d8dee9"> </span>claude-opus-X-Y<span style="color: #d8dee9"> </span><span style="color: #eceff4">&amp;</span>&gt;<span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;</span><span style="color: #d8dee9">$LOGFILE</span><span style="color: #a3be8c">&quot;</span>
+<span style="color: #81a1c1; font-weight: bold">done</span>
+</pre>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 agent prompt 中，告诉 Claude 要解决什么问题，要求它把问题拆成小块、跟踪进度、找出下一步该做什么，并持续工作直到完美。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-2" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">并行运行 Claude</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">并行运行多个实例解决单 agent harness 的两个弱点：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. 单个 Claude Code 会话一次只能做一件事，调试多个问题时并行更高效 2. 多个 agent 允许<strong style="color:#a0220d;font-weight:bold;">专业化分工</strong>——一些解决实际问题，其他维护文档、监控代码质量或解决专门子任务</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">实现方式很简单：创建一个裸 git repo，为每个 agent 启动一个 Docker 容器。每个 agent 克隆本地副本到 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">/workspace</code>，完成后推送到 upstream。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">同步算法</strong>防止两个 agent 同时解决同一问题：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Claude 通过写文本文件到 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">current_tasks/</code> 来"锁定"任务</li><li style="margin-bottom:0.5em;line-height:2;">如果两个 agent 尝试认领同一任务，git 的同步机制强制第二个 agent 选择不同的任务</li><li style="margin-bottom:0.5em;line-height:2;">完成后 pull、merge、push、移除锁</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">没有使用编排 agent，每个 Claude agent 自行决定如何行动，通常选择"下一个最明显的"问题。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-3" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">经验教训</h2>
+<h3 id="s-100" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">编写极高质量的测试</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Claude 会自主解决你给它的任何问题，所以<strong style="color:#a0220d;font-weight:bold;">任务验证器必须近乎完美</strong>，否则 Claude 会解决错误的问题。需要找到高质量的编译器测试套件、编写验证器和构建脚本、观察 Claude 犯的错误然后设计新测试。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">后期 Claude 开始频繁在实现新功能时破坏现有功能，于是构建了 CI 流水线和更严格的执行机制。</p>
+<h3 id="s-101" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">站在 Claude 的角度思考</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为 Claude 而非自己编写测试 harness，需要重新思考很多假设：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">上下文窗口污染</strong>：测试 harness 不应打印数千字节无用输出。最多打印几行，重要信息记录到文件。日志应易于自动处理：有错误时写 ERROR 并把原因放在同一行。预计算聚合统计。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">时间盲</strong>：Claude 无法感知时间，会愉快地花几小时运行测试。Harness 不频繁打印增量进度，包含默认 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">--fast</code> 选项运行 1% 或 10% 随机样本。</li></ul>
+<h3 id="s-102" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">让并行变容易</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当有许多不同的失败测试时，并行化很简单：每个 agent 选择不同的失败测试。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但编译 Linux 内核时卡住了——这是一个巨大的单一任务，每个 agent 都会遇到同一个 bug。解决方案是用 GCC 作为<strong style="color:#a0220d;font-weight:bold;">在线已知正确的编译器 oracle</strong> 来对比：随机用 GCC 编译大部分内核，只用 Claude 的编译器编译剩余文件。如果内核工作，问题不在 Claude 的子集中；如果崩溃，进一步细化。这让每个 agent 并行修复不同文件中的不同 bug。</p>
+<h3 id="s-103" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">多种 agent 角色</h3>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">并行也支持专业化：一个 agent 合并重复代码，一个改进编译器性能，一个负责输出高效编译代码，一个从 Rust 开发者角度批评设计，一个负责文档。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-4" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">评估结果</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">经过近两周的 2,000 次 Claude Code 会话，Opus 4.6 消耗了 20 亿输入 token 和 1.4 亿输出 token，总成本略低于 $20,000。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是一个洁净室实现（Claude 在开发期间没有互联网访问），仅依赖 Rust 标准库。10 万行编译器可以：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">在 x86、ARM 和 RISC-V 上构建可启动的 Linux 6.9</li><li style="margin-bottom:0.5em;line-height:2;">编译 QEMU、FFmpeg、SQLite、PostgreSQL、Redis</li><li style="margin-bottom:0.5em;line-height:2;">在大多数编译器测试套件（包括 GCC torture test suite）上达到 99% 通过率</li><li style="margin-bottom:0.5em;line-height:2;">编译并运行 Doom</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">局限性</strong>：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">缺少 16 位 x86 编译器（启动 Linux 出 real mode 需要），这部分调用 GCC</li><li style="margin-bottom:0.5em;line-height:2;">没有自己的汇编器和链接器</li><li style="margin-bottom:0.5em;line-height:2;">不是所有项目都能成功构建</li><li style="margin-bottom:0.5em;line-height:2;">生成的代码效率不高（全优化开启仍不如 GCC 全优化关闭）</li><li style="margin-bottom:0.5em;line-height:2;">Rust 代码质量合理但远非专家水平</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="s-5" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">展望</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每一代语言模型都开启了新的工作方式。Agent 团队展示了<strong style="color:#a0220d;font-weight:bold;">自主实现整个复杂项目</strong>的可能性。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但完全自主开发伴随真实风险。当人类与 Claude 一起开发时，可以确保一致的质量并实时捕获错误。对于自主系统，看到测试通过就假设工作完成很容易，但这很少是事实。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">作者坦言这个实验既令人兴奋又令人不安——没有预料到这在 2026 年初就接近可能。语言模型和交互脚手架的快速进步打开了编写大量新代码的大门，需要新策略来安全导航。</p>
+</section></body>
+</html>
