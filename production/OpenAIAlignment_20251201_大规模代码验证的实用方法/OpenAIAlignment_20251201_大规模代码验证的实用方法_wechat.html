@@ -1,0 +1,28 @@
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">A Practical Approach to Verifying Code at Scale</span> 来源：OpenAI Alignment | 2025-12-01 作者：Maja Trębacz, Sam Arnesen 等（Codex 团队）</p></blockquote>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">为什么需要自动代码审查</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">精确度比召回率更重要</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">仓库级工具和执行是必要的</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">部署经验</span></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么需要自动代码审查</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">随着自主协作编码系统的普及，产出的代码量迅速超出彻底人工审查的极限。差距越大，AI 编写的代码引入严重 bug 和漏洞的风险就越大——无论是意外还是故意。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们不能假设代码生成系统是可信或正确的；<strong style="color:#1e88e5;font-weight:bold;">必须检查它们的工作</strong>。自动代码审查是一种实用的输出监控器，作为纵深防御策略的一部分，补充 CoT 监控、行动监控、内部激活监控、行为测试和诚实训练等其他安全工作。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">本文分享了为 gpt-5-codex 和 gpt-5.1-codex-max 训练专用 agentic 代码审查器的经验。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">精确度比召回率更重要</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">防御往往不是因为技术上错误而失败，而是因为太不实用以至于用户选择绕过它们。慢、嘈杂或笨重的系统会被绕过。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">部署代码审查 agent 时，明确接受了一个权衡：<strong style="color:#1e88e5;font-weight:bold;">适度降低召回率以换取高信号质量和开发者信任</strong>。先优化信噪比，然后才在不损害可靠性的前提下推高召回率。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们希望发现最大化以下公式的结果：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">$$P(\text{correct}) \times C_{\text{saved}} - C_{\text{human verification}} - P(\text{incorrect}) \times C_{\text{false alarm}}$$</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">技术上正确但更偏风格性质的评论甚至可能产生负效用（如在个人研究笔记本中指出注释拼写错误可能不值得）。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">仓库级工具和执行是必要的</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">之前的代码审查尝试大多只提供变更的 diff 和可选的简短周围上下文。这产生最快的审查但也最不准确——审查器缺乏理解变更影响所需的上下文。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">GPT-5.1-Codex 的审查器添加了：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">推理能力</li><li style="margin-bottom:0.5em;line-height:2;">工具使用</li><li style="margin-bottom:0.5em;line-height:2;">仓库级上下文</li><li style="margin-bottom:0.5em;line-height:2;">精确度/延迟目标</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">给审查器仓库范围的工具和执行访问同时改善了召回率和精确度。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">部署经验</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 OpenAI 内部，每个 PR 都自动审查，许多工程师在推送前在 Codex CLI 中运行 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">/review</code>。模型已经保护了高价值实验并捕获了阻止发布的问题。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键设计决策：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">允许精确度和召回率的权衡以及其他指南通过自定义任务指令或仓库级 AGENTS.md 规范来可控</li><li style="margin-bottom:0.5em;line-height:2;">接受可衡量的权衡：适度降低召回率换取高信号质量</li><li style="margin-bottom:0.5em;line-height:2;">使审查器可以被开发者信任，从而实际被使用而非绕过</li></ul>
+</section>

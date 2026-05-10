@@ -1,0 +1,532 @@
+Detected language: English
+[00:00] Hi, listeners.
+[00:06] Welcome back to NoPriors.
+[00:07] Today, I'm here with Simon Last, co-founder at Notion.
+[00:10] We talk about their new vision for Notion in the AI age as a platform for humans and
+[00:15] agents to collaborate, how the engineering and product org at Notion is changing, and
+[00:20] these new tools for thought.
+[00:21] Welcome, Simon.
+[00:22] Hey, Simon, thanks for doing this.
+[00:23] Hey, of course.
+[00:24] Yeah, it's really fun to be here.
+[00:25] Notion's at scale, amazing platform, lots of users.
+[00:28] You did start quite a while ago.
+[00:30] I think of Notion as one of the companies that has really braced AI quite aggressively.
+[00:35] I was told you first got your hands on GPT-4 at a company offsite in Mexico.
+[00:42] Is that true?
+[00:43] What is the origin story of starting to work on this stuff?
+[00:45] Yeah, I think that year, that was 2022.
+[00:50] I've been watching what's going on.
+[00:52] In general, I've just been super curious about the technology and fascinated to try everything
+[00:57] and think about how we can apply it.
+[01:00] It wasn't until I played with GPT-4 that it became really, really real.
+[01:03] So when we got access to it, it was sort of like a proto-ChatGTBT-like interface.
+[01:12] And my co-founder Ivan and I both got access, and it was just immediately clear, I would
+[01:17] say two big things.
+[01:19] One is that it was just pretty smart.
+[01:22] It could follow reasonably complicated instructions.
+[01:24] It could write things for you, it could edit things.
+[01:27] The second big thing was that the scope of its knowledge was extremely interesting.
+[01:31] Super, super deep and broad world knowledge.
+[01:34] When we played with it, it became just instantly clear to both of us, like, okay, the time
+[01:38] is now at a start, but thinking about how to apply it, it's only going to get better.
+[01:41] We were talking about Mexico, GPT-4, you guys saw it was clearly the time.
+[01:47] Did you start with a particular vision of what you should obviously be able to do with
+[01:52] AI in Notion, or did you start calling people from different teams or recruiting people
+[01:55] and say, let's experiment?
+[01:57] How did you begin?
+[01:58] I think we immediately had a long-term and a short-term vision, I would say.
+[02:03] I'll start with the short-term one.
+[02:05] The thing that was immediately obvious was, oh, it could be like a writing assistant.
+[02:08] So it could be in your document, you could select some text, rewrite it, you could have
+[02:13] it write text for you, maybe look something up and then give you sources or more information.
+[02:19] So that was the thing that we immediately got to work on, and we sort of started a Tiger
+[02:23] team around it, and then we were able to launch it in two or three months after that.
+[02:26] And then the long-term vision that we immediately had was like, oh, the thing that looks like
+[02:30] it may be possible is more of a general assistant.
+[02:33] So what if you could just give it all the tools inside Notion that a human would have,
+[02:38] be able to create its own databases, query, manipulate them, create documents, edit them,
+[02:44] and sort of weave all of these things together to do a longer range task.
+[02:48] And so we sort of immediately started on both.
+[02:52] The short-term one we were able to shoot very quickly, and then the long-term one didn't
+[02:55] really work yet.
+[02:56] So that took much longer to get working.
+[02:58] Are there specific first launch of the AI-specific Notion features and products was when?
+[03:05] Last year?
+[03:06] No, it was February 2023.
+[03:08] Oh, okay.
+[03:09] My timelines are wrong.
+[03:11] Are there a few specific learnings or breakthrough moments you think since beginning to release
+[03:16] that are interesting?
+[03:17] Yeah.
+[03:18] I mean, there's been a slog over multiple years at this point with many, many learnings.
+[03:25] I would say, yeah, I mean, just to give you a timeline of the arc of what we shipped.
+[03:30] So the first thing was our writing system.
+[03:33] We called it AI Writer.
+[03:35] That's the first thing we launched.
+[03:37] It was easiest to get working because it's like single-step task, rewriting, editing
+[03:40] text.
+[03:41] There's no retrieval aspect.
+[03:42] It was just like raw access to the model to write the text.
+[03:49] The next big thing that we immediately started working on was a Q&A, doing a semantic index
+[03:54] of the entire workspace and then letting you ask a question and I can give you an answer
+[03:59] that's grounded in the sources.
+[04:00] That was also immediately obvious to us that that'd be super useful.
+[04:03] And so we started work on that.
+[04:04] That one we launched in, I think it was October 2023.
+[04:08] So we started a beta before then, but then our GA was in October.
+[04:11] That was a much bigger effort day at working, obviously.
+[04:14] We weren't just like plugging in the LLM.
+[04:15] It was actually doing this real-time updating index.
+[04:19] We had to get much more serious about the evals and the quality there as well.
+[04:23] The Q&A has been a multi-year journey.
+[04:26] Basically what we did is as soon as we got the Notion index working, it was obvious that
+[04:32] okay, we should index everything else as well.
+[04:35] And so we indexed Slack and Google Drive and we're launching new ones on a regular cadence.
+[04:43] And now we have a, I would say, fairly complete index.
+[04:45] One could argue that those are very difficult problems that those products natively have
+[04:49] not solved perfectly yet.
+[04:51] So how did you think about taking that on?
+[04:52] I don't know if that's an offensive thing to other product teams, but it's not working yet.
+[04:56] Yeah, it's kind of true.
+[04:58] This has been something we talk about a lot because it's almost like what right do we
+[05:03] even have to do this?
+[05:04] But it turns out that most of the companies are pretty bad at making their indexes somehow.
+[05:09] It's honestly kind of baffled us a little bit.
+[05:12] But I think my take after dealing with all of this and working with the teams trying
+[05:18] to get it working is there's a little bit of just AI-pilled savviness that's pretty
+[05:24] important.
+[05:25] And then I think most of it is honestly just like a bit of like craft and attention to
+[05:29] detail.
+[05:30] I think like in particular with this like indexing retrieval stuff, in order to really
+[05:35] get it working, you have to be quite empirical and iterative and actually be like trying
+[05:40] queries.
+[05:41] Like each data source is a little bit special.
+[05:46] You can't just apply a one-size-fits-all to like querying Slack versus querying Google
+[05:49] Drive, let's say.
+[05:50] They're completely different kinds of information.
+[05:52] And we found that there's just a little bit of like craft and love that has to go into
+[05:55] it in terms of like actually trying a bunch of different queries, actually using it every
+[05:58] day and constantly iterating and rethinking and tuning how the retrieval works.
+[06:03] How did you think about the diversity of how people organize their workspaces?
+[06:08] I mean, even notion is not, use of it is not homogenous, right?
+[06:12] I'm probably part of 15 workspaces as an investor.
+[06:17] And so I look at them and I'm like, well, mine's a mess and these people are really
+[06:20] organized and the workflow is reflected in how their notion works.
+[06:23] Yeah, totally.
+[06:24] I would say, I mean, the interesting thing is that with embeddings, it almost doesn't
+[06:27] matter as much anymore.
+[06:30] The AI doesn't really care what the tree structure is, for example.
+[06:35] All the AI cares about is that there's a snippet of text that has the context you need and
+[06:39] then it can retrieve it.
+[06:40] So actually, we kind of advise people now, like, don't worry as much about organization.
+[06:45] Just find a way to get it all piped in and like thrown in there.
+[06:48] You still make decisions that could change performance quite a bit, like chunking strategy
+[06:52] or whatever.
+[06:53] Yeah, that's super important.
+[06:54] But that's sort of not, that's sort of transparent to the user and sort of independent of their
+[07:00] particular method of organizing things.
+[07:02] It just seems like still a difficult technical challenge given how different the content
+[07:06] bases are.
+[07:07] Yeah, yeah.
+[07:08] Yeah, I think, yeah, that took a lot of iteration.
+[07:10] The chunk sizing, how retrieval works, the different steps in the pipeline of retrieval.
+[07:14] Yeah, there's a lot of iteration on that.
+[07:16] Ivan said I should ask you how many times you've rebuilt Notion and rebuilt your harnesses.
+[07:24] Yeah, yeah, it's kind of a running joke almost.
+[07:26] I mean, we rewrite our AI harness probably every six months or so and the time to rewrite
+[07:32] has kind of been decreasing just because, I mean, like, progress has been accelerating.
+[07:36] I think this is honestly a really key thing and something that a lot of companies get
+[07:40] wrong is just like doing one thing and then just like sticking with it.
+[07:45] You really do have to keenly aware of what the current state of the model is and the
+[07:49] technology is and then designing the harness and system and the product deeply around that.
+[07:54] And it basically means you have to rewrite it every six months.
+[07:57] I find it pretty fun.
+[07:58] It's part of the process.
+[07:59] You know, you get to restart and rethink it.
+[08:04] You know, we're working on, we're about to release a new version of our harness like
+[08:07] in the next week or two and then we're already thinking about the one after that as well.
+[08:12] I think that leads to a set of questions I have for you on just like how does Notion
+[08:17] as an engineering and product and research organization work now that you have the power
+[08:22] of coding agents as well?
+[08:25] Because I imagine like your willingness to rewrite the harness goes up dramatically,
+[08:30] like agents are going to help me do it.
+[08:32] Yeah, that's extremely true.
+[08:33] Yeah, I mean, yeah, it's been really fun to use the coding agents.
+[08:37] I think the ambition of what I even consider building has gone up a lot.
+[08:41] What do you think has most dramatically changed in how you think about how engineering and
+[08:45] product should work at Notion over the last two, three years?
+[08:48] Yeah, I mean, it's definitely changed multiple times.
+[08:51] I mean, in terms of the coding agents, we kind of went through multiple eras.
+[08:54] There was kind of like the tab autocomplete era and then we got into sort of inserting,
+[09:01] rewriting some code.
+[09:03] But it wasn't really until the agents started working, I would say like early last year,
+[09:08] we started to adopt the agents.
+[09:09] Like I started using clog code, I think around April last year.
+[09:13] That was a huge unlock.
+[09:14] Like I would say the big shift there is that, you know, you can really push on getting these
+[09:19] agents to end to end, you know, implement and verify and maintain stuff.
+[09:24] But it requires pretty significant thought in terms of how you architect things and what
+[09:28] is the verification loop.
+[09:31] But the upshot is I think if you do it well, you can be much more ambitious about what
+[09:35] you're building and also make it much more robust than you could have done with humans
+[09:40] writing it.
+[09:41] And then the flip side is if you do it badly, it's all slop.
+[09:44] Does that change your lens of like what teams should look like at Notion?
+[09:49] Like size, seniority, anything like that?
+[09:52] Yeah, I mean, I would say, I mean, the fundamental effect is that, you know, everyone's individual
+[09:58] impact in terms of their output can be much higher and your output increasingly depends
+[10:04] on your ability and willingness to use the tools.
+[10:07] I think that's the fundamental thing that's happening.
+[10:09] And then like, how does that play out?
+[10:11] I think I don't think we've seen that much impact on the team size, really.
+[10:16] I think we we like to work in like a smallish Tiger teams for the most part.
+[10:22] I think if you can make teams small, it's almost always better.
+[10:26] That was true before, and I think it's still true, maybe increasingly a little bit, but
+[10:30] not that much.
+[10:31] I think, yeah, the main thing is to just like really harness the tools.
+[10:35] Do you think something different happens to the median engineer in an organization versus
+[10:40] the 10x engineer or the engineer 10x more willing to use the tools?
+[10:44] Yeah, I think the gap is bigger.
+[10:46] You can be like 100 or 1000 X engineer of using the tools right now.
+[10:49] I think I think the the gap is much bigger, like the the minimum bar has not changed,
+[10:54] but the maximum bar is extremely increased.
+[10:57] One impact has had internally, I would say, is like, broadly, things feel like a little
+[11:01] bit more messy and chaotic, I would say, like, but I kind of love that.
+[11:04] I mean, it's like there's there's more there's way more prototypes, you know, people are
+[11:09] like, for example, our design team made an made an entire get repo, they call it the
+[11:16] design playground.
+[11:17] And essentially like a simplified notion with a bunch of like, UI primitives.
+[11:24] They've made it like really sophisticated, you know, it has like an agent in there and
+[11:28] like, and it's it's pretty cool, because it allows them all designers can can spin up
+[11:33] like super high fidelity prototypes really quickly.
+[11:37] And so it's no longer like like pointing out a mock and being like, you know, like, like
+[11:40] how will this look like they'll give you like a URL to approach it that's that's been deployed.
+[11:45] And that sort of thing is true all the way up and down the stack, you know, for all of
+[11:48] engineering, just like a little more chaotic, more stuff happening.
+[11:52] All the PRs are more ambitious.
+[11:54] Do you draw a line somewhere about like stuff that is more dangerous to touch or sensitive,
+[11:59] like there could be a risk of data loss over here or and not?
+[12:03] Or is it kind of you look at it all as it's fair game.
+[12:07] We still do reviews on all the pull across.
+[12:09] And I would say and you know, all the pull across are now ridden by agents.
+[12:14] They're often like larger and more complex.
+[12:17] That's like the worst part.
+[12:19] But the better part is that they're often like a much better tested and we can demand
+[12:23] sort of a much better testing for the things that merit it.
+[12:25] I never produce a PR that like hasn't been like fully intent tested anymore.
+[12:31] And so it's like you can get to a pretty high degree of confidence that that it works.
+[12:34] But it requires like you're not just vibe coding by saying the thing you want.
+[12:39] You're sort of thinking carefully about like what is the thing I'm like, what is the change
+[12:42] I'm trying to make and like and how can it be verified and how can it be deployed safely
+[12:47] and then enlisting the agent to help you with that process.
+[12:50] Anything about where you said the general assistant like doesn't quite exist yet.
+[12:55] What's the what do you imagine notions agent agents being able to do like over the next
+[13:01] year or two that are still unblocked.
+[13:03] They're still blocked by either capability or your harness work.
+[13:06] We struggle for a few years to build an agent.
+[13:10] And you know, it always like like sort of works.
+[13:12] But then, you know, wasn't that useful.
+[13:16] Largely just it was too early.
+[13:17] So we we tried to build an agent, I would say, actually three or four times.
+[13:22] And then we finally launched it last fall.
+[13:25] So like last August, September.
+[13:27] So the fusion notion AI now it's like the full agent that has accessed everything in
+[13:31] notion pretty much.
+[13:32] So that that totally works.
+[13:33] I would say like the a lot of the original vision that we had totally works now.
+[13:38] And it's like fully shipped.
+[13:41] Less August, August or September, we shipped our personal agent.
+[13:45] It's pretty much every user in notion has an agent.
+[13:48] And basically it has access to all all the things that these are as access to.
+[13:52] So, you know, it can create a database for you.
+[13:54] It can update things, create documents, search, search the web, do research.
+[13:58] And then the second big thing that we just launched last week actually was custom agents.
+[14:03] So you can basically you can create a new custom agent, give it a name.
+[14:06] And unlike the personal agent, by default, it doesn't have access to anything.
+[14:11] So you have to grant access.
+[14:13] But then once you do, it can actually run autonomously in the background.
+[14:16] So, for example, you can give it access to its own database to file tasks, let's say,
+[14:20] and then you can attach it to a Slack channel and then it will start responding to people
+[14:24] on Slack and a filing task.
+[14:25] That's that's that's one use case.
+[14:27] Another one is maybe you could you can give it access to a database of like weekly reports
+[14:31] and then let it search the web or search your workspace.
+[14:33] So it's sort of a custom agent sort of represents some work or job, some some knowledge
+[14:38] where tasks that you want to be done autonomously.
+[14:40] One thing I'm really excited about this going forward is we want it to be extremely good
+[14:45] at sort of bootstrapping its own capabilities, basically from an initial kernel, allowing
+[14:51] it to basically bootstrap itself to do anything.
+[14:53] Right.
+[14:54] So even, for example, maybe building an integration that we don't support yet, deploying that
+[14:59] and then and then using it.
+[15:01] So you imagine that notion agents are actually the broader definition of agent where like
+[15:05] writing code is a tool it's got access to.
+[15:08] Yeah, I think it's pretty key.
+[15:09] So yeah, I think I think of coding agents as like the kernel of AGI.
+[15:13] AGI will be a coding agent and and and code is just a really, really useful primitive
+[15:20] for representing like deterministic logic.
+[15:23] The thing that's really exciting about it, replying it to a knowledge work agent is that
+[15:28] it can bootstrap a capability.
+[15:30] So like I said, if integration doesn't exist, it can build it.
+[15:34] If it needs to connect itself to a new data source, it can do that.
+[15:39] Given you have a notion is at scale, but is operating in a landscape of productivity and
+[15:45] platform players that are at even more scale.
+[15:48] Right.
+[15:49] Many of these will end up with their own agents.
+[15:51] Lots of people from the labs, the Microsoft world are trying to integrate other data sources.
+[15:56] This like cross attempt to integrate and index.
+[15:59] Like how do you think that plays out?
+[16:02] What do you what do you imagine that notion agents are best at or what they have the right
+[16:06] to go do?
+[16:07] If you look at the landscape, like I would sort of say there's the labs and then there's
+[16:11] maybe the the software platforms and then there's maybe like infrastructure in terms
+[16:17] of the labs.
+[16:18] You know, we see ourselves as kind of like the Switzerland for models.
+[16:21] We think and our customers, they you know, they don't want to be locked into a certain
+[16:25] certain labs model.
+[16:26] They're always releasing new versions.
+[16:28] Any given month, one is better than the other.
+[16:31] So we want to be a place where basically you can you can easily get access to all the best
+[16:36] models anytime and you can easily switch around.
+[16:39] Do you think open source plays into that as well?
+[16:42] Yeah, yeah, absolutely.
+[16:44] I think the open source models are actually getting really good.
+[16:46] There's like four different Chinese models now that are good.
+[16:49] We actually just released one of them in our agent last week and we're going to do all
+[16:53] four for sure.
+[16:54] They're they're actually quite good and they're and they're way cheaper than the frontier
+[16:59] models.
+[17:01] I think there's a lot of use cases where you'd want that.
+[17:03] We want to give that as an option in terms of like the other, you know, so you know,
+[17:07] we think of our role as sort of taking all the best models that we can creating really
+[17:13] high quality state of the art agent implementations where people can easily and conveniently get
+[17:17] access to them and then making sort of a collaborative workspace that is really good for humans and
+[17:24] for the agents to to coordinate on.
+[17:28] I think it's it's something that's that's very needed in the world and we're just trying
+[17:31] to do it in a really tasteful, well executed way.
+[17:34] You were describing you need the index to make the agents good.
+[17:39] You give the agents access to the tools that we humans have in Notion.
+[17:43] How do you think about the structure of Notion and like where it's like useful or even like
+[17:49] not useful or relevant for agents like blocks and databases and such?
+[17:53] It's all still pretty useful, extremely useful.
+[17:57] There's been a challenge to sort of, you know, we want to make it really convenient for the
+[18:03] agent.
+[18:04] I think that's that's a new thing that didn't exist.
+[18:07] In the past, it was convenient for humans and then we also made it API is convenient
+[18:09] for humans writing code.
+[18:11] Mm hmm.
+[18:12] To use our API.
+[18:13] So we essentially have a new customer, which is the agent.
+[18:16] At first, that was definitely a problem.
+[18:18] You know, so for example, like our our API uses this this crazy JSON format for blocks
+[18:24] that by default is like crazy verbose and like horrible for the agent.
+[18:28] But we basically took on that challenge and designed just really convenient APIs for the
+[18:35] agent.
+[18:36] We created sort of a markdown dialect that looks like the default normal markdown, but
+[18:41] it's sort of enhanced with all the notion blocks and the models are really good at it.
+[18:46] It works really well.
+[18:48] So that's how it reads and writes the pages.
+[18:50] And then for databases, we we use SQLite.
+[18:56] So basically, it's just a speaking SQLite, which also works really well.
+[19:00] So the default thing did not work really well.
+[19:02] But then we just like like took that on as an engineering challenge.
+[19:06] And I would say now we have like extremely convenient APIs that the agents are are really
+[19:10] naturally good at.
+[19:11] How did you understand or figure out what would make the API better for agents?
+[19:18] That's a good question.
+[19:19] I would say it's a combination of just trying things.
+[19:22] It's very empirical.
+[19:24] So we're just playing around and like noticing, oh, it's not very good at that.
+[19:27] Oh, that's way too many tokens.
+[19:28] How can you make this smaller?
+[19:30] And then a little bit of just like like first principles thinking of like, you know, what
+[19:33] is it the models are being trained on and what's in their prior?
+[19:37] What do they know?
+[19:38] And what do we think it would naturally be good at?
+[19:41] And like how does the agent loop work?
+[19:43] And like what would be the convenient, efficient pattern for accessing these things?
+[19:49] And so and then just, you know, a lot of playing around.
+[19:52] I hear user research where the user is actually agent and then ongoing eval.
+[19:58] Yeah, I mean, you just chat with it.
+[20:01] The user is always there.
+[20:02] It's ready to talk to you.
+[20:03] Yeah, actually, that is wonderful where you have infinite access to it.
+[20:06] You have infinite access to it.
+[20:07] Yeah.
+[20:08] And you can you can script and scale the access.
+[20:09] Well, I assume you have.
+[20:12] I mean, I know you do because you walked in.
+[20:13] You're like, hey, I need to get access to the Wi-Fi.
+[20:15] I need power.
+[20:16] We can't block the agents while we're doing this.
+[20:18] What are you running right now?
+[20:19] Tell me about your setup.
+[20:20] I'm working on a new prototype.
+[20:22] And so I have a couple of agents working on that.
+[20:25] And then my setup these days is just either Cloud Code or Codex.
+[20:30] I like the CLI tools.
+[20:33] They're super simple and like work pretty well.
+[20:36] I'm pretty comfortable in the CLI.
+[20:38] And then, yeah, my my.
+[20:39] You don't need my generated game.
+[20:40] You see, like, it's a very cool idea.
+[20:44] I would say, yeah, my my my whole goal these days is essentially to just have as many running
+[20:50] as possible and to run them all the time.
+[20:52] And you know, so, for example, like every night before I go to bed, I'm like, OK, I
+[20:56] let's go guys.
+[20:57] Yeah.
+[20:58] Basically, what I have to do is make sure that I've given it enough stuff that by the
+[21:02] time I wake up in the morning, it will still not be done.
+[21:04] And so I've maximized.
+[21:05] That's victory.
+[21:06] Yeah, that's that's victory.
+[21:07] So, yeah, like I've done that, I would say less, less five nights pretty well.
+[21:14] My personal record is that I've had a coding agent running for I think it was 13 days straight
+[21:19] without stopping and just just basically working through like tasks.
+[21:25] Well prompted.
+[21:26] Yes, I admit to having woken up in the middle of the night at least multiple times this
+[21:30] week and just being like, are you still going?
+[21:32] Yeah, I know.
+[21:33] Yeah, it's it's kind of nerve wracking.
+[21:35] I always like this always like I'll check it one last time before bed and just really
+[21:38] make sure that it's still spinning.
+[21:40] What about on the notion agents?
+[21:41] Like, do you have a workflow there that is core to daily work?
+[21:45] Yeah, I mean, I mean, I use our personal agent all the time.
+[21:49] So it's it has all the context about about our company and everything that's going on.
+[21:53] So like, for example, last night I was asking you about how the custom agents launch was
+[21:58] going and like like what the what the signals were getting from it were super useful for
+[22:02] that.
+[22:03] I have many custom agents that are that are running.
+[22:06] My my my personal favorite is I have a email triage agent, so it has access to all of my
+[22:12] work and personal emails and it just wakes up every day and just archives all the stuff
+[22:18] I don't need to see.
+[22:19] I train it over time to to learn my preferences.
+[22:21] Do you actually label data for it?
+[22:23] It's pretty easy to do this actually.
+[22:24] So all you have to do is you make the agent and then you give it access to your email
+[22:27] and then you you can make a blank page.
+[22:29] It's like it's memory and you let it edit that page.
+[22:33] And then you just say, OK, now go and look at my emails and then interview me.
+[22:37] Ask me which things, you know, so sort of it will like propose things that it thinks
+[22:42] it should archive.
+[22:43] And then you can kind of correct it.
+[22:45] And then we'll use that to essentially generate like a list of rules about like what it thinks
+[22:49] are correct or not.
+[22:50] And so for the first couple of days, I was sort of like like like correcting it on things
+[22:54] after a couple of weeks or so.
+[22:56] I I dropped the approval entirely and it just automatically archives all things I need to
+[23:00] see now.
+[23:01] Wow.
+[23:03] It completely solved my email problems because for me, like I don't I don't use email that
+[23:07] much for work stuff like it's it's mostly in Slack.
+[23:10] Ninety five percent of the personal emails and work emails that I get, I don't need to
+[23:14] see at all.
+[23:15] And so it's just a waste of time.
+[23:17] And so it completely solved that.
+[23:18] So now I'm in my inbox.
+[23:19] It's like only stuff I need to see.
+[23:21] I've got lots of custom agents running.
+[23:23] There's another one that I built that triages customer all internal feedback and and and
+[23:32] bugs. So we have a Slack channel where basically people just just post random like like product
+[23:38] feedback and bugs in the past.
+[23:40] It was it was sort of sometimes get answered and then sometimes like like haphazardly get
+[23:44] ignored just because, you know, this is like things.
+[23:48] So its entire job is just to route it to the right place.
+[23:51] And and it uses a similar sort of like like memory pattern where it sort of learns on
+[23:56] the fly where it's supposed to file bugs.
+[24:00] And then over time, it's built up like hundreds of rules that it just sort of like like learn
+[24:04] over time. You know, so for example, like there's a there's a blog about the mobile
+[24:06] app and knows to route to the mobile team and then a file a task in their database.
+[24:10] Do you look at that like the generated and updated memory?
+[24:15] Like because it's legible to you to say like, that makes sense to me.
+[24:18] I think I did it. I did it first.
+[24:21] But then sort of once you trust it's kind of working, you kind of ignore it.
+[24:25] And then if it ever breaks, I'll I'll go fix it.
+[24:28] It'll break every now and then.
+[24:29] And then the benefit of not reading your emails.
+[24:33] Yeah, just not read it. So, yeah.
+[24:35] Yeah. I mean, generally, I would say, yeah, the the general pattern I follow is sort of
+[24:39] I build it as a prototype.
+[24:41] I have it in sort of like an approval mode where I'm sort of, you know, watching it
+[24:45] closely and then but then after it runs a bunch of times, you kind of trust that it's
+[24:49] working. And then is there anything you do internally at Notion to make sure
+[24:54] non-technical teams have the intuition for how to build agents or how to like express
+[24:59] that productivity to?
+[25:01] Yeah, that's a great question. I mean, we do sort of workshops and hackathons
+[25:06] pretty frequently. So, like, for example, like a month ago, I did a I did a hackathon
+[25:10] with the people team and sort of sort of got them.
+[25:14] The people team has been amazing. They're actually one of the the highest adopters of
+[25:17] custom agents. You know, they do all these kind of workflows like Slack and Notion kind
+[25:21] of like manual work like that. And and yeah, I would say, yeah, like people are super
+[25:26] excited to to try and sort of like maybe just need like a little bit of a push in terms
+[25:30] of intuition and like like getting them started.
+[25:33] But then honestly, I've been super impressed.
+[25:35] Like I think the concept is like kind of intuitive, sort of like like once you get once
+[25:41] you get past sort of a little bit of the technical barrier of like what is a prompt and
+[25:44] like what is the agent and how does it get triggered and woken up and like how does that
+[25:48] even work? But then once you sort of get past that, I think it's actually a very human
+[25:52] like interface.
+[25:53] Yeah. Maybe the maybe the biggest barrier is actually just getting people to try and
+[25:57] assuming it's going to work at all.
+[25:59] Right. Yeah. You and Ivan originally met on the Internet tools for thought community.
+[26:06] It feels like, you know, the tools we have for thinking are very different now as your
+[26:11] like core conception of notion changed over the last few years because of all the AI
+[26:15] stuff. Like what is that?
+[26:17] What thinking does the tool do for you?
+[26:19] Should agents do for you?
+[26:20] What do you get to do?
+[26:22] Yeah. I mean, it's I would say change quite a lot.
+[26:25] I mean, broadly speaking, before AI, our goal was to create the best tool for humans
+[26:35] to directly perform their work.
+[26:38] And then now the goal is to create the best tool for humans to manage agents to do the
+[26:43] work for them.
+[26:44] That's a big shift.
+[26:45] That's a pretty big shift.
+[26:46] It's pretty fundamental.
+[26:49] But it turns out that you need most of the same primitives.
+[26:53] You actually all the primitives that we built are actually still extremely useful.
+[26:56] It's more that we just needed some some new primitives like representing what is an
+[27:00] agent and how does it interact with your pages and databases.
+[27:02] But you still need the same primitives.
+[27:04] You still need a document.
+[27:06] It's an unstructured way to write stuff.
+[27:09] Agents love to write markdown documents.
+[27:12] So it's still very relevant.
+[27:14] And you still need a database.
+[27:15] It's you still need structured data.
+[27:17] You know, if you're working with your swarm of like 100 background coding agents, you
+[27:22] don't want to have 100 chat threads.
+[27:24] You want a Kanban board.
+[27:25] It's the same as before.
+[27:26] Makes sense. You still need the coordination structure.
+[27:30] What is one thing that just because you're ahead on this stuff and then trying to figure
+[27:35] out how to bring, you know, notion and then users along with you.
+[27:39] What is something that's really changed about how you personally like build even in the
+[27:45] last six months?
+[27:46] I mean, it's completely changed.
+[27:48] I haven't written code since like last summer.
+[27:52] I don't type code anymore.
+[27:54] Yeah, it's it's complete shifted.
+[27:55] I mean, we went from humans type all the code to like we're still typing, but we like
+[28:01] tab complete to sort of like we talk to the agent and it sort of does little tasks for
+[28:06] us, but we are still in the outer loop.
+[28:08] And then now it's more like I design a end to end task that involves like making some
+[28:15] change and then verifying it.
+[28:17] And then I'm just the the outer the outer verifier sort of like like double checking at
+[28:20] the very end that it is correct.
+[28:23] And if it's going off the rails kind of like like monitoring it.
+[28:26] So it's a it's a complete shift.
+[28:28] Is you know, I'm I'm now like the agent manager is out of the coder.
+[28:33] Amazing.
+[28:34] Well, thanks, Simon.
+[28:35] It's been a super great discussion about how we're all going to become agent managers and
+[28:40] hopefully in notion.
+[28:41] Cool.
+[28:42] Yeah.
+[28:45] Find us on Twitter at NoPriorsPod.
+[28:47] Subscribe to our YouTube channel.
+[28:49] If you want to see our faces, follow the show on Apple Podcasts, Spotify or wherever you
+[28:53] listen. That way you get a new episode every week and sign up for emails or find
+[28:57] transcripts for every episode at no-priors.com.

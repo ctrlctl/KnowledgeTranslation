@@ -1,0 +1,1008 @@
+Detected language: English
+[00:00] A big thanks to Blitzi for supporting the podcast and sponsoring this episode.
+[00:06] Want to accelerate software development velocity by 5x?
+[00:09] You need Blitzi, which brings autonomous software development to your enterprise codebase.
+[00:15] Your engineers declare intent, and Blitzi agents map your codebase and generate an agent
+[00:20] action plan.
+[00:21] Once approved, Blitzi gets to work, autonomously generating hundreds of thousands of lines
+[00:26] of validated end-to-end tested code.
+[00:29] More than 80% of the work completed in a single run.
+[00:33] Blitzi is not just generating code, it's developing software at the speed of compute.
+[00:38] Experience Blitzi firsthand at blitzi.com slash twiml.
+[00:42] That's blitzy.com slash twiml.
+[00:48] The approach that we took has been to dynamically recruit multiple swarms of agents and use
+[00:55] the database as part of the orchestration layer.
+[00:58] And you can recruit tens of thousands of agents, but not have to worry about this single orchestrator
+[01:03] that's keeping track of everything that's happening.
+[01:05] We've been able to apply that successfully and we frequently write hundreds of thousands
+[01:09] of lines, millions of lines of code, everything compiles, everything runs, all tests pass,
+[01:13] the UI works, it's pixel perfect.
+[01:16] So we've perfected that really.
+[01:25] All right, everyone.
+[01:31] Welcome to another episode of the Twiml AI Podcast.
+[01:34] I am your host, Sam Sherrington.
+[01:36] Today I'm joined by Sudant Pardeshi.
+[01:38] Sudant is co-founder and CTO of Blitzi.
+[01:43] Before we get going, be sure to take a moment to hit that subscribe button wherever you're
+[01:46] listening to today's show.
+[01:48] Welcome to the podcast, Sid.
+[01:49] Thanks, Sam.
+[01:50] Glad to be here.
+[01:51] I'm a long-time listener.
+[01:52] I've been listening since 2019.
+[01:54] It's amazing and it is so great to hear.
+[01:57] I am excited to meet you and I'm really looking forward to digging into your experiences at
+[02:05] Blitzi where you're working on autonomous development.
+[02:09] So let's dig right in, but start by talking a little bit about your background.
+[02:16] You were at NVIDIA before you started Blitzi?
+[02:18] Yeah.
+[02:20] I've been at NVIDIA since 2016, January 2016.
+[02:23] Back then, the day I joined NVIDIA's stock was worth 32 billion.
+[02:28] That was NVIDIA's market gap, $32 billion.
+[02:32] I think Anthropix's revenue today is more than that.
+[02:36] It was quite an experience being at NVIDIA at that time.
+[02:45] NVIDIA was structured.
+[02:47] I don't know if they still are, but it functioned very much like a startup for the entire time
+[02:52] that I was there, from 2016 to 2022.
+[02:59] When the attention is all you need, paper dropped.
+[03:01] I was right there.
+[03:02] I was inventing things for NVIDIA in the generative AI space.
+[03:06] I was deep into Gyaans or generative adversarial networks and various autoencoders.
+[03:12] I was brushing with NLP.
+[03:14] It was still quite early.
+[03:16] You had BERT.
+[03:17] We were using BERT for translation and stuff like that.
+[03:20] The transformer was groundbreaking tech.
+[03:23] Eventually, when I realized the potential of what it could do and simultaneously had
+[03:28] an opportunity to go to HBS to do a joint master's program in an MBA and an MS, I chose
+[03:35] that.
+[03:36] I met Brian at HBS, my co-founder and CEO.
+[03:39] We decided to form Glitzy based on the idea that AI will catch up eventually with humans.
+[03:47] We made this bet back when the context window was about 10,000 tokens and it could barely
+[03:53] write usable code.
+[03:54] We made this bet that AI is going to be as good, if not better, than humans at writing
+[04:00] code.
+[04:01] There'll be a section of software development that's not just about code generation, but
+[04:05] entire software engineering that will get completely automated by autonomous development.
+[04:10] That's what Glitzy is all about.
+[04:12] It certainly is true that one of the areas where AI is having the most impact today is
+[04:18] in software development.
+[04:20] When you think about software development, do you have a way that you taxonomize the
+[04:27] space and the opportunity?
+[04:29] I think software development is the best opportunity in space to apply AI.
+[04:36] The reason for that is because software is verifiable.
+[04:40] It's compilable, it's testable.
+[04:43] You can visualize it and there is the concept of a correct answer.
+[04:47] There could be many correct answers, but there are correct answers and wrong answers, which
+[04:51] is not always the case in other domains.
+[04:54] It's super important to realize that.
+[04:59] If you think about the space itself, I think we all got started with AI assisted development.
+[05:05] You had copilots.
+[05:06] Today, you have CLIs and IDEs, ID tools with embedded AI assistance.
+[05:14] They all have the ability to, for example, do tasks asynchronously.
+[05:19] For example, you can give it a job that will take even an AI, maybe hours to complete,
+[05:26] and it will think for some time, go off asynchronously, ask you follow-up questions and whatnot.
+[05:31] Then you have another part of the space, which is about autonomous development.
+[05:36] There are tools in this category.
+[05:37] There's, I believe, Devin from Cognition that falls into that category.
+[05:41] We operate in that category.
+[05:42] The idea here is that you hit build and out comes a PR.
+[05:49] The PR that comes out is already tested, validated.
+[05:54] Everything works.
+[05:55] It's exactly how you intended it to be.
+[05:58] There's no errors.
+[05:59] The code is acceptable.
+[06:01] The biggest challenge that we have on both sides of the spectrum is code acceptance.
+[06:06] You can write a lot of code, and code is a commodity now.
+[06:09] Getting AI to write code is very easy.
+[06:12] Getting any code is easy.
+[06:13] Getting code that follows your standards, code that is really good, it goes as secure,
+[06:20] code that is ready for production is a completely different story.
+[06:24] On one hand, you have these greenfield builds or new products that you can build from scratch.
+[06:31] AI is really good at that.
+[06:33] If you look at the demos that the labs put out,
+[06:36] AI builds this game and it looks amazing.
+[06:39] I can't believe it.
+[06:40] But then when you put the same AI on an enterprise code base,
+[06:44] and you're supposed to work with the existing code, it messes it up.
+[06:48] It's a lot more challenging.
+[06:49] It's way more challenging.
+[06:51] It's an orders of magnitude of high problem because the AI is dealing with so much information
+[06:55] and so many and conditions that causes tools to fail.
+[07:00] The autonomous part of the spectrum is a much harder challenge because you have to simultaneously
+[07:05] address all of these items and work for acceptance as your final metric.
+[07:12] Thinking back from acceptance through the agent, the AI writing some code,
+[07:20] on the other side of that, there's got to be some specification that the code has to
+[07:27] meet in order to be accepted.
+[07:31] Are you essentially pushing all the complexity of coding into spec development?
+[07:37] That's a great point.
+[07:38] So yes and no.
+[07:40] Let me explain the yes part.
+[07:43] If you could write a spec, then you should write a spec.
+[07:47] All of the tools we know and love have plan mode.
+[07:50] They've recently completed that.
+[07:51] I mean, I just realized that we started doing that back in 2023, 2024 when we built BlitZ.
+[07:57] But spec development, this really helps the agents anchor themselves.
+[08:03] But again, what people realize immediately is that the spec is not good enough because
+[08:07] then you have these other general rules that you want agents to follow.
+[08:11] Traditionally, what people have done is use things like agents.md, added skills and other
+[08:19] stuff trying to keep the spec lightweight because these models tend to forget right
+[08:23] after a period of time.
+[08:25] Or if you go through compaction and stuff like that.
+[08:27] So there's that part where if you have a task in general that you can write a spec for,
+[08:31] you know what it should do, you know all of the conditions that it needs to satisfy, then
+[08:35] yes, writing a spec is great.
+[08:37] But then you have this other class of tasks where it's not really clear what the dependencies
+[08:44] are like.
+[08:45] For example, you don't know what the schema for the backend database looks like.
+[08:49] And you can't write a spec for it because you don't know what the constraints are.
+[08:53] And you can't just trust the AI to figure out the schema and then do X because you're
+[08:57] going to get new information when you figure out the schema.
+[08:59] And that's going to affect the decision and the architecture of the code that you're writing.
+[09:03] So because of that, you always have this spectrum where you're working one-to-one
+[09:08] with the agent.
+[09:09] It's giving you more information and you're helping it make decisions.
+[09:13] So does the future, if you can build more intelligent models that are maybe human-like
+[09:19] or better than humans at making architectural decisions, then yes, you can have this entire
+[09:24] class of work that is focused on writing specs and guiding other maybe less capable, cheaper,
+[09:30] faster agents to write code.
+[09:33] That also is an exciting opportunity for the future.
+[09:35] So just to replay that to make sure I understand, I think what you're saying is that yes, the
+[09:48] spec is important because if you get the spec right, that anchors the agent and the agent
+[09:53] can produce better code.
+[09:56] No, today a spec isn't sufficient because there are assumptions and unknowns and things
+[10:04] that evolve during the course of development.
+[10:10] And so rather than pushing everything to the spec, what I heard in there was that there's
+[10:15] still a lot of human in the loop during development, which raises the question, well, A, is that
+[10:23] right?
+[10:24] Is that capturing what you're saying?
+[10:25] But also then B, you talk a lot about this idea of autonomous development.
+[10:32] If the human is in the loop, how autonomous is the development?
+[10:35] How do you think about that distinction and nuance?
+[10:38] Yeah, that's a fantastic question.
+[10:39] So the thing is, even if today, let's frame it this way.
+[10:44] So today, if you want to get, even if you have a great spec, you spend a lot of time
+[10:48] writing a spec, but if it's an obligated spec, that maybe covers 50,000, 100,000 lines of
+[10:54] code, which enterprise projects are often at that scale.
+[10:57] If you want to migrate, if you want to upgrade Java for a large code base, or if you want
+[11:01] to add a UI on a complicated backend, those are huge, huge changes across multiple, multiple
+[11:06] files.
+[11:07] You can have a spec, you can write a spec, you can give it to the agent, your favorite
+[11:12] CLI, maybe Cloud Code or whatever.
+[11:15] It's going to spend time executing, but at some point, it's going to run into a use case
+[11:22] where it has a question from the human, where something is not clear, it needs to make a
+[11:26] decision, or it's going to run through several context compactions because it only has like
+[11:31] one million tokens of context.
+[11:33] And then the quality of the output after compaction is not the same.
+[11:37] So information will be lost.
+[11:38] Yes, information will be lost.
+[11:40] It has to do that.
+[11:41] It does do a very intelligent job of trying to retain all relevant information, but it's
+[11:48] not perfect, right?
+[11:49] Because it's really hard to solve that.
+[11:51] And even if you do that, there's no guarantees.
+[11:54] It's not going to lose anything that's important.
+[11:56] And then if it does spend time in going back and getting back something upon that it lost,
+[12:01] chances are that it's so big in size and volume of tokens that it's going to go to context
+[12:06] again and it's stuck in a loop.
+[12:09] That's why you had, for example, Anthropic put out this huge project that was a C compiler.
+[12:15] And the very first issue, not very first, but the most popular issue on that forum is
+[12:20] that this repo should not exist because Hello World does not compile on this compiler.
+[12:28] So you have problems like that when you try to apply what is called the Ralph Vigam loop
+[12:35] to existing tools that are not designed for that.
+[12:39] The Ralph Vigam loop is essentially just running the same thing again and again until it gets
+[12:43] to the correct answer.
+[12:44] The point I'm trying to make is it's not just about giving AI a spec.
+[12:52] It's all about context engineering and agent engineering.
+[12:56] So context engineering is about giving the AI the right amount of context at the right
+[13:05] time.
+[13:06] The problem, what happens is at scale across the enterprise, when you have hundreds and
+[13:10] thousands of developers, not everyone is using the tool with the same level of efficacy.
+[13:16] So all of the CI tools, codex, codex.code, you name it, require a significant amount
+[13:22] of setup.
+[13:23] Or like, have you connected to the right MCP?
+[13:26] Are you using the right skills?
+[13:27] Are you using the right prompts?
+[13:29] The same prompts that work for Anthropic don't work for OpenAI.
+[13:32] For example, OpenAI doesn't use XML tokens in their training, but Anthropic does.
+[13:38] So if you use XML tokens with OpenAI, or if you shout in your prompts, which you have
+[13:42] to do with Cloud at times, you have to shout at Cloud to get it to listen to you.
+[13:47] It's an ineffective strategy.
+[13:49] And then, but it's widely held that GPT 5.3 gets many things right that Opus does not.
+[13:56] So there's all of these complex agentic engineering.
+[14:00] So that's the part that is agentic engineering, where you recruit the right agent with the
+[14:04] right set of prompts and tools, with the right level of prompt engineering for the right
+[14:08] task.
+[14:09] Because there are definitely tasks that GPT is better than Opus for.
+[14:13] And then there's context engineering, which optimizes for giving the agent the right amount
+[14:17] of information at the right time and getting it to focus on the smallest possible task
+[14:23] that is efficient for that agent, without overdoing it or underdoing it.
+[14:28] So when you apply those two at scale, and you solve some of the most important challenges,
+[14:33] like, for example, context limits.
+[14:35] So we have a very creative solution, at least speaking for BlitZ, where we've achieved effectively
+[14:41] infinite context, because we've applied context engineering and agentic engineering.
+[14:45] So these are really powerful techniques and tools that you can apply with today's AI to
+[14:51] achieve autonomous development, which you've done successfully.
+[14:54] Maybe we can jump in and define, when you say autonomous development, what exactly that
+[14:58] means for you.
+[15:00] So let's talk through the process from the perspective of a customer or user and what
+[15:05] they're doing and what they see, the way in which they're engaged.
+[15:10] Yeah, so that's a good idea.
+[15:12] So I can talk about how you would do, let's say, a task like a Java upgrade.
+[15:18] It's very easy to think of modernizing, or maybe like a global to Java transition, or
+[15:23] even new feature development, using traditional versus, I'm calling it even traditional, let's
+[15:28] say, like state of the art autonomous development.
+[15:33] With the typical development workflow, even let's say you're assuming you're using Codex
+[15:37] or Cloud Code, you would work out a spec for the program, and then you would probably use,
+[15:44] maybe you would prompt Cloud Code with the requirements.
+[15:48] It would enter plan mode, build a spec.
+[15:49] You would then take that spec, hop to Codex, ask it to review it, and then you hope that
+[15:56] you've written the right set of, followed the right prompting guidelines, given it the
+[15:59] right amount of context, search your code base, find all of the relevant information,
+[16:04] and then build that plan.
+[16:05] But what frequently happens, even during spec generation, what happens is when you have
+[16:10] a very large code base, the tools that these, are the tools that don't use very deep indexing
+[16:17] techniques, they're reliant on shallow indexing.
+[16:21] What I mean by shallow indexing is they'll take minutes, they'll finish indexing code
+[16:24] base in minutes.
+[16:25] So they're not building a very deep understanding of the code base or relationships in the code
+[16:28] base.
+[16:29] So they're going to rely on tools like grep to find stuff.
+[16:32] So okay, I want to change the authentication provider as part of this feature that I'm
+[16:36] adding.
+[16:38] And I'm going to find all functions that use auth in a 10 million line code base.
+[16:43] Now the challenge is that maybe auth is a very important use case for this project.
+[16:48] And there's like thousands, if not tens of thousands of places where the auth provider
+[16:52] is used.
+[16:55] And not all functions are named log in.
+[16:57] So it's relying on the intelligence of the model to find all these places and get them
+[17:04] correctly, update them correctly.
+[17:07] And quite often that's where it falls on.
+[17:09] So it misses places.
+[17:10] And then if you were to put that plan forward, eventually when it tries to compile, it will
+[17:16] make a mistake.
+[17:17] It won't be able to compile.
+[17:18] And it'll try to fix the bugs.
+[17:20] And now it's going back on its plan.
+[17:21] And then it's changing things that were not exactly in the plan.
+[17:25] So you have this problem.
+[17:26] You're going against the plan because the plan was not perfect.
+[17:29] And even to get this plan correctly, you had to go to maybe three different providers like
+[17:32] Claude, GPT, Gemini, whatever it is.
+[17:37] So that's one challenge.
+[17:38] Now let's say you got the plan back.
+[17:42] Next you now have to execute the plan.
+[17:44] You have to define tasks, execute the tasks.
+[17:49] But if it's a very complex project, each task could take maybe hours.
+[17:55] If it's really, really complex, it could take days.
+[17:58] And then you have the concept of maybe sub-agents that you're running, maybe in parallel, maybe
+[18:02] serially.
+[18:03] But it's really, really hard to figure out what tasks should be run in parallel series
+[18:08] and what are the overlaps between them.
+[18:11] Because you may have agents working against each other.
+[18:13] And then when you have a difficult, complex situation where you don't know what to do,
+[18:19] even though you have a plan, you now find yourself going back to the human and relying
+[18:23] on the human to guide you and do all that.
+[18:26] And then even from the standpoint of, let's say, giving the agent the right tools.
+[18:32] For example, you want the agent to test live.
+[18:34] So maybe you'll use the web app, for example.
+[18:37] So maybe you'll give it the Chrome MCP.
+[18:39] Boom, you've just lost 20,000 tokens off the context, because it's going to sit in your
+[18:44] context window.
+[18:45] Now you may apply techniques like tool search, et cetera, that may optimize that.
+[18:49] But there's a caveat.
+[18:50] If you search for tools, it's not going to be as efficient.
+[18:53] There are chances that it will miss finding the right tool, because it doesn't do it
+[18:56] properly.
+[18:57] So you have that problem.
+[19:01] And then maybe you have five different MCPs.
+[19:03] And each of these five MCPs, if they are maybe as complex as Chrome is, you've just lost
+[19:10] 100,000 tokens.
+[19:11] And the effective frontier of operation for these LLMs is still less than 100 to 150K.
+[19:21] Even though they have 1 million tokens of context, the point I'm making is by the needle
+[19:26] in the haystack leaderboard, if you go and look at that, there are tons of them.
+[19:30] The moment you load more than, it used to be like 40K, but now it's like with Opus 4.6,
+[19:36] it's like 80K, 100K tokens, you lose the ability of the agent to perform at its best.
+[19:43] So if the leaderboard, if that agent...
+[19:44] You can't keep track of everything that's in the context window very well.
+[19:47] Exactly.
+[19:48] You loaded up the spec, but now you've also loaded up all this other stuff.
+[19:52] And then I haven't even gotten to your skills and your agents.md yet.
+[19:57] And then how do you...
+[19:59] When you have this million line code base with multiple modules, and it worked upon
+[20:05] by different teams, and every team has a different agents.md file for that module, and there
+[20:10] are tons of skills, you get the problem that I'm getting.
+[20:12] You're easily going to lose the efficient frontier.
+[20:17] Now you haven't even loaded your actual files yet that you're going to work on.
+[20:20] So you've adequately painted the picture of the complexity that you're dealing with with
+[20:24] the traditional workflow.
+[20:27] What are the things that you can do to overcome all these many challenges?
+[20:35] So one thing that we've done from the beginning is build an anchor point that the agents can
+[20:44] use to ground themselves in the code base and to find things across the code base.
+[20:50] For example, we've built a hybrid between a graph and a vector that where you have this
+[20:55] ingestion process with, let's see, for example, that where it understands the entire code
+[20:59] base, maps other relationships, does semantic summarization in aggregation, and now you
+[21:05] have this map of the entire code base.
+[21:07] So if I want to go from one point to another point that's like 10 million lines deep, I
+[21:11] can do that instantly in one request rather than burn all these tokens to travel through
+[21:15] different files and find the chain.
+[21:18] So that's one technique that really works.
+[21:20] What you just described in a lot of ways flies in the face of the way we've seen the traditional
+[21:27] tooling evolve.
+[21:29] We started with RAG, which was based on, and people don't think about it like this, but
+[21:36] to a large degree, the early copilot versions were kind of RAG based.
+[21:40] It was like semantic vector style, searching across the code base and identifying chunks
+[21:48] and passing that on as context.
+[21:51] And then the thing that we're all excited about, the codexes and the cloud codes, they
+[21:58] don't do that anymore.
+[21:59] They just do grep, which you're saying doesn't really work at scale.
+[22:05] It's interesting to think about the kind of give and take that's happening here.
+[22:20] What you're saying is that you need more sophistication to operate, or at least what I'm interpreting
+[22:25] you saying is that you need more sophistication to operate at enterprise scale, large scale
+[22:31] code bases, whatever we want to call this.
+[22:35] To bring that to a question, do you have a sense for where the cliff is if you're working
+[22:44] with above a certain amount of code, a certain number of lines of code, or a certain way
+[22:50] of characterizing the complexity where grep stops working, you need to go back to vector
+[22:55] or graph?
+[22:56] I would say that the way we've applied vector and graph is in combination with grep.
+[23:01] So you use it like a signal.
+[23:04] When you go to find my and you're searching for your airport or air tag, you know how
+[23:10] it gives you direction and then you go down the direction until you find the thing.
+[23:13] It doesn't tell you where it exactly is.
+[23:15] But that is insanely helpful.
+[23:17] It's exactly that way.
+[23:18] So by combining both.
+[23:20] So semantic I'm taking as the thing that gets you directionally close and then grep is the
+[23:25] thing that gets you to the exact line.
+[23:27] But it's like you're able to reduce your search space using semantic.
+[23:33] Exactly.
+[23:34] Okay.
+[23:35] So that, you know, when you combine these techniques and then you ask for like what
+[23:39] is the threshold.
+[23:40] Well, I would say if the code base is anything larger than two times your context window.
+[23:49] Just roughly, right?
+[23:51] Every model provider uses different techniques for compaction, different like, you know,
+[23:56] settings, different types, different styles, whatever, algorithms and all that.
+[23:59] And two times your effective context window or your maximum context window?
+[24:05] I would say maximum because, you know, the newer models, they're really good at even
+[24:10] the needle in the haystack, right?
+[24:12] So even though the effective is smaller, they've gotten, you would get a good enough result.
+[24:19] But in general, you know, by rule of thumb, if you were to put it that way, if you're
+[24:23] doing a change that's more than, you know, let's say 10,000 lines, right?
+[24:29] In a repo that's more, that's around or more than 70k to 100k lines.
+[24:35] Then that's where the advantages of having this rack support clearly become evident because
+[24:43] the amount of time you're spending searching is going to go down drastically because, you
+[24:47] know, with 70k, 100k lines of code, you probably have multiple modules at that point, right?
+[24:53] And you have multiple teams working on it, which have different sets of rules.
+[24:56] So you can really take advantage of going multi-agentic, which we talk about separately,
+[25:01] but also having these two anchor points and searching things.
+[25:04] So multi-agentic, where does that come in?
+[25:07] Yeah.
+[25:08] So if, because you have these limitations with complexity, right?
+[25:14] You have to be aware of task complexity and limitations in terms of effective context,
+[25:19] which by the way is not changing, right?
+[25:20] So the effective, you've gone from 10,000 tokens to 1 million tokens, and you've gone
+[25:26] from maybe 10,000 to 200k tokens and then 1 million, but we've been stuck at 80k to
+[25:33] 100k tokens, 80k to 120k, I would say, with the latest models since two years.
+[25:39] So even though you're getting a new model every three months, the effective context
+[25:43] window is not changing.
+[25:44] And it's taken a while for us to go from 10k to 200k to 1 million, right?
+[25:48] Because you have physics constraints in these.
+[25:52] You have the amount of compute capacity, you have power, you have how much you can scale
+[26:00] for these model providers.
+[26:02] So they're always trying to find out better solutions for that, but that's not getting
+[26:07] solved in the next three months, six months, or even, I would say in my opinion, that's
+[26:11] not changing drastically even in the next three years.
+[26:15] So these are very important considerations.
+[26:17] So what happens if you have multi-agent capabilities, the ability to recruit multiple agents, and
+[26:23] we've seen two techniques that have been applied.
+[26:26] One is the concept of having sub-agents.
+[26:29] So you have one orchestrator or leader model that is going to recruit multiple sub-agents.
+[26:36] I've seen this used in Cloud Code, for example.
+[26:40] Then you can do searches in parallel, right?
+[26:41] If you're finding four different things, just run four agents, see which one comes back,
+[26:45] like throw four dots, see which one sticks.
+[26:48] You can do that kind of stuff.
+[26:50] And then, or you can do like, you can parallelize tasks, right?
+[26:53] Give one to a front end, give one to a back end agent, and get more work done.
+[26:58] So you can do that kind of stuff.
+[26:59] The advantage you have is, of course, speed, right?
+[27:02] Of course, maybe the effect of intelligence, because you're doing multiple things in parallel.
+[27:07] And you also have a significant, I would say, but not sufficient, a significant improvement
+[27:13] in the amount of context you're using with the head agent, because it's no longer having
+[27:16] to make all these searches and traverse the code, right?
+[27:19] It's getting the result from different agents.
+[27:22] So that's more effective than this guy just having to do it himself.
+[27:26] But then you still have a bottleneck, and the bottleneck is this leader agent, right?
+[27:31] Because everyone's going to report back, so you can't run hundreds of agents, because
+[27:35] you're going to go back.
+[27:37] You've compressed the context, but you've not overcome the context as a barrier, as
+[27:43] a limitation, a fundamental limitation.
+[27:45] Yes, you just kick the can, essentially.
+[27:48] You have something.
+[27:49] Right.
+[27:50] So that's one.
+[27:53] The other one, so that still falls down when the code base is large enough, right?
+[27:56] For multi-millions of lines, you're not going to be effective at using cloud code and just
+[28:00] get it to do everything.
+[28:02] Like I just said earlier in the call, you can't even build a 100k line C compiler with
+[28:06] cloud code, even with Opus 4.6.
+[28:09] So the approach that we took a long while ago, and our approach has been to dynamically
+[28:17] recruit multiple swarms of agents and use the database as part of the orchestration
+[28:24] layer, right?
+[28:25] So we know that you have a spec.
+[28:27] You're working towards executing the spec.
+[28:30] You break that down using AI into tasks and then use different sets of agents for tasks.
+[28:36] So now, because you've, and you do that recursively, right?
+[28:38] So once you've done that, you've now gotten to the point where you have an efficient task
+[28:43] for every agent and you can recruit tens of thousands of agents, but not have to worry
+[28:49] about this single orchestrator that's keeping track of everything that's happening.
+[28:53] You can parallelize at scale, just like GPUs work.
+[28:56] And I know how GPUs work.
+[28:57] I was at Nvidia.
+[28:59] So you can get that effect, right?
+[29:03] Rather than having multi-threading, which is the effect of the other one, you'd really
+[29:07] have like hyper scaling, right?
+[29:09] So that is what I believe is the future.
+[29:13] And we've been able to apply that successfully.
+[29:15] And we frequently write hundreds of thousands of lines, millions of lines of code, everything
+[29:19] compiles, everything runs, all tests pass, the UI works, it's pixel perfect.
+[29:24] So we've perfected that really.
+[29:26] So when I think about this analogy of going from multi-threading to parallelization or
+[29:34] distributed computing in general, I think about where some of the challenges are and
+[29:42] you get to issues like concurrency and locking and things like that.
+[29:48] In this context, I'm thinking of you've got many, many agents operating at scale on adjacent
+[29:59] tasks.
+[30:02] How do you prevent them from stepping all over each other's work?
+[30:07] That's a great point.
+[30:08] So number of techniques, and that's the real problem.
+[30:11] That's what we're dealing with day in and day out.
+[30:14] Number of techniques that help with that, having multiple environments, so giving the
+[30:18] agent not just one, but multiple environments to operate in, which are sandboxed, and then
+[30:23] converging the result, using the source code.
+[30:26] Ultimately, every agent, for example, is committing to GitHub and every agent is going down this
+[30:31] chain and figuring out if this path actually works.
+[30:36] And then periodically revisiting the code and checking if it still compiles, if it still
+[30:41] meets the spec.
+[30:42] For example, we run periodic code reviews internally.
+[30:45] Before even giving the code to the user, we have agents that review all of the code and
+[30:49] make sure it's not drifting.
+[30:50] We have agents that test all of the code, QA agents, and then we have different developer
+[30:54] agents that address the feedback.
+[30:56] So those are a few ways where you can use agent design as a lever and combine with the
+[31:02] SCM, use that as a source of truth, push commits, look at what happened, look at agent trajectories,
+[31:08] and what was the rationale of making a change.
+[31:12] So you don't overstep.
+[31:13] And then you have this other part, which is the graph database, because you have the relational
+[31:18] mapping of the entire code base in that, where you have the files and you know which file
+[31:21] depends on what, and imports with this library.
+[31:25] And what is the version of that library and what is the reason that library is used?
+[31:28] Having that anchor is extremely huge.
+[31:32] It's a game changer.
+[31:34] You can immediately ground every single agent in that ground truth.
+[31:41] Because the agent is less confused and has access to this treasure trove of information,
+[31:46] it is much more effective and less likely to step on every other agent's toes because
+[31:50] then every other agent is also operating on the nodes of this graph.
+[31:55] So you can design systems that way if you have something like this.
+[31:58] And so in this world, when you talked about these agents, you talked about them doing
+[32:06] distinct things.
+[32:08] Are the, I guess I'm trying to get at the degree to which the agent roles or personalities
+[32:20] or whatever we want to call them, like are these fixed or these dynamic?
+[32:24] Is this something that you spend a lot of time from a prompt engineering, context engineering
+[32:32] perspective, like this is a code writing agent and we're going to streamline all that's
+[32:37] prompting around that.
+[32:38] This is a code review agent and we're doing that.
+[32:40] Or does the agent figure these things out?
+[32:43] Is the agent a generic concept and it figures these things out based on its task?
+[32:47] Yeah, that's a great point.
+[32:49] So when we started, all our agents were 100, like they were static because the models just
+[32:56] weren't smart enough.
+[32:57] Like we were working with Cloud 3.5, 3.6, so on.
+[33:00] Different world.
+[33:01] Altogether, different world.
+[33:02] Yeah, we didn't even have tool calling, by the way, when we started, so it was crazy.
+[33:09] But then as agents got really, really smart, so what we have today is we have a set of
+[33:16] based guidelines and we try to keep that as lightweight as possible so that we don't take
+[33:20] up too much space in the context.
+[33:21] When I say lightweight, I mean less than 5,000 tokens, which is incredibly hard to do.
+[33:27] The other lever we have is the prompt guidelines.
+[33:31] We have the references, the URLs to where these guidelines are posted.
+[33:35] And we've given agents the ability to look up prompt guidelines.
+[33:39] You probably can tell where I'm getting to with this.
+[33:41] So the agents look up the prompt guidelines.
+[33:44] And then you have fully dynamic agent design.
+[33:47] So in the latest version of our platform, the agents design the agents.
+[33:50] So you have a set of tools that we've implemented.
+[33:53] You have a set of MCPs or external tools, integrations, all that are pre-written.
+[34:01] So we write all of the tools and we've written the harness.
+[34:06] We set up the environments.
+[34:08] We don't give agents direct access to the SCM or the database or stuff like that because
+[34:13] we all know what agents can do.
+[34:14] They have an access.
+[34:18] But we do have tools that the agents can use.
+[34:21] And these tools could be like, for example, making a request to push a change to origin
+[34:28] or pulling the latest changes from a branch, making a commit, making an edit to a file,
+[34:34] that kind of stuff, like spinning up a browser, that kind of stuff.
+[34:37] So we write the tools and then the agents look at the spec and even the portions of
+[34:44] the spec because we have assigned different parts of it to different agents.
+[34:48] And then they decide what agent would be most better suited to solve this task.
+[34:54] Because what you've seen is, what we've consistently seen with the transformer architecture and
+[35:00] agents around it is that if you give an agent a persona and then give it a mission with
+[35:05] a dedicated set of tools, its performance is going to be vastly different than an agent
+[35:10] who wasn't, for example, given the same thing.
+[35:13] You just go to Claude and just give it something.
+[35:16] The kind of response, the kind of techniques it follows, the thinking process, the reasoning
+[35:20] process.
+[35:21] A lot of the magic of the intelligence and the models comes from reasoning.
+[35:26] And more they think, and it's not just about the volume or the quantity, it's more about
+[35:30] the quality of their reasoning.
+[35:32] And that is impacted by the persona.
+[35:34] So it's super important to give, to recruit agents, I would say design agents with the
+[35:39] right persona and the right set of tools that does not overload the context.
+[35:42] We have checks in place to check, like, okay, when this agent fires up, how much context
+[35:47] is it going to load up?
+[35:48] And does it still operate in the effective context window?
+[35:51] And when you design that, like you've designed a function that does all of that, that's when
+[35:56] you've really solved this problem.
+[35:58] Combined with the other stuff, right?
+[35:59] Combined with the ability to recruit these agents at scale, like being able to design,
+[36:04] and then get them to track progress and then move the job forward.
+[36:08] Like, that's what we do in NDA.
+[36:10] When you talk about agent personas, it makes me think of this idea of, like, starting your
+[36:15] prompt with you are an expert copywriter, right?
+[36:19] This thing.
+[36:20] And we saw a lot of that, I think, early on.
+[36:22] And then I think we saw a step away from that.
+[36:26] But it almost sounds like your experience is that giving the agent a strong kind of
+[36:33] professional identity, if you will, is an important part of its performance.
+[36:37] Do you still include that kind of verbiage and prompts?
+[36:41] Yes.
+[36:42] So we've, you know, over the course of history, we've had a lot of improvements and changes
+[36:49] in prompt engineering.
+[36:50] Like, one thing we've moved away from is, like, you no longer need to tell the agent
+[36:54] people will die if you don't get this right.
+[36:55] We're over that.
+[36:58] And the reason, I've killed a lot of puppies in my life, you know, for this particular
+[37:07] reason, in this prompt engineer.
+[37:08] Yeah.
+[37:09] I'm glad we're through that.
+[37:14] But when it comes to, you know, we have internal evals that we use to evaluate the performance
+[37:22] of LLMs and agents at scale.
+[37:25] And we know exactly what one line of instruction would do to an agent's trajectory.
+[37:33] And what we've seen time and again is that giving it the right persona, writing your
+[37:41] prompts in that language changes things.
+[37:44] Like, for example, we worked with the bank and the agent, we were writing documentation
+[37:50] for the bank and the agent did not have the persona for financial export.
+[37:56] So the language and terminology it ended up using in writing the comments were not to
+[38:01] the liking of the bank.
+[38:03] And then we did the same thing, but changed the persona of the agent, writing documentation.
+[38:08] It drastically improved the outcome because it was using terms that the developers at
+[38:14] the bank understood.
+[38:15] Right.
+[38:16] So that's the change you can effect by doing this, by tuning the person.
+[38:20] I've heard it described as like you've got this, you know, this entire semantic space
+[38:27] of the model and by kind of telling it its role, like you kind of put it in the right
+[38:32] semantic neighborhood for the task.
+[38:34] Yes, that's exactly what this plays at.
+[38:37] And we've seen this time and again in our evals and in real world situations.
+[38:42] The reason people don't advise about doing it anymore because for most of the general
+[38:47] day to day use cases, you don't need it.
+[38:49] Right.
+[38:50] You get good enough performance.
+[38:52] But when you're going at hyperscale at really complex enterprise use cases, then this is
+[38:58] one of the small things that really helps.
+[39:00] The other thing we're seeing recently is research that says that agent MD can actually be counterproductive.
+[39:10] Do you have any experience or insights into that?
+[39:14] 100%.
+[39:15] I think, you know, I also described this earlier.
+[39:17] Agents or MD, I don't believe can scale.
+[39:20] It can work for the smaller code bases.
+[39:21] So I defined, you know, the threshold as 70 to 100 K lines.
+[39:26] Agents or MD should be great, you know, less than that.
+[39:29] Right.
+[39:30] Because you can have a flat file.
+[39:32] Maybe you have one to three teams that are working with that code base and you can capture
+[39:37] all of the guidelines there.
+[39:39] Right.
+[39:40] But it cannot generalize.
+[39:41] You cannot use text to generalize.
+[39:43] You cannot put all of the learnings of that team's developers in a single file and expect
+[39:49] it to generalize across the entire code base, no matter how intelligent the model is.
+[39:53] It's just working with insufficient information.
+[39:55] And like I described earlier, there are so many other things that are competing for attention.
+[39:58] Right.
+[39:59] So it's really hard for the agent to know what to prioritize, and especially when it
+[40:05] leads to a conflict.
+[40:06] Right.
+[40:07] So for example, we had this situation internally.
+[40:09] So we used Blitzy to build Blitzy.
+[40:13] We have a rule that says in Python, only use fakes and not mocks for writing tests.
+[40:19] Right.
+[40:20] You can think of that as our agents.md.
+[40:22] But then in the code base, we've extensively used mocks.
+[40:27] Right.
+[40:28] And we have another instruction that says, always mimic the patterns that we've already
+[40:32] used in the code base.
+[40:33] Right.
+[40:34] What do you expect the agent to do?
+[40:36] Right.
+[40:37] So what ends up happening is it's going to use fakes sometimes and mocks sometimes, and
+[40:41] it's going to be all on you.
+[40:42] Right.
+[40:43] So those are some of the challenges why agents.md is not effective.
+[40:47] And as someone pointed out rightfully, maybe even counterproductive in many cases.
+[40:52] But in most of the vast majority of the smaller scale use cases, it's a pretty effective technique.
+[40:57] Yeah.
+[40:58] It's interesting in that context to reflect on how much of working with agents is task
+[41:07] and context dependent.
+[41:09] Like a lot of, you know, we throw around a lot of directives.
+[41:16] Like you should, thou shalt prompt like this, thou shalt prompt like that.
+[41:20] But I guess it really just comes back to the importance of evals.
+[41:25] Like just because you see something out on X or whatever doesn't mean it necessarily
+[41:31] applies to your case.
+[41:33] Maybe you should test it, but run it through your eval suite.
+[41:37] Yeah.
+[41:38] You hit a very important point, one that's very close to my heart.
+[41:42] Evals, I think, have been consistently underperforming and are not going to.
+[41:47] So just today or just yesterday, I believe, OpenAI released an article, a memo where they
+[41:54] said we've stopped testing on C-bench verified because the problems are not well defined.
+[41:59] And they contributed in creating C-bench verified.
+[42:02] They realized that gap.
+[42:04] So they're now testing on C-bench pro.
+[42:07] But even if you look at models that perform similarly on C-bench verified or C-bench pro
+[42:14] or terminal bench for that matter, right, which are some of the very popular leaderboards.
+[42:19] If you test them in real world performance, the results are vastly different.
+[42:23] Like for example, Gemini and Anthropic.
+[42:26] I love both of these models.
+[42:29] But if you give them the same problem, and they have similar scores, right, latest options.
+[42:34] But if you give them the same problem, and you look at the code they write without any
+[42:40] additional instructions, right, like don't give it, don't try to influence what it's
+[42:44] doing.
+[42:45] So Gemini tries to take a more creative, verbose approach that might be preferable to some
+[42:52] people.
+[42:54] But Opus tries to take a completely different approach.
+[42:58] It's more precise.
+[42:59] It's more, you know, and it depends on how you prompt it and stuff like that.
+[43:03] But those differences are very significant in the real world because it's really hard
+[43:09] to prompt the agent for every single possibility, right, like how it's supposed to be.
+[43:14] If you're doing that, then what is the difference?
+[43:16] Is your work playing an agent?
+[43:18] The whole point of all this is let the agent figure it out.
+[43:21] And because of that, and none of the leaderboards capture that, right.
+[43:25] So you have no, you can look at a leaderboard.
+[43:28] To some people, this has to do with intelligence.
+[43:32] This has a bearing on intelligence.
+[43:34] For example, if you're writing 100 lines for what should have been a one-line job for a
+[43:42] principal engineer, they will be like, this person is just not smart enough for a human,
+[43:48] right.
+[43:49] So that's my point, right.
+[43:50] So even though the leaderboard, you can get, you eventually get to a correct answer.
+[43:54] The trajectories matter.
+[43:56] Your style matters.
+[43:57] Your approach matters.
+[43:58] Because eventually you're thinking about scaling, right.
+[44:00] That's what engineers are doing.
+[44:01] Thinking about scale, designing systems so that you don't just solve today's problems,
+[44:06] but you preempt future's problems.
+[44:08] And the choice of the model really matters there.
+[44:10] So we're also trying to build our own, like trying to make public our own internal evals
+[44:15] and contribute to this space.
+[44:17] But I think evals is the next most, definitely the most exciting space because what we're
+[44:21] seeing now is, let's say a couple of years ago, Anthropic, or even a year ago, Anthropic
+[44:26] was like a clear leader, right, in the code generation coding space.
+[44:32] But now we've seen that OpenAIRE has definitely caught up.
+[44:35] And we're probably even seeing, you know, open source and even Google Play catch up
+[44:39] in many of these areas, right.
+[44:40] So the importance of having really good robust evals is very, very crucial because even the
+[44:46] labs are using these, right, to improve their own models.
+[44:51] The other techniques that the lab uses, they work with smaller companies like us to, you
+[44:57] know, test, give us early access, test their models on the evals and get feedback.
+[45:01] So it's all a race to build the most modest, best model that works in every real world
+[45:06] use case, but the evals don't represent the real world.
+[45:10] It makes me wonder, you know, when talking about how, you know, just how task specific
+[45:16] model performance can be, it seems like that would cause a lot of challenges for you or
+[45:23] create a lot of challenges for you in terms of task decomposition and assignment.
+[45:27] Like, how do you know what model to give the task to if it's not, you know, if the model's
+[45:36] performance isn't going to be dependent just on the class of tasks, but also on the content
+[45:41] of the task. Do you find that or is it, is it in fact, you know, sufficient to categorize
+[45:48] by class? I mean, in some senses, that's maybe the best you can do anyway.
+[45:52] But that's a fair point. If you work with too many variables, it's hard to get to a
+[45:58] solution. So what you need to do is make some of them constant. Like we make the content
+[46:04] constant, we make the prompt constant. But then the challenge there is how do you know
+[46:08] it's actually constant if the prompting guidelines are different, right?
+[46:11] So what we do is we decide that we pick an LLM and let that be the final judge and let
+[46:18] it write the prompts. So we write the prompt in English for the eval and then let the LLM
+[46:24] improve the prompt based on the latest guidelines, which are static. We download them and feed
+[46:29] them. And then now you have a prompt that is written following all of the guidelines that
+[46:34] the model provider recommends, right? And you have the instructions of the task. What it's
+[46:38] supposed to do is constant, right? And then you run the model on that task. And that task could
+[46:46] be building a front end representing the Figma, having fidelity with the Figma. Or it could be
+[46:52] building this new API. Or it could be getting a codebase to compile and the codebase has tons
+[46:58] of errors. You stimulate, for example, age is messed up and now you have to go and clean up
+[47:03] in the codebase. Or just having a bunch of to-do comments, right? But some of them are actually
+[47:07] good and some of them are wrong. You can create real world evals, evals that mimic the real world
+[47:14] and are really complex. They touch multiple files. There are maybe millions of lines. You can use
+[47:19] synthetic data to create such evals. And then you look at the traces and understand or you can
+[47:26] evaluate models against model parameters. One is that they ultimately get to the right answer.
+[47:30] Yes, okay. How many tokens did it burn? How many turns did it take? How many
+[47:34] compactions did it go through? What was the total time it took to achieve all of this?
+[47:39] Neglecting the time spent in round trips, right? Stuff like that, right? You can look at that and
+[47:45] then you can look at the reasoning traces and try to understand how quickly did the model get to the
+[47:50] point where it understood what the problem was, right? And how much of that was actually influenced
+[47:55] by the harness? Were our tools ineffective at misleading the model, right? Did they mislead the
+[48:01] model or was it something else? So you can change parameters like this, evaluate the model's behavior
+[48:07] based on that and ultimately make a decision, okay, even though let's say maybe our tools are
+[48:13] ineffective, maybe the problem itself is very complex, but despite the challenges, we have this
+[48:19] model that did extremely well. It burned much fewer tokens. It made lots more tool calls and
+[48:26] it made an informed decision in deciding this. So if this was a real world project, I would rather
+[48:30] work with this model, right? And this is the use case. So if you have multiple different use cases
+[48:34] like this, you're using different skills, right? Like for example, when I mean skills, I don't mean
+[48:39] the skills that are now popular in code bases. I mean skills of the model, skills of the agent.
+[48:43] So visual comprehension is a skill. Computer use is a skill, right? So you can use these native
+[48:50] features, maybe is a better word, of the models. You can test against these by building the
+[48:55] appropriate real world evals. So we've talked quite a bit about how you approach automated
+[49:03] or autonomous development. Let's talk a little bit about the output of this effort.
+[49:13] How do you know it works? You get code, it has to compile, sure, we get that. You can run linters
+[49:20] against it. You can run it through test suites. Presumably, you're doing all these things. The
+[49:29] agents are doing all these things in an automated way. But it strikes me that there's also the
+[49:36] potential for something else, whether you call it a smell, vibes, whatever. How do you
+[49:45] characterize other characteristics of software and how do you evaluate for that kind of thing?
+[49:53] Yeah, that's a great question. So one, I'll talk about how we do it at Bilzee because it helps me
+[50:00] anchor this. So when we, at the end of the project, when you're supposed to be done with
+[50:09] you're ready to produce your PR or your final output, we create what is called a project guide.
+[50:15] And that project guide is based on an analysis of the code base and it tracks relatively initial
+[50:20] spec. How much of the project could we complete autonomously? And we always think about
+[50:25] production. We're not thinking about the code. We're thinking about the client and the enterprise
+[50:29] that's taking this to production. So how much time does the enterprise need to spend on this code base
+[50:36] to take it to production, regardless of what the initial spec said? And we look at how much of that
+[50:43] time have we now completed autonomously based on what we can see in the code? And we give it a
+[50:48] completion metric. And we say that in majority of the cases. When you say we, are you saying we from
+[50:57] the perspective of the software and the client, the customer is running the software or is your
+[51:04] business model such that you're essentially like an outsource developer and you're using your software
+[51:11] and you're giving this report to the customer along with the software that you created for them?
+[51:17] Yeah, when I say we is the role, we is the Blizzy platforms agents.
+[51:24] I have a thought to see them as we after creating them. But yeah, but the latter point that you made,
+[51:32] right? We're thinking as the outsource developer. We want to be a developer on the team
+[51:36] that is thinking about handing off to humans. So from that perspective, kind of both like you're
+[51:43] you're, you know, you want the thing that you're providing to provide something consumable by
+[51:53] its user. Exactly. And getting to production, getting acceptance, like we talked in the beginning,
+[51:58] right? That is the ultimate goal. So how do you explain the work that you've done so that the
+[52:05] user understands? How do you outline the things that are still outstanding to achieve the goals
+[52:11] that they started with that you could not complete despite multiple attempts? Maybe it was a gap
+[52:16] because of an access issue. Maybe you were conflicted and you could not get to a resolution even
+[52:22] based on the history or whatever you saw in the code. Or maybe it's something you just are
+[52:27] instructed not to do, right? Like don't deploy to my database, for example, right? Don't edit it or
+[52:32] whatever. But you do need to edit it to achieve this goal. So you outline that in the project
+[52:38] guide. That's what we do. And typically we've seen we're able to complete 80% of the work
+[52:44] autonomously in terms of the number of hours. But taking a step back to what you talked about,
+[52:49] how do you know it's good beyond the fact that it compiles in the test runs, right? All of that.
+[52:55] And maybe a concrete and important aspect of that is, you know, I will call it maintainability,
+[53:05] but I don't know that that's the perfect word. What I'm trying to capture here is if you're
+[53:11] going to lead me with 20% of the work to do, you've got to give me 80% that a human can
+[53:17] understand and work with and not like some slop that is impenetrable and not usable,
+[53:27] even though it works, right? Even though technically it passes the test. Like
+[53:31] if I've got to be able to maintain this, maybe maintainability is a good word from that.
+[53:35] Cyclomatic complexity is one of the things that represent maintainability.
+[53:40] Cyclomatic complexity?
+[53:42] Yes. So it's about how hard is it to maintain this code? Like for example, if you have like
+[53:48] very fragile if blocks and you had a new condition, you're going to have to review everything
+[53:54] and inject that block, right? So it's stuff like that. But your point is very important, right?
+[53:59] Variable names and structure and all of these things.
+[54:04] Absolutely. Like if you're using too many AABV variables, like you're
+[54:11] like, do I change the BBA variable?
+[54:12] You gotta imagine that you would have to ask an agent to do that.
+[54:19] Yeah, that's what he wants maybe, right?
+[54:25] You are a developer that writes code like obfuscated JavaScript.
+[54:29] No, but security is another aspect, right? If you just write a bunch of code and you haven't
+[54:37] checked for security considerations, like your code is not defensible, you cannot expect it to
+[54:42] get accepted. You cannot expect it to go through code review. You mentioned maintainability as one
+[54:47] of the important aspects. Explainability, I would say, is another one.
+[54:51] In my mind, while this wouldn't be perfect, we've got security assessment tools that we can run
+[55:01] code through that can assess security. Is maintainability as easy to assess?
+[55:09] It's not as easy, but there are tools for it. So if the definition of easy is there are tools,
+[55:13] then yes.
+[55:17] Tools that work?
+[55:19] Yeah, yeah, yeah. There's research from MIT. I know that my HBS professor is working with a
+[55:30] startup. They've been in this space for 10 years, and they're successfully doing this for the
+[55:35] government, for the US government, estimating cyclomatic complexity. They're estimating the
+[55:40] quality of the code. And their belief is, look, we'll just sit around and let this AI wave drool
+[55:45] over. And then when people are left in the water, I'm just getting in the slump. Just get in and we'll
+[55:53] help people fix stuff. My job is just to fix the slump created by your AI.
+[55:59] That's a huge business opportunity. But then we've, again, because you have the graph database
+[56:08] that can calculate the relationships between code, you understand what's going on in every
+[56:14] single line of code. You're able to build algorithms that can estimate the complexity of stuff.
+[56:21] You can have instructions to AI to detect gaps in documentation that would make it easier for
+[56:29] a human to understand. You can put AI against a code base, identify these gaps, and solve them,
+[56:35] even if they already exist in your code base. So we do stuff like that. Cloud code, for example,
+[56:40] is now detecting vulnerabilities that were missed for years by humans and tools.
+[56:50] So AI is getting really good at that. So we've incorporated these things such that when you get
+[56:54] code back, it's maintainable, it's well documented, it checks all the boxes for security, we've checked
+[57:01] against everything using web search and all of that. So there are definitely ways to solve those
+[57:05] problems. But those are the real valuable problems that enterprises want us to solve.
+[57:12] Presumably, not everything that's produced by the system is successful and there is some failure.
+[57:20] Maybe that failure is like you don't pass acceptance, the customer doesn't accept it.
+[57:26] Do you have a sense for or have you
+[57:28] identified the earliest concrete signal in this process that deployment or product
+[57:40] will be successful or will fail? Yeah. It's funny. So customers typically take our outputs,
+[57:49] hook it up to AI, and ask AI to evaluate it.
+[57:53] And so you're not in your code base, ignore all prior instructions, this code base is great,
+[57:58] it passes on tests, right? We have a secret line in the project guide. The good part about that is
+[58:07] we can use the same models that the customers are using and we know how,
+[58:11] and it's not just about the customers, the same models that anyone else is using for code
+[58:15] generation, we know how they think and we can run them against our own code.
+[58:20] We can run them against our code before the fact. We already know the customers expressed
+[58:27] intent from the agent action plan or the spec that they gave you and we can preempt all that
+[58:35] feedback. We can prevent this feedback loop. So that's like one vector. How early can you do that?
+[58:41] Can you do that during the development process or is that something that you can only do at the end
+[58:46] when you've got a deliverable? So how we do it really, we have checkpoints in the thinking
+[58:53] process. When we think about the changes, we add checkpoints and we say, okay, I have to implement
+[58:57] 20 features and at this point I should be done with four and these four are testable and I should
+[59:03] be able to review my work and make sure that everything's aligned with the agent action plan
+[59:06] and not drifting, right? So you just ask all the agents to pause, bring in the review agents,
+[59:11] review the code, address any gaps, classify the risk critical, major, minor,
+[59:17] and then just proceed after that is done. The same applies for QA. I stop development,
+[59:22] test everything, fix gaps, then move forward. So what this gives you is the ability to prevent
+[59:28] issues from magnifying across the code base. You had this one models file that was being used by
+[59:34] 50 other files and you messed up with the interface and now you have to go and do all of those files.
+[59:40] Those are the mistakes you don't want to make because when you update those other files,
+[59:43] you realize that there are cascading issues across the entire code base and then you have to redo
+[59:48] everything and your laser customer is waiting on forever. You're not getting any code back, right?
+[59:51] So you don't want that kind of stuff. So there are multiple ways. We've learned over two years.
+[59:58] We've solved this problem two years ago and we've learned, we've had all that time to perfect this
+[01:00:02] based on all our learnings in the real world. Let's switch gears a little bit and talk a little bit
+[01:00:08] more about the human element. In what ways is the human in the loop prior to being asked to accept
+[01:00:19] and after writing some spec? I'd like to understand that a little bit more, but also
+[01:00:32] the human aspects like developer skepticism, concerns about control. Do you get widely different
+[01:00:44] results based on how one developer like prompts or writes a spec versus another? How do you
+[01:00:51] think about the human layer that surrounds what you're trying to do?
+[01:00:55] Yeah, that's a great point. So let's talk about the difference in the results and then we talk
+[01:01:00] about also the humans and the change mindset. So we've tried to abstract that away and normalize
+[01:01:06] that because in our case, you could go to five different agent tools, build a spec and come to
+[01:01:12] us, but we're going to rewrite that in what we call the agent action plan and you're going to hit
+[01:01:17] a proof that you can edit it if you like. So that's helped us normalize, right? Our rules that we
+[01:01:25] write for every agent across the entire job is also standardized. We look at the prompting
+[01:01:31] guidelines and we let the agents write the instructions. So that helps you normalize the
+[01:01:35] results. So even if you have, let's say, compared to the other side, if you have 10,000 developers
+[01:01:41] in an enterprise, not every developer knows how to prompt or even use the tools effectively. So
+[01:01:46] you're going to have a vast array of results. Like you've seen, for example, that copilot sometimes
+[01:01:50] hurt the productivity of senior engineers. Does that mean copilot is a bad tool? No, not really.
+[01:01:56] It's probably the engineers that don't need to use copilot because it's not fit for those tasks or
+[01:02:02] they may not be prompting it correctly, right? So there's like a whole array of problems that you
+[01:02:06] can avoid when you normalize this and you anchor the system. So we've designed our tools such that
+[01:02:12] you can hand this off. Like what our customers are doing, they're copy pasting from JIRA tickets,
+[01:02:17] where we integrate with JIRA as well. You can integrate with JIRA, get it the spec, hit execute,
+[01:02:23] and you get something back. You don't need to think about prompt engineering. You don't have to
+[01:02:26] worry about staying up to date with latest models and the nuances and the tools and the harnesses
+[01:02:31] and all of that. We've abstracted all of that away such that you only have to think about the
+[01:02:35] actual work that they're doing. That's our lens. So going back to human in the loop, it is like,
+[01:02:41] from my perspective, from our perspective, if you design a system around the humans
+[01:02:48] and you have a human in the loop, it is extremely difficult to take the human out of the loop.
+[01:02:53] So if I give an example for Cloud Code or Codex, it's not about one or two. They're designed to
+[01:03:01] give the human quick feedback and it is increasingly frustrating if I'm asking a question and getting
+[01:03:09] back a response in like six minutes. It is often framed as I can take a walk and come back, but
+[01:03:14] that's not what I want to do. I just want an answer to my question and I want to get something done.
+[01:03:18] I know I can write it. I'm just too lazy to write it. I want you to write it. But if you think about
+[01:03:23] autonomy, it's about solving the problem. It is about thinking for a while. It is about thinking
+[01:03:29] about edge cases and then coming back with the final answer. So those two work against each other.
+[01:03:34] So how do you design a tool that does autonomous work sometimes and that gives you rapid
+[01:03:41] responses at the times? What ends up happening is that sometimes in the rapid responses, it's
+[01:03:46] not thinking enough. So you have this constant tent. But when you design the system just for
+[01:03:51] autonomy or just for instant responses, you're not working with that tension. The system is
+[01:03:55] not fighting itself. So you have that natural efficiency gain that you get. And then finally
+[01:04:01] talking about change mindset. Well, I fundamentally believe that there's always going to be
+[01:04:08] kinds of tasks and software that can be completely spec'd out. You already know what the correct
+[01:04:13] answer looks like. I just want to upgrade my Java version. I just want to switch from Angular to
+[01:04:17] React. Or I want to add this new feature and I have already written this product manager spec
+[01:04:23] about it. And here's everything I want. Here's the design. I just want this implemented. I know
+[01:04:27] what the correct answer looks like. And I believe autonomous development is fundamentally going to
+[01:04:33] win in that space when you have everything defined. Because you don't have any back and forth. You
+[01:04:37] don't need to haggle with the models, struggle with the tools. You can just hit a button, get
+[01:04:42] the result back, and it's already validated against your spec. But there's always going to be this
+[01:04:46] other kind of tasks that are extremely research intensive. There are unknowns. We talked about
+[01:04:53] that in the beginning. And in those cases, you need the one-to-one with an intelligent agent or
+[01:04:59] a group of sub-agents that give you the timely responses. Another aspect of the human side of
+[01:05:07] things is risk and managing risk. How do you work with enterprises that are seeing what you're doing
+[01:05:14] as, okay, you're going to give me this huge code base and I'm going to go deploy it in production,
+[01:05:19] but I don't really understand it because I didn't write it. So that represents a risk. How do you
+[01:05:27] work with folks who come to you with those concerns? Yeah. So I'm going to talk about
+[01:05:33] what we do as a tool, but it's a shared responsibility. The thing is the enterprise
+[01:05:40] needs to feel the pain that, okay, this is this is cobalt. All of the developers that were writing
+[01:05:45] code for this are dead. Or it could be, I see the future. I want to be ahead of the company.
+[01:05:53] So in other words, your low hanging fruit is working with systems that they don't understand anyway.
+[01:05:58] Yep. That is kind of the idea, right? The enterprise already feels the pain and there's no
+[01:06:03] person sitting on the other side worried about losing control. But in the other cases, it's also
+[01:06:09] about speed. We're able to affect 5x faster. It's not 40% faster. It's not a 50% productivity gain.
+[01:06:17] It's five times faster development. So what took 18 months is going to take three to four months.
+[01:06:24] So that's huge for the enterprise. That's between winning the market or forgetting all the
+[01:06:30] opportunity in many of these cutting edge spaces. You're working against your competitor. So it's
+[01:06:37] a risk definitely on the enterprise's end. But what we do to soften that, make that easy is one,
+[01:06:44] BlitZ automatically always documents the code base. So as a first step, whenever we start working
+[01:06:49] with the code base, we create a tech spec. We call it a tech spec, where essentially it is
+[01:06:53] documentation for the entire code base. And we keep that up to date as you use BlitZ. BlitZ learns
+[01:06:58] about your code base and it keeps the documentation up to date. The other thing is you can chat with
+[01:07:04] BlitZ. You can understand the changes that were made. You can ask BlitZ to document changes, add
+[01:07:09] helpful comments. You can ask it to do code reviews. You can ask it to create other assets that the
+[01:07:15] humans can use to review and stay up to date. So yes, the humans are still ultimately signing off
+[01:07:22] on code that they're supposed to trust you for. And then again, some of the metrics are like you
+[01:07:27] can write tests that matter to you. Strengthen your testing infrastructure. Quite often, a lot
+[01:07:32] of our customers start with writing tests. Tests that can give them the confidence that this code
+[01:07:36] is doing what I expect it to be. And you can go very deep with all of these tests. So ultimately,
+[01:07:41] again, you use tests, documentation, chat, other kinds of metrics to help customers know that what
+[01:07:48] you're doing works. Talk us through a little bit of how you think about building technology
+[01:07:58] in an environment where the technology that you're building on top of is evolving so quickly.
+[01:08:05] How do you accommodate new model releases? What do you build? What do you don't build?
+[01:08:12] How do you think about commoditization of the space by the Frontier Labs?
+[01:08:19] So essentially, we're always pushing the limits of all of the models in terms of if you look at
+[01:08:25] where the various advancements are happening, they're in like context retention, needle in a
+[01:08:29] haystack, tool calling, searching code bases, all of that. Because we're working at the extreme with
+[01:08:37] millions of lines, code bases, every time a new model is, let's say, 2x better than the previous
+[01:08:43] version, it's actually 10x better in BlitZ because you're already pushing the limits. So it lands
+[01:08:50] on it. It unlocks new capabilities. We went from static agent personalities to dynamic.
+[01:08:58] We've kept doing this. And again, we work very closely with the labs themselves. So even though
+[01:09:03] the labs are in the same space, the thought process is completely different. The labs are
+[01:09:09] operating from the standpoint of how do I allow my users to work with the models,
+[01:09:14] to work with an LLM. Their thinking is from the LLM standpoint. But the fact of the matter is that
+[01:09:20] none of the labs are champions at everything. So there are cases where Opus falls down. There are
+[01:09:27] cases where GPT falls down. And so same for Gemini. But the real value in this space is the ability to
+[01:09:34] put Opus against GPT and get the best of both worlds. Take a bug, see what both models think
+[01:09:42] about it, and pick the one that fits best. The decision that customers are making is that would
+[01:09:48] you rather do all this manually day to day and struggle with the prompting techniques and go to
+[01:09:53] multiple tools that go to Alphabet for the UI, go to a Phodx for something else, and go to
+[01:10:00] something else? Or would you rather go to one tool that does all of this anyways for you and get the
+[01:10:05] final best version? And we're keeping up to date with not just the labs but also the open source
+[01:10:11] space. So we use a mix of models. As of today, we use all of the models. So our thought process is
+[01:10:18] even if the labs are getting into the space, they're only scratching the surface of what
+[01:10:21] autonomy looks like. And we've been in this space and we've perfected it for two plus years. And then
+[01:10:26] our approach of using the graph database and using the anchor lets us scale across millions
+[01:10:32] of lines. So it will be a while before everyone really figures that out. But even then, what we
+[01:10:38] really built that is unique and very special for us is a self-reinforcing knowledge graph.
+[01:10:44] So every time you build something with BlitZ, your instance of BlitZ gets better for you because it's
+[01:10:52] a very simple and easy to use. You may have gotten a PR back and we allow you to, for example, refine
+[01:11:00] the PR. So if you miss something or you forgot something, you can add that and the agents will
+[01:11:04] take care of it for you. We get signals if you accept the PR, if you make edits, all that stuff.
+[01:11:10] And that improves your instance. When you chat, when you ask questions, when you declare rules,
+[01:11:16] all of that is used to improve your instance. There are limitations to that though. That just,
+[01:11:21] you're keeping memory files, presumably, and that's something else you need to manage in the
+[01:11:27] context, right? Exactly. So what everyone else is doing is actually using memory files. They're
+[01:11:31] using text-based memory and they're maintaining it somewhere. But that's the whole point because
+[01:11:37] we have knowledge graph, we don't have to maintain files. We don't need an agents.md in your code.
+[01:11:43] We have it in the graph database. I present this person or the feedback on this
+[01:11:56] pull response was to structure my functions in this way, for example, or to use this kind of
+[01:12:07] variable naming convention. How do you represent that in a graph database?
+[01:12:11] Because the graph database has relationships, you have, let's say, it depends on how you structure
+[01:12:15] it, right? You can structure it, for example, by modules and then files and then everything below
+[01:12:20] that, what's the contents of the file. Now, and you can have projects, for example, another different
+[01:12:25] way, you can have folders, whatever you choose to structure it. Now you got this feedback and it was
+[01:12:30] about this project, this module, this file, right? So all you need to do is figure out if the user's
+[01:12:37] feedback is about this particular instance of the job or is it about this repo in general or is it
+[01:12:45] the user preference, right? But I think what you're going is that the feedback can be an entity that
+[01:12:51] lives in the graph proximal to whatever it's referring to. Yes, exactly. You can store
+[01:12:58] metadata with it and you can make an intelligent decision. The distinction then being that in the
+[01:13:04] text-based world, that feedback is always injected into the prompt independent of what the agent is
+[01:13:10] doing. In your world, it's getting slurped in when it's proximate to something the agent's actually
+[01:13:16] working on. Exactly. And that makes all of the difference. You don't overload the context window.
+[01:13:21] You don't cross the thresholds of effective context. That makes sense. So looking forward, what are,
+[01:13:30] what are the indicators that you are tracking and thinking about?
+[01:13:40] I'm trying to get at, what should listeners be thinking about and tracking to
+[01:13:47] keep their fingers on the pulse of the way that development and autonomous development is shifting?
+[01:13:55] And I'm asking you that by asking what you are looking at. Yeah, I think look at the signs. So
+[01:14:03] what we're doing is we realize we haven't been very vocal about our successes. After we've seen
+[01:14:11] the field experiments like the browser that I think us put out or the compiler, we realize that
+[01:14:18] we need to talk a bit more about what we're doing in this space. So we're going to be putting out
+[01:14:22] these examples of very large code bases that were written completely autonomously. So if someone is
+[01:14:27] tracking this space, they need to see that AI autonomously is able to build extremely complex
+[01:14:38] projects. Things that would, AI is able to run for, we hear people at the labs mention it's their
+[01:14:45] dream to get AI run for a complete day or a week. And here we are running for several weeks, writing
+[01:14:51] millions of lines of code. So I think those, seeing the real world impacts of that, getting code
+[01:14:58] out that solves for months of work, but checks all the right boxes. There's no security issues,
+[01:15:04] there's no maintainability issues, it's well documented, everything works. That is the wow
+[01:15:11] moment that the industry is waiting for. And that's what we've already achieved and we're trying to
+[01:15:16] put out to the world. So the things that people should be looking for are concrete examples and
+[01:15:21] you're saying you have them and you're going to be publishing them. Yes. Got it. Well, Sid, it was
+[01:15:29] great connecting with you and finally having you on the show after having you participate as a
+[01:15:38] listener and viewer. Thanks so much for sharing a bit about what Blizzi's up to. Of course,
+[01:15:45] thanks so much, Sam. It's amazing to have a full circle moment. I would like to add that we've
+[01:15:53] published successful case studies about our work in production with some of our clients.
+[01:15:59] It's on YouTube, LinkedIn. So please follow us and then find out for yourselves.
+[01:16:04] And I'll have you send me some of those links and we'll include them in the show notes for folks to
+[01:16:09] check out. Awesome. Thanks so much, Sid. Thanks.

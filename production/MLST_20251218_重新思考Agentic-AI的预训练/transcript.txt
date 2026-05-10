@@ -1,0 +1,286 @@
+Detected language: English
+[00:00] For the longest time, we were measuring pre-training on static benchmarks.
+[00:05] If we want these models to be useful as agents, they need to be able to interact with environments.
+[00:10] And when we start caring about those agentic tasks, pre-training needs to rethink from fundamentals.
+[00:17] This is not just a post-training problem to achieve these set of capabilities that we want in the next generation of models.
+[00:23] And the kind of benchmarks we need for measuring this kind of intelligence is sometimes not available today.
+[00:30] All right, everyone, welcome to another episode of the TwiML AI Podcast.
+[00:35] I'm your host, Sam Charrington. Today I'm joined by Akansha Choudhury.
+[00:40] Akansha is a member of technical staff at Reflection.
+[00:44] Before we get going, be sure to hit that subscribe button wherever you're listening to today's show.
+[00:49] Akansha, welcome back to the TwiML AI Podcast.
+[00:54] Thank you, Sam.
+[00:55] You have a really interesting background.
+[00:59] You've trained some of the earliest large language models, including Palm and Gemini 1.0, Gemini 1.5.
+[01:08] Tell us a little bit about those experiences.
+[01:11] I got into large language models at Google while building one of the distributed systems that led to the training of the large language models.
+[01:20] It had 540-percent parameters.
+[01:23] And people stopped publishing the number of parameters after that.
+[01:28] I wonder why.
+[01:29] And that led me to be at the forefront of pre-training, solving one set of problems after the other that come with scale.
+[01:37] In the first two generations of Palm models and then the first two generations of Gemini models,
+[01:42] I think the one thing that you learn when you do pre-training is that at scale, every problem magnifies and things go wrong at every possible part of the stack.
+[01:52] So it's always fun and it's always exciting.
+[01:55] And you said you were on the infrastructure side?
+[01:58] I wasn't on the ML side, but I've done both.
+[02:01] One thing that is super interesting about the whole training is that you have a lot of different tools that you can use to help you solve problems.
+[02:11] The other thing about pre-training is that you have to be able to think across the stack.
+[02:16] Otherwise, if you're going to train something for two or two and a half months, you need to be able to think about every single part of the system.
+[02:26] Nice.
+[02:27] So tell us about Reflection.
+[02:28] What is Reflection focused on?
+[02:30] So the mission of Reflection is to build frontier-open intelligence for agentic capabilities.
+[02:37] The company has been focused on building post-training stack for agentic tasks.
+[02:42] And with the most recent fundraisers, we are doing training end-to-end.
+[02:47] So we're building the frontier-open agentic models, which are both pre-trained and post-trained in-house.
+[02:54] And that's really going to be a focus of what we're talking about today.
+[02:59] Some of the reasons why you think pre-training, a different approach to pre-training is key.
+[03:05] Is that kind of the way you think about it?
+[03:07] Well, the way I really put it is that for the longest time, we were measuring pre-training on static benchmarks.
+[03:15] For example, there was a popular one or GSM 8K or math Olympiad problems like Amy and Matt or you name it.
+[03:26] But extremely static benchmarks, they want these models to be useful as agents.
+[03:31] They need to be able to interact with environments and be useful to us in the workflows where we can use them.
+[03:39] The simplest version of that that we are already starting to see today are coding agents and then deep research agents.
+[03:45] The coding agents are extremely useful in the sense that you can put a coding agent to help you understand a large code base.
+[03:52] Or they can help you, for example, refactor and apply a fix across multiple files.
+[03:58] They might not do it correctly. They're not perfect yet.
+[04:02] Or in deep research agents, I think we moved away from just a search bar interface to more like here is what you want.
+[04:10] And then putting a language model on the job of finding multiple articles that investigate that kind of workflows.
+[04:17] And you can imagine that any such goal oriented task can be given to the language models and the models can achieve these goals over multiple steps as opposed to just being chatbots.
+[04:29] So those are the kind of agentic tasks that we start caring about.
+[04:33] And when we start caring about those agentic tasks, pre-training needs to rethink from fundamentals.
+[04:39] This is not just a post-training problem to achieve these set of capabilities that we want in the next generation of models.
+[04:45] And the kind of benchmarks we need for measuring this kind of intelligence is sometimes not available today.
+[04:51] So I'm happy to talk about that as well.
+[04:54] And to maybe underscore this point, a lot of the incremental progress we've made over the past three years since chat GPT,
+[05:04] whether we're talking about reasoning, whether we're talking about tool use, all these things that contribute to our ability to build, quote unquote, agentic systems.
+[05:13] This has all come from not thinking radically differently about the way these models, the core, the base LLMs are pre-trained,
+[05:22] but by kind of tacking on new ways of thinking about how we tune them or post-train them through reinforcement learning and other techniques.
+[05:33] Why can't we keep doing that?
+[05:35] Oh, we totally can keep doing that.
+[05:38] I think it is limiting in the sense that it fundamentally limits you in what you can achieve in terms of capability.
+[05:46] So the way I think about models is what are they capable of and the capabilities can be anything from, do they have long context capabilities?
+[05:55] Can they do retrieval over longer context or are they good at, for example, solving natural language understanding problems?
+[06:02] Are they good at natural language generation problems?
+[06:04] Are they good at reasoning?
+[06:06] I think what is especially important about agentic tasks like coding tasks is that if you're trying to read a code base and then execute some parts of it or write your own talk about it,
+[06:17] you will accumulate context over time because you're reading a lot of content.
+[06:21] And then if you execute something, then you also have some additional feedback from execution.
+[06:26] So what you need a model to be able to do is have planning as a capability, have ability to reason over its context length, which might be very long.
+[06:35] So what went well, what did not go well.
+[06:38] It needs to be able to fail from trajectories that went wrong, for example.
+[06:44] So you can have short-term setbacks where it went and did something wrong, but then it needs to correct course for itself.
+[06:50] And then it needs to be able to learn new tools on the go.
+[06:54] So it needs to be able to explore tools and figure out what it should use if it's for a new environment.
+[07:02] So all of this is possible to some extent, but it's sometimes limited.
+[07:08] And the fundamental problem where you see it's very limited is the context engineering problem.
+[07:13] So when you have companies build agentic systems today, they are building it by doing a lot of context engineering where they tack on a lot of like it's literally limited to this is what I can fit into context length.
+[07:26] So that's the length my agent will do and then the next thing will be the next sub agent.
+[07:32] What gives you the confidence that we can achieve the goals that you're trying to achieve just by changing pre-training?
+[07:39] Like do we need a more fundamental set of changes, a new architecture, kind of a post transformer approach?
+[07:48] Like how do you think about that?
+[07:50] When I go and talk about rethinking pre-training, I always think about it in terms of what are the capabilities we want out of the models.
+[07:58] And to me, architecture is just one part of the equation.
+[08:02] A big part of the equation is what is the loss objective and what is the training data.
+[08:07] So as I was alluding to before, what we want are these models to be able to do planning and reasoning over multiple steps,
+[08:17] look at what they did in their context before and refer to that and use that as a way to inform their next steps in terms of taking actions.
+[08:25] And for them to be able to do that, the fundamental mechanism in transformers that enables this is the attention mechanism.
+[08:33] Whether attention mechanism works well over long context or not is a question that we're definitely taking a very strong look at as to whether that's the best way for us to achieve long-term reasoning.
+[08:45] We do know that long-term retrieval, like if you want to retrieve over millions of context, that is achievable today with large language models.
+[08:53] Reasoning over longer context is a harder problem.
+[08:57] The second bit that is extremely important is the training data that goes into these models.
+[09:03] And the third bit that's extremely important is the loss objectives.
+[09:06] So believe it or not, we have actually trained these models to probabilistically predict the next token.
+[09:12] What is the most likely next token?
+[09:15] Out of that, we have managed to get these models to be extremely strong reasoners.
+[09:20] But is that the best loss objective one could go after?
+[09:23] I'm betting on the fact that we need these models to have more fundamental long-form reasoning capabilities and need to be able to learn how to learn from their contexts.
+[09:32] Yeah, what I heard in there was a little bit of like you include a little bit of architectural shift in pre-training.
+[09:44] You know, when you talk about rethinking pre-training that is inclusive of maybe tweaking the way attention is done.
+[09:50] But it's not, you don't believe that, well, you believe that we can do better with what we have and you're not necessarily requiring state space models or some kind of funky next generation thing.
+[10:05] Like you think, you know, you're riding the horse that you have, so to speak.
+[10:10] That is fair. And I will add, I think you have to have gone through the pre-training experience from multiple generations of models to kind of know where to make the best use of the data.
+[10:20] And pre-training is one of the sciences which is both fun and exciting and high risk and high capital expenditure.
+[10:28] So when you make those bets, you want to be as sure of your bet as possible.
+[10:34] And that's why the pre-training sees most incremental changes and post-training sees more radical changes, as my experience.
+[10:44] Otherwise you spend a lot more time debugging through what you changed as opposed to getting a model that works.
+[10:50] There are a lot of interesting proposed architectures that I come across where the researcher is leaving scaling to someone else because they don't have the resources, but it's still, it leaves a big question as to, you know, whether you'll see the expected results at scale.
+[11:05] I think for folks who are experienced in scaling and have had the fortune of being one, it's truly an art and a science to get it right.
+[11:16] And it's not just like, we can change this thing and change this other thing and it just works. It's a fun adventure every single time.
+[11:26] And so when you think about the first of those elements, attention, like how do you think attention needs to evolve in order to support agents better?
+[11:38] When I think about agentic capabilities, I think the fundamental bit that we need out of attention mechanism, and I'm not proposing exactly the solution, is that the ability to look at not just things around its context, but also being able to refer to things that were further in the past.
+[11:59] Because as you can expect that for specific examples of say deep research agent, you might have collected 100 articles, and then you need to somehow organize them into topics.
+[12:11] And so your attention mechanism needs to have some form of a summary of these articles, and then it needs to somehow organize them into content.
+[12:19] So a lot of the heavy lifting in this case is being done by the attention mechanism here. So how do you think about that long form reasoning? What is the token attending to? Is that enough or is that not enough out of the kind of questions we ask?
+[12:39] There's a lot of work happening in research as well as in labs looking at memory architectures and expanding or augmenting current LLM approaches with different ways of thinking about memory.
+[12:56] How do you think about that relative to this conversation about enhancing attention?
+[13:02] Thank you. I see memory as an additional tool in addition to the attention mechanisms. So at any given point in time, what we want the language models to be able to reason well about is what tool to use and memory being one of them.
+[13:17] And as long as they are strong reasoners, they should be able to refer back to an index and say, this is where I need to look up content and this is what I need to go back and read from the context.
+[13:32] Today, some of these systems end up being engineered as multi-agent systems where you put like subagents and something is going to go fetch that content. But effectively what you're referring to is sort of the ability of the large language model to use a tool which can look up a database or memory or something that's perhaps stored away. That's how humans do it, right?
+[13:56] So that type of memory approach doesn't necessarily remove the requirement to have a different approach to attention that enables different recall models, I guess.
+[14:12] Yes.
+[14:13] Clearly there's a lot of work being done looking at the attention mechanism, both from the perspective of increasing computational efficiency, increasing long context performance. What research out there do you find kind of inspiring and in the direction of what you think needs to happen to better support agents?
+[14:35] You'll find me extremely conservative on architecture stuff because I have scaled too many models and debugged and been in the trenches for too many models, basically. Like I've trained five scaled up models and every single time I have to debug them.
+[14:53] I'm not the only one. There's usually a ward room and there's like a few other people, but like it's, I'm the person who has to be in the trenches.
+[15:02] What has that informed for you?
+[15:04] There has to be a good reason and one has to be extremely rigorous about evaluations. One has to be extremely rigorous about the way you do scaling and innocuous changes that feel like fun and exciting don't work at scale.
+[15:23] And?
+[15:24] So there has to be a good reason to make that bet. So every single bet is extremely well-vetted.
+[15:30] Consequently, transformers have been extremely well-vetted relative to the next thing, the next best thing.
+[15:39] I think for a startup like reflection, we also have to make the first bet to be as strong a model as possible.
+[15:49] So yeah, there are ways that we might want to tweak attention, but it's only one part of the pre-training recipe. There's also fine tuning the loss. You talked a little bit about the loss and some of the ways that people are thinking about that.
+[16:08] Can you elaborate a little bit on how some of the loss tweaks tie directly to agent performance?
+[16:20] Like if you think about the next token prediction for an LLM and think about the initial tasks that we expected LLMs to do, like generate texts, like that makes sense. It's intuitive.
+[16:35] Like when we think about agents, there are so many more things that we need these agents to be good at. Reasoning is one thing that you mentioned. Tool use is another.
+[16:45] What are some of the ways that you think that we can kind of tune the losses to support those types of behaviors?
+[16:57] So some of the things that have been done in the past, and this is kind of extremely well known, is that when we were training coding models to just be autocomplete models, we don't just train them on, you know, give them code files and then train them on next token.
+[17:13] We have this fill in the middle where we actually break up the file, put the first or the second half, and then the middle part goes at the end. The model has to go predict that.
+[17:25] When we train these models for tool use today, we actually mask out certain portions so that the model learns which tool to use. So it's not just about or which search query to use. I think those aspects get masked out in how you train the model so that you can teach the model by masking.
+[17:45] If you go to the history of language models, for example, BERT and so on, masked language modeling was an objective that was heavily explored and leveraged in meaningful ways.
+[17:57] So the way I look at it is that what you pay attention to also is important in the loss objective. So masking is one particular way, and then how the training is augmented is another way in getting the model to pay attention to specific parts of what is there in each sequence, and that teaches the model to pay attention to that part or predict that part more versus the other.
+[18:25] So from a loss perspective, it sounds a little bit like what you're saying is that a lot of what we're doing in post-training has not come in with new pre-training things necessarily, but it's finding ways to pull some of the things that we're doing in post-training into pre-training in a scalable way so that they're more fundamental capabilities of the models.
+[18:51] Yes. I would say it unifies the two paradigms. I think the pre and post is fundamentally coming from the world of we had to start out with pre-training because that's where we saw the scaling gave us the larger set of gains in terms of amplifying the natural language capabilities, while post-training allowed us to make these models more accessible as chatbots.
+[19:14] And they were extremely strong when you got them working with reinforcement learning with human feedback as we move into this agentic paradigm. Is reasoning a capability you want to endow in the model in the last stage, or does that move up front? And do we need a very strict divide between the two paradigms is a great question to ask.
+[19:36] From a training data perspective, talk a little bit about how you think that needs to evolve. Right now we're training on all the data that we have.
+[19:46] Well, pre-trained models are fundamentally dependent on large volumes of data that is high quality and is diverse. I think the bit that we have exploited the most is go for as much scale as possible so more and more data is always better. And go for as diverse data sources as possible.
+[20:09] I think what we have seen from our counterparts in the East, say, Quinn models or DeepSeq models or Kimi models, is that I think the quality of curation in training data matters as well. So I think that is one axis in which you get a lot more compute efficiency out of pre-trained models when you get your training data to be extremely high quality.
+[20:29] And the second axis that matters is more along the axis of reasoning. So how do you get really good reasoning traces? It's almost like asking the question, if you train on internet, reasoning emerges kind of by default, but then how do you get those expert traces of people working on problems in all possible domains?
+[20:49] And today we are doing them by getting these models to explore and say reinforcement learning environments and whatnot. But once we have some semblance of we understand how these models can generate those traces, what should be put and what is available at scale and pre-training starts to become a question.
+[21:06] So this kind of alludes to the fact that what would be good reasoning traces that can feed back into the models at large scale is a question that is something that we're thinking a lot about.
+[21:29] Do you have a sense for the, if I were to guess, like, try to compare the token volume of reasoning traces to the token volume of core training data, like it's off by several orders of magnitude, it's a very small fraction of the total training data.
+[21:52] Like, how do you, let's say you had, you know, these reasoning traces, how do you even make it so that it makes a difference in the training process if it's so outnumbered by Reddit chatter in pre-training?
+[22:10] That's a fair point. I think the question that is worth asking is that what is the dominant pre-training data source and how can that be augmented to generate that kind of volume of data is the question. And there is some pointers in that direction.
+[22:27] For example?
+[22:30] For example, the dominant training data source would end up being say articles on the internet. How to use articles on the internet to, but augment them in interesting ways. And like there have been some results which show that you can formulate them into question answer pairs or into conversational sort of things or into, or if you have problem solving tasks, then you can like augment them in interesting ways.
+[22:56] So there has been, there's starting to be work in this direction, but do not, you have to tap into the fundamental volumes of data to generate similar volumes of data before we can go down the path of like completely new generated data sources.
+[23:10] I hear you talking about the volumes of data and I'm also in my, I'm also trying to piece together like, you know, if we're talking about needing to, you know, do an inference on, you know, some significant fraction of all of the training data that we use for pre-training in order to extract, you know, question answer pairs or reasoning traces or things like that.
+[23:37] I'm trying to decide if I think that's tenable or not. It sounds expensive.
+[23:43] How expensive do you think it is? I mean, DeepSeq was training 15 trillion tokens. I can't say the numbers for Gemini, but let's assume that it's tens of trillions of tokens on the pre-training side.
+[23:57] Well, then it's not horribly expensive if you're doing like, you know, a fraction of a dollar per million tokens and then some small multiple of that. Maybe not.
+[24:10] Exactly.
+[24:11] Yeah.
+[24:12] I think the question that is worth answering is that for the longest time, that has not been a focus area because that was not where a lot, you always get better performance out of natural data that is representative of human workflows and synthetic data has challenges in the sense that the models don't perform as well because you're not actually expanding the data distribution in any meaningful ways.
+[24:37] So what is the fundamental bed that you're making in this particular case? And I think what I'm alluding to is that that is the axis along which we are thinking as to here are the model capabilities we fundamentally care about and what we get those capabilities would be to go down this path.
+[24:54] I guess the other challenge that's often raised in the context of training on synthetic data is kind of the smoking your own exhaust problem.
+[25:10] Do you have a sense for how, especially if you're scaling up the amount of synthetic data, do you have a sense for how that's overcome?
+[25:22] At the end of the day, the fundamental underpinnings of how you determine what is going to help and what's going to hurt is dependent on what's the underlying data distribution. And if you are changing the distribution substantially to be all synthetically generated, I expect the models will not do well.
+[25:38] So the goal here is to very much keep the underlying data distribution to be very representative of the natural data distribution that you want the models to be trained on.
+[25:46] And so I think that leads us naturally to talking a little bit about measurement and kind of benchmark construction for these types of tasks. What have you, what are you seeing so far that you think is kind of in the right direction?
+[26:01] That's a great question. I think the fun thing about benchmarks is that every year there is a few new ones that come out and then they get saturated. And then you have to build a new set of benchmarks.
+[26:14] I think for a lot of the frontier development for these models, the current paradigm that we have kind of settled on is that everyone builds benchmarks in-house to measure what is the set of model capabilities they're going after.
+[26:28] So I was alluding to the fact that, for example, we want these models to be able to reason better and belong from reasoning over their context plan. We want them to be able to do multi-step problems.
+[26:41] So they need to be able to like tackle not just the next step, but what their actions might be in multiple steps from now. We want these models to be able to recover from say failed trajectories, plan better, to be able to learn how to learn how to use tools.
+[26:56] All of these capabilities require very, very specific ways of measuring. And even though I'm giving you overarching concepts, like when you break down and put them, for example, in like actual say coding tasks or in sweep and style tasks.
+[27:12] And we're starting to see some of these tasks with varying horizons come into picture. Like METR has this software atomic actions thing that allows you to have tasks of varying lengths.
+[27:25] Then there is a few other benchmarks. What you will see is that you basically want tasks that are varying complexity and also varying along these dimensions of capability to test the models.
+[27:38] So it's almost like if you were to break down your real workflow in a day, what are the sub problems that the models could go after or what are the sub sub problems that the model could go after?
+[27:49] And even if those are hard, then why is it hard? And like making that a challenge for the model is roughly how a lot of these benchmarks are constructed.
+[27:58] And just to give you a sense of why this is super important is that back like three, four years ago when we were training POM, it was a large model.
+[28:10] But we tried this on a new benchmark that was crowdsourced through researchers who were basically coming up with reasoning tasks that they found large language models could not do back in the day.
+[28:20] And we tried our freshly trained, actually halfway trained model on this benchmark.
+[28:26] And what we found was like, certainly this benchmark had a step change and that led us down the path of figuring out, oh, the model was actually starting to showcase reasoning capabilities.
+[28:35] And that's fascinating to some extent, but that would not really have been available had we not had that plethora of benchmarks to look at, like including understanding emojis or like how does the model reason over, say,
+[28:49] a movie script or whatnot. So I think these are these questions, sourcing these questions in the right ways and understanding what is hard with the current generation of models is often the way to make progress towards the next step.
+[29:04] To what extent do you see these, and I think this question applies to all of the kind of implications on pre-training that we've talked about, but for measurement in particular, how do you think about which of these things you think the community will provide or like everyone's moving in the same direction by the time you need it, it'll get there versus what a small lab like Reflective Lab is?
+[29:30] Like how do you think the community will be able to do that?
+[29:34] And what are the fundamental capabilities that you think the community will be able to share versus, you know, what a small lab like Reflection takes on to try to incorporate into your own models?
+[29:49] So I think those are fundamental paths. We'll definitely prioritize them in addition to the usual array of benchmarks. I also believe that we are just at the start of getting reinforcement learning to work well with LLMs. So the first reasoning model with reinforcement learning really came out a year ago.
+[30:10] So I do believe that a lot of the workflows that are being tried out in real world will make it into benchmarks over the next year. So we will have more benchmarks that are representative of real world workflows that will test the models in challenging ways and help us learn where the models are challenged versus not.
+[30:31] I think the fun part about planning pre-training is that it ends up being a longer term endeavor. So you have to kind of think ahead of time of what the fundamental model capabilities you're shooting for and plan for that.
+[30:43] When you think about the direction the field is heading relative to larger models and scaling laws, you know, kind of the march towards ever increasing models. And then we've seen resurgence in interest in smaller, more efficient models. Like which of those are you aiming for?
+[31:03] So when you go for larger scale models, you often find capabilities much sooner than you will in smaller models. So typically, model scaling is one way in which we notice model capabilities that we haven't noticed before. And often the model capabilities that become available at scale then also with the right training data and the right set of things and training longer and whatnot, become available in smaller models as well.
+[31:30] So, for me, the largest model, largest reasoning model was constructed out of say, I don't know the specific state, but let's assume GBT4, right? So you take the largest models, you posturing them for reasoning, and then the next generation of models had that capability even in the smaller models.
+[31:50] So what I would say and what we are shooting for is the most capable models and then the most cost efficient, most capable models. But oftentimes, to discover that capability, you do have to go to the right scale. And then you can come back and make them cost efficient. And often that involves an additional step of distilling, which helps. So that's the way to look at it.
+[32:17] I think you kind of got what I was getting at. And maybe the question is, as a small lab, given that there is a lot of interest in small models as a small lab, can you just target building a small model? And what I'm hearing is not really because a lot of these capabilities are emergent in the sense that you need to hit a certain level of scale to see them.
+[32:44] And so therefore you want to go as big as you can, given your resources, and then worry about making smaller later in order to achieve all the benefits of smaller models.
+[32:56] Yes. Oftentimes, at least in my track record and history of playing with large language models and training them, emergence is something that you find fun and interesting things in the larger models. And then you often distill them or get them in the smaller models in the next generation because you figured out exactly the recipe that it takes to get them.
+[33:19] Yeah, we've talked about this idea of long form reasoning kind of casually throughout this conversation, but dig into what that means. What is long form relative to short form?
+[33:33] So long form reasoning, I'll give you very specific examples of what is long form. So for example, if you wanted an AI model for the longest time when you might want an AI to understand your entire code base, including the parts of the code base that another team wrote, or perhaps if you have a large enough organization, then you basically want it to go look at different parts of the code base and any time you tap on that particular
+[34:03] subset of the code base, you want to be able to understand it well. What long form would allow you to do is that for this part of the code base that your team is working on, you can reference that part of the code base and use it like a library without thinking about it because AI can help you understand it and use it seamlessly. So you don't actually have to walk up to that team and spend time finding team members there. So that's one form of long form reasoning. What that roughly means is,
+[34:33] if you put a lot of these things in context length, the model is able to reason about this parrot set of things that are pretty far apart in some ways. So where they are in position in the context length. Another way to look at it is that, and that is a hard problem because for the longest time, if you just want to retrieve relevant parts of the code base, that's an easier problem for the models to solve and needle in a haystack or multiple needles in a haystack or the salt problem.
+[35:03] But when you go to benchmarks that have multi-hop reasoning, say MRCR V2 or Loft, these benchmarks have only recently started to show signal that models are getting better. For the longest time, these were not the benchmarks where you were seeing strong capabilities, even in very long context models. So even though you have millions of tokens in your context length, you're not necessarily able to think about all of them. Or if you put things that are very confusing set of documents, like let's say you
+[35:33] want to do deep research and you want to go on a vacation and you have 10 articles about your favorite vacation spot, the model will not necessarily always be able to think about each one of those articles and give you a synthesized form from each one of them. That's a harder problem for the model to solve.
+[35:54] So that's one form of long-term reasoning that we're talking about. The second form of long-term reasoning that I'm talking about is more along the side of trajectories. So when you want the models to do multi-step reasoning, what you're asking really of the models is to almost think ahead. So it's like the game of chess where you are thinking ahead and the next action that you take should move you or at least have some sense of projection of where it will take you towards your goal. And that bit has not existed because that logistically just
+[36:24] generating the next token. So how do you reason about where this next set of tokens will take you? What does that mean in terms of trajectories with the next action that you take? Those are also bits that have, or how was the past affecting up to this point in time? If you're looking at an existing trajectory where there are failures and then recover from that, often the models will get stuck in repetitive loops today because they don't really know that they made that failure. So they will go try that same thing again.
+[36:54] Because that's the most realistic thing to go to. So those are some examples of long-term reasoning that are pretty pertinent in today's generation of models.
+[37:05] I thought the distinction you were going to make was between the model spitting out an answer and the model kind of going through thought traces and like inference time scaling, that kind of thing.
+[37:18] But it sounds like at least part of what you're pointing to in describing it as long-form reasoning is like abstract reasoning, meaning not necessarily you're going from A to B to C, but you know about A, you know about B, you're working on some separate problem C that might benefit from that knowledge. How do you incorporate that into the solution?
+[37:46] Yes. And I see the first thing that you brought up is a natural evolution of reasoning. So I'm talking about like, where do we go from there?
+[37:54] In your description, you talked a little bit about failure and the model's ability to recover from failure, the agent's ability to recover from failure. Dig into that a little bit and what that implies and requires.
+[38:09] Typically, when you think about trajectories, and let me define the word trajectory. So let's say you are solving a coding task in say Terminal Bench or in SveeBench, or you're solving a goal-oriented task in general, then you will have come up with a plan of like, these are the relevant set of files to go look at.
+[38:31] Here are the set of changes that would help achieve the objective, and then you would go try those changes, and then you would say have some form of a verification process where you would go run tests, for example, to verify whether these changes will solve the problem or not.
+[38:47] Right. When you collect such traces, where here was the relevant context, here was my solution to the problem, here is what I tried, and here is the output, the execution feedback from trying this, what you'll find is that over multiple steps, the model might need to figure out what it learned from the past step should not redone or like it should choose different set of actions in the subsequent set of steps.
+[39:15] And that's a harder problem for the model, both from the perspective of paying attention to like, okay, these are discrete set of things, so it needs to choose new action space, so that's partly a reinforcement learning problem.
+[39:28] But it's also a pre-training problem asking what was the model paying attention to? Did it understand that these were failed steps? Did it have the right, were the trajectory path to it in the right format so that it noticed that these were things to correct on?
+[39:46] So it's both a reinforcement learning objective problem, it's as much a problem of like, what is the length of context the model is able to pay attention to and learn from?
+[39:57] It sounds like you're talking about kind of inference time failure and an awareness on the part of the model of these types of failures.
+[40:08] Yeah, we want the model to learn how to learn and how to correct itself.
+[40:14] And I guess the question was going to relate that to hallucination as a property of LLMs and the degree to which often these failures come from, you know, hallucination of one type or another.
+[40:28] And if that's like this fundamental property of LLMs, like, how do you imagine that you would overcome it without fixing that?
+[40:38] I'm trying to rephrase, I mean, depending on the business objective hallucination, it's a positive or a negative word.
+[40:46] And I'm not making a judgment about it. I'm just saying that it's something that happens.
+[40:52] So, like, if the model, if these failures that we're talking about are when the model thinks something is true and it's not true, like, but the model doesn't have an awareness of that, how do you give the model that awareness?
+[41:08] And if we could do that, haven't we fixed hallucination?
+[41:12] So I see hallucination as more of like what probabilistically was the highest probable next set of tokens that the model thought it should output.
+[41:22] So to me, was there anything else that could have made it into its context or could have gotten additional feedback from interacting with a set of tools to change course in certain ways, right?
+[41:35] So that's the question I'm asking.
+[41:38] Given the goal and given the history of all the things that it has tried to achieve that objective, is there a next set of probabilistic tokens that it can output that would have a higher probability of moving it forward towards the goal?
+[41:55] And so when you talk about this recoverability, is that, that's at inference time, right?
+[42:06] The goal is to get it at inference time.
+[42:09] And are you...
+[42:12] It's not a solved problem, let me just say that.
+[42:15] Yeah, no, I get that. I get that. Are you envisioning like the model, you know, having some awareness of, you know, when it doesn't have enough information, for example, and asking for more information or like halting as opposed to continuing
+[42:34] the ideas in that direction?
+[42:37] So, yes, it doesn't have enough information to verify what it proposed is the correct solution.
+[42:41] So it goes and tries a few other ways to like verify the approach that it was trying and then comes back and it's like, okay, now I have enough information to make an informed decision.
+[42:52] Okay.
+[42:54] Or ask the user for help, point me in the right direction.
+[42:57] Right, right. As opposed to a lack of awareness of, you know, not having enough information and just powering on through with wrong information or information that it made up.
+[43:10] Yes. Or constantly telling the user that it came up with the right answer.
+[43:16] How do you see this particular facet recoverability, tying back to the pre-training, you know, the pre-training levers that we talked about, attention training data loss measurement?
+[43:35] So I think it comes down to training very strong reasoners and there are some levers both on training data side and loss objective side that we think will help you.
+[43:45] It really comes down to really strong reasoners that can reason well over context length and in general across domains.
+[43:52] When thinking about building agents that can learn new tools, talk a little bit about that one.
+[44:01] And MCP immediately comes to mind and like this drama that we've seen with, oh, hey, MCP is this great thing.
+[44:11] Let's all use MCP's. Whoa, MCP's blow up the context and use more of it than the question that the agent is trying to solve.
+[44:21] Let's instead, you know, delegate it to software programs that the agent can write so it doesn't have all that context.
+[44:29] And then, oh, no, well, that is kind of hard. Let's actually make it so that the agent can search its tools.
+[44:35] Like if there's anything on this list that cries for a more foundation, foundational solution, maybe it's like tool use and an agent's ability to learn new tools.
+[44:47] Is that kind of the thing that you're talking about when you describe this?
+[44:51] Yes. So I think what we have taught our models to kind of learn so far is really what we put in context is what they know.
+[45:01] If we could point them in the direction of here is say end tools and by interaction, they are able to learn how these tools are useful versus not.
+[45:13] That is something that has been tried in the past in the form of say, container learning or in the world of robotics like watch by imitation.
+[45:21] So watch by how this tool is being used.
+[45:24] So the question comes back to how can we get the models to meta learn, like learn how to learn what exactly is the format in which this exploration of the new environment needs to be done so that the model learns to take actions in that space.
+[45:37] And one of the promising directions there has been some form of unified domain specific language, perhaps in code format that would allow for this kind of reasoning to emerge.
+[45:49] There have been a few papers in that direction.
+[45:52] But overall, I do believe that the ability to explore new tools and learn by exploration and feedback from trying those tools allows for more flexible and capable models than like literally either having to fit them all in context length or having to fine tune them with all the right traces or like cloning the set of tools that goes into the context
+[46:19] so that you have the perfect system built to go going.
+[46:24] So I think I think there is but there is a fair bit of work to happen to get that bit going.
+[46:32] It doesn't like it's not out off the shelf available today.
+[46:36] Throughout the conversation you've returned to coding agents, code development agents as a touchstone.
+[46:45] To what degree do you think that the ideas that you're generating for these coding agents like apply to like workflow agents, agents for enterprise oriented workflows or consumer workflows, but you know not code generation, but you've got a bunch of tools, generate an itinerary or a
+[47:05] or you know solve some workflow tasks or set of tasks like do all the same principles apply? Do they differ a little bit?
+[47:12] So even when we are talking about coding agents, I do believe same principles apply though slightly broader.
+[47:20] Even when we are building coding agents and even before that when we were building large language models, one of the fundamental capabilities that we get at pre-training scale is that the models learn to reason across modalities.
+[47:34] And what that means is they learn to reason across languages, they learn to reason across say code and text, they learn to reason across different languages even within code for example or even like modalities that are not text.
+[47:51] So to us the fundamental principles for building anything that requires reasoning across crossover set of domains comes from this kind of capability.
+[48:08] So to me the fundamental principles still very much apply and it's mostly a matter of maybe the last stage of post-training will be different, but the models need to be able to reason across domains, across say text and language, across different domains or languages and so on.
+[48:28] Cool. So we've talked a little bit about what you're working on at Reflection for folks that, for whom these ideas resonate and they want to kind of further explore this.
+[48:47] Are there papers out there or you know, NURFS workshops or various fora? Like what, how do folks like dig into these problems?
+[48:58] Come work with us.
+[49:02] I take it you're hiring?
+[49:04] Yes, we are hiring cross pre-training and post-training. We recently closed your founding ground with backing from NVIDIA and our mission is to build frontier open intelligence.
+[49:16] We are a team of about 60 researchers. So very small teams still hoping to build a frontier lab for open agentic models and we have researchers from X DeepMind, OpenAI, top universities who had leading contributions in POM, ChodgPD, Gemini, AlphaProof, AlphaGo. So I think it's a team you would enjoy and feel challenged by.
+[49:44] And besides from coming to work with you, how else can they dig into these problems?
+[49:49] So if you're trying to really make a dent in the community at this point in time, a lot of the work that starts with building good systems of measurement.
+[50:03] So a lot of what I talked about are capabilities that don't really have fundamentally strong benchmarks that actually measure in.
+[50:13] So the best way to think about measuring intelligence is that if we wanted, like oftentimes you think about, if I could use this dark language model for this particular thing and then you actually find the model is not good at it, that's a starting point of like, okay, why is it not good at it?
+[50:31] What is missing in the models today and being able to create that in a package form. And these are evaluation benchmarks that don't work well.
+[50:42] I spend time at Stanford as well. Like oftentimes I'll work with students to figure out where are the gaps in the current set of models?
+[50:50] How does that lead to an evaluation benchmark that we can use is often a very good starting point.
+[50:57] And from there, you can start with post training, which is a relatively inexpensive shift for you to go try and see what you can already start to close in terms of gaps for the models.
+[51:12] And if that excites you, then come join us or any of the French Air Cavs for taking on a bigger adventure to build these models from scratch.
+[51:23] Awesome.
+[51:25] Well, Acansha, thanks so much for jumping on and sharing a bit about what you're seeing with regards to agents.
+[51:32] Thank you.
