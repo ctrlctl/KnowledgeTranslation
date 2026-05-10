@@ -11,7 +11,7 @@ body, .markdown-body {
 }
 </style>
 
-# Writing Effective Tools for Agents — with Agents：用 Agent 为 Agent 编写有效工具
+# 用 Agent 为 Agent 编写有效工具
 
 > 原文：[Writing effective tools for agents — with agents](https://www.anthropic.com/engineering/writing-tools-for-agents)
 > 来源：Anthropic Engineering | 2025-09-11
@@ -19,14 +19,14 @@ body, .markdown-body {
 
 ---
 
-## 目录
+## 索引
 
 - [工具是什么：确定性与非确定性的契约](#工具是什么确定性与非确定性的契约)
 - [如何编写工具：原型→评估→协作优化](#如何编写工具原型评估协作优化)
 - [原则一：选择正确的工具](#原则一选择正确的工具)
 - [原则二：命名空间划分](#原则二命名空间划分)
 - [原则三：返回有意义的上下文](#原则三返回有意义的上下文)
-- [原则四：优化 token 效率](#原则四优化-token-效率)
+- [原则四：优化 Token 效率](#原则四优化-token-效率)
 - [原则五：Prompt-engineer 工具描述](#原则五prompt-engineer-工具描述)
 
 ---
@@ -99,20 +99,21 @@ Agent 可能访问数十个 MCP server 和数百个工具。当工具功能重�
 
 ## 原则三：返回有意义的上下文
 
-工具实现应只返回高信号信息。优先上下文相关性而非灵活性。
+工具实现应只返回**高信号信息**。优先上下文相关性而非灵活性。
 
-**避免：** `uuid`、`256px_image_url`、`mime_type`
-**推荐：** `name`、`image_url`、`file_type`
+**避免返回：** `uuid`、`256px_image_url`、`mime_type`
+
+**推荐返回：** `name`、`image_url`、`file_type`
 
 将任意字母数字 UUID 解析为更有语义意义的语言，显著提高 Claude 在检索任务中的精度（减少幻觉）。
 
-**`response_format` 枚举模式：** 暴露简单参数让 agent 控制工具返回"concise"还是"detailed"响应。Concise 响应可以只用 detailed 的 1/3 token。
+**`response_format` 枚举模式：** 暴露简单参数让 agent 控制工具返回 "concise" 还是 "detailed" 响应。Concise 响应可以只用 detailed 的 1/3 token。
 
 ---
 
-## 原则四：优化 token 效率
+## 原则四：优化 Token 效率
 
-对任何可能消耗大量上下文的工具响应，实现分页、范围选择、过滤和/或截断，配合合理的默认参数值。Claude Code 默认限制工具响应为 25,000 token。
+对任何可能消耗大量上下文的工具响应，实现**分页、范围选择、过滤和/或截断**，配合合理的默认参数值。Claude Code 默认限制工具响应为 25,000 token。
 
 **截断时：** 用有帮助的指令引导 agent 追求更 token 高效的策略。
 

@@ -23,18 +23,19 @@
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Feature List（功能清单）</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了解决 agent 一口气做完或过早宣布完成的问题，initializer agent 被提示编写一个全面的功能需求文件，扩展用户的初始 prompt。在 claude.ai 克隆的例子中，这意味着超过 200 个功能点，例如"用户可以打开新聊天、输入查询、按回车、看到 AI 响应"。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些功能最初全部标记为 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">"passes": false</code>，这样后续的 coding agent 就有一个清晰的完整功能蓝图。</p>
-<pre style="display:block;overflow-x:auto;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2b2b2b;color:#f8f8f2;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;">{
-  "category": "functional",
-  "description": "New chat button creates a fresh conversation",
-  "steps": [
-    "Navigate to main interface",
-    "Click the 'New Chat' button",
-    "Verify a new conversation is created",
-    "Check that chat area shows welcome state",
-    "Verify conversation appears in sidebar"
-  ],
-  "passes": false
-}</pre>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;category&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;functional&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;description&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;New chat button creates a fresh conversation&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;steps&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">[</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Navigate to main interface&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Click the &#39;New Chat&#39; button&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Verify a new conversation is created&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Check that chat area shows welcome state&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Verify conversation appears in sidebar&quot;</span>
+<span style="color: #d8dee9">  </span><span style="color: #eceff4">],</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;passes&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #81a1c1; font-weight: bold">false</span>
+<span style="color: #eceff4">}</span>
+</pre>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键设计决策：</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Coding agent 只能修改 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">passes</code> 字段的状态</li><li style="margin-bottom:0.5em;line-height:2;">使用强措辞指令："删除或编辑测试是不可接受的，因为这可能导致功能缺失或 bug"</li><li style="margin-bottom:0.5em;line-height:2;">选择 JSON 而非 Markdown——模型不太容易不当修改 JSON 文件</li></ul>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
@@ -55,18 +56,19 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">还要求 initializer agent 编写一个 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">init.sh</code> 脚本来运行开发服务器，然后在实现新功能之前先跑一个基本的端到端测试。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 claude.ai 克隆的例子中，agent 总是先启动本地开发服务器，用 Puppeteer MCP 开始新聊天、发送消息、接收响应。这确保 Claude 能快速识别应用是否处于损坏状态，并立即修复现有 bug。如果 agent 直接开始实现新功能，可能会让问题更严重。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">典型 session 开头的 assistant 消息：</p>
-<pre style="display:block;overflow-x:auto;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2b2b2b;color:#f8f8f2;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;">[Assistant] I'll start by getting my bearings and understanding the current state of the project.
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;">[Assistant] I&#39;ll start by getting my bearings and understanding the current state of the project.
 [Tool Use] &lt;bash - pwd&gt;
 [Tool Use] &lt;read - claude-progress.txt&gt;
 [Tool Use] &lt;read - feature_list.json&gt;
 [Assistant] Let me check the git log to see recent work.
 [Tool Use] &lt;bash - git log --oneline -20&gt;
-[Assistant] Now let me check if there's an init.sh script to restart the servers.
+[Assistant] Now let me check if there&#39;s an init.sh script to restart the servers.
 &lt;Starts the development server&gt;
 [Assistant] Excellent! Now let me navigate to the application and verify fundamental features are still working.
 &lt;Tests basic functionality&gt;
 [Assistant] Based on my verification testing, fundamental functionality is working well. Now let me review the tests.json file to understand what needs to be implemented next.
-&lt;Starts work on a new feature&gt;</pre>
+&lt;Starts work on a new feature&gt;
+</pre>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">失败模式与解决方案总结</h2>
 <table style="width:100%;border-collapse:collapse;margin:1.5em 0;font-size:14px;"><tr><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">问题</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">Initializer Agent 行为</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">Coding Agent 行为</th></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Agent 过早宣布整个项目完成</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">设置 feature list 文件：基于输入 spec，建立结构化 JSON 文件，包含端到端功能描述列表</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">在 session 开始时读取 feature list，选择单个功能开始工作</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Agent 留下有 bug 或未文档化进展的环境</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">初始化 git 仓库和 progress notes 文件</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Session 开始时读取 progress notes 和 git commit log，对开发服务器运行基本测试。Session 结束时写 git commit 和 progress 更新</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Agent 过早标记功能为完成</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">设置 feature list 文件</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">自我验证所有功能。只有在仔细测试后才将功能标记为 "passing"</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Agent 需要花时间弄清如何运行应用</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">编写 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">init.sh</code> 脚本来运行开发服务器</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Session 开始时读取 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">init.sh</code></td></tr></table>

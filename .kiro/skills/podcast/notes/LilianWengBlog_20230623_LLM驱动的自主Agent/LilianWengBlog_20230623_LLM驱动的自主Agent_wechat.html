@@ -26,10 +26,11 @@
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">自我反思</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">自我反思允许自主agent通过精炼过去的行动决策和纠正错误来迭代改进。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">ReAct</strong> 通过将动作空间扩展为任务特定离散动作和语言空间的组合，在LLM中整合推理和行动。prompt模板包含显式步骤：</p>
-<pre style="display:block;overflow-x:auto;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2b2b2b;color:#f8f8f2;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;">Thought: ...
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;">Thought: ...
 Action: ...
 Observation: ...
-（重复多次）</pre>
+（重复多次）
+</pre>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">Reflexion</strong> 为agent配备动态记忆和自我反思能力。它有一个标准RL设置，奖励模型提供简单的二元奖励，行动空间遵循ReAct设置。每次失败后，agent进行自我反思并将反思结果存入记忆，用于未来的试验。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">Chain of Hindsight（CoH）</strong> 鼓励模型通过展示一系列过去的输出（每个都带有反馈注释）来改进自己的输出。人类反馈数据被表示为 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">[输出, 反馈]</code> 序列对。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
