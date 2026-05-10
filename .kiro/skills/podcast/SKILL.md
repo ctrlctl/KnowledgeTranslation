@@ -141,7 +141,7 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 ```bash
 .venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py transcribe "<url>" -t "标题" -m base > /tmp/transcript.txt
 ```
-然后分段读取（每次约200行），逐段翻译整理为中文Markdown，最终合并保存。同样需要 review 后再生成其他版本。
+转录完成后，将转录文件保存到 `notes/<slug>/transcript.txt`（不要删除，方便后续回溯）。然后分段读取（每次约200行），逐段翻译整理为中文Markdown，最终合并保存。同样需要 review 后再生成其他版本。
 
 #### 多版本输出
 
