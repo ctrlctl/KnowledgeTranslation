@@ -37,6 +37,7 @@ KnowledgeTranslation/
 │       ├── <slug>_wechat.html    # 微信公众号版本（蓝色高亮，无外链）
 │       ├── <slug>_web.html       # 网页浏览版本（深红高亮，有链接，有锚点）
 │       ├── transcript.txt        # 转录文件（音频类）
+│       ├── source.html           # 抓取的原文内容（文章类）
 │       └── xhs/                  # 小红书图片版本
 │           ├── 01.png
 │           └── ...
@@ -131,7 +132,7 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 ```bash
 .venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py fetch-article "<url>" > /tmp/article.html
 ```
-然后分段读取文件（每次约200行），逐段翻译整理为中文Markdown，最终合并保存。
+然后将抓取的原文保存到 `production/<slug>/source.html`，再分段读取文件（每次约200行），逐段翻译整理为中文Markdown，最终合并保存。
 
 **⚠️ 翻译后必须先 review 再生成其他版本。** 流程如下：
 
