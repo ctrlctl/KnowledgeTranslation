@@ -145,9 +145,9 @@ def parse_md_to_blocks(md_text):
             blocks.append({"type": "spacer", "height": int(FONT_SIZE_BODY * 0.4)})
             continue
 
-        # 列表项（- 或 * 开头）
-        if re.match(r'^[-*]\s+', line):
-            while i < len(lines) and re.match(r'^[-*]\s+', lines[i].strip()):
+        # 列表项（- 或 * 开头，允许前导空格表示子列表）
+        if re.match(r'^\s*[-*]\s+', line):
+            while i < len(lines) and re.match(r'^\s*[-*]\s+', lines[i].strip() if lines[i].strip() else ''):
                 item_text = re.sub(r'^[-*]\s+', '', lines[i].strip())
                 blocks.append({"type": "list_item", "text": item_text})
                 i += 1
