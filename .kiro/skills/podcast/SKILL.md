@@ -34,37 +34,27 @@ KnowledgeTranslation/
 ├── production/               # 生产笔记（与 output 平级）
 │   └── <来源>_<YYYYMMDD>_<中文标题>/
 │       ├── <slug>.md             # Markdown ADHD版本
-│       ├── <slug>_wechat.html    # 微信公众号版本（蓝色高亮 #1e88e5，无外链）
+│       ├── <slug>_wechat.html    # 微信公众号版本（蓝色高亮，无外链）
+│       ├── <slug>_web.html       # 网页浏览版本（深红高亮，有链接，有锚点）
 │       ├── transcript.txt        # 转录文件（音频类）
 │       └── xhs/                  # 小红书图片版本
 │           ├── 01.png
 │           └── ...
-└── output/                   # 按格式整理的输出（从 production 生成）
+└── output/                   # 按格式整理的输出（从 production 直接复制）
     ├── markdown/             # 每篇的 .md 文件
-    ├── wechat/               # 微信公众号 HTML（蓝色高亮，无外链）
+    ├── wechat/               # 微信公众号 HTML
     ├── xhs/                  # 小红书图片文件夹
     │   └── <slug>/01.png...
     └── web/                  # 网页浏览版 HTML
         ├── index.html        # 索引页（按来源/主题筛选）
-        └── <slug>.html       # 带页面壳、锚点链接、原文链接的版本
+        └── <slug>.html       # 直接从 production 复制的 _web.html
 ```
 
 ### production vs output
 
-- **production/** 是笔记的源目录，每篇一个文件夹，包含所有生成物
-- **output/** 是按格式分类的发布目录，从 production 自动生成
+- **production/** 是笔记的源目录，每篇一个文件夹，包含所有生成物（md、wechat html、web html、xhs、transcript）
+- **output/** 是按格式分类的发布目录，从 production 直接复制（不做转换）
 - 处理完每篇笔记后，必须同步更新 output 目录
-
-### output/web 版本与 wechat 版本的区别
-
-| 特性 | wechat | web |
-|------|--------|-----|
-| 高亮色 | #1e88e5（蓝色） | #a0220d（深红） |
-| 外部链接 | 禁止（微信限制） | 有（原文链接可点击） |
-| 页面壳 | 无（纯 section 片段） | 有（完整 HTML + viewport + 背景色 #faf8f5） |
-| 返回索引 | 无 | 有（← 返回索引） |
-| TOC 锚点 | 无（纯文本） | 有（点击跳转到对应章节） |
-| index.html | 无 | 有（按来源/主题筛选，从新到旧排列） |
 
 ## 工作流
 
@@ -206,7 +196,21 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 - 包含：标题下划线、引用块左边框+灰底、代码块深色背景、分隔线用居中点号
 - 图片使用 `<img>` 标签引用原始 URL（或相对路径），粘贴到微信编辑器时图片会被自动上传，无需手动处理
 
-**版本3：小红书图片**
+**版本3：网页浏览 HTML**
+- 文件：`production/<slug>/<slug>_web.html`
+- 从 Markdown 渲染，与 wechat 版本共用渲染逻辑但有以下区别：
+
+| 特性 | wechat | web |
+|------|--------|-----|
+| 高亮色 | #1e88e5（蓝色） | #a0220d（深红） |
+| 外部链接 | 禁止（转为纯文本） | 保留（原文标题可点击跳转） |
+| 页面壳 | 无（纯 section 片段） | 有（完整 HTML + viewport + 背景色 #faf8f5 + 「← 返回索引」） |
+| TOC 锚点 | 无（纯文本 span） | 有（点击跳转到对应 h2/h3，匹配时去除时间戳 [MM:SS]） |
+| h2/h3 id | 无 | 有（自动生成） |
+
+- 可复用 `render_wechat.py` 的解析逻辑，通过参数或独立脚本 `render_web.py` 生成
+
+**版本4：小红书图片**
 - 文件夹：`production/<slug>/xhs/`
 - 将内容拆分为多张图片，每张 1080×1440px（3:4）
 - 执行渲染脚本：
@@ -295,20 +299,12 @@ body, .markdown-body {
 
 ### 4. sync-output — 同步到 output 目录
 
-每次处理完笔记后（或批量处理结束后），执行以下步骤将 production 内容同步到 output：
+每次处理完笔记后（或批量处理结束后），将 production 内容复制到 output：
 
-1. **复制到 output/markdown/**：`production/<slug>/<slug>.md` → `output/markdown/<slug>.md`
-2. **复制到 output/wechat/**：`production/<slug>/<slug>_wechat.html` → `output/wechat/<slug>.html`
-3. **复制到 output/xhs/**：`production/<slug>/xhs/` → `output/xhs/<slug>/`
-4. **生成 output/web/ 版本**：
-   - 从 wechat HTML 转换为 web 版本：
-     - 替换高亮色 `#1e88e5` → `#a0220d`
-     - 包裹完整 HTML 页面壳（DOCTYPE、viewport meta、`body{background:#faf8f5}`）
-     - 添加「← 返回索引」链接
-     - 原文标题 `<span>` 转为 `<a href="原文URL" target="_blank">`（URL 从对应 .md 文件提取）
-     - 为所有 h2/h3 添加 `id` 属性
-     - TOC 中的 `<span>` 转为 `<a href="#id">` 锚点链接（匹配时去除标题中的时间戳 `[MM:SS]`）
-   - 保存为 `output/web/<slug>.html`
+1. **output/markdown/**：`production/<slug>/<slug>.md` → `output/markdown/<slug>.md`
+2. **output/wechat/**：`production/<slug>/<slug>_wechat.html` → `output/wechat/<slug>.html`
+3. **output/xhs/**：`production/<slug>/xhs/` → `output/xhs/<slug>/`
+4. **output/web/**：`production/<slug>/<slug>_web.html` → `output/web/<slug>.html`
 5. **重新生成 output/web/index.html**：
    - 遍历 output/web/ 下所有文章 HTML
    - 从文件名解析来源、日期、标题
