@@ -4,7 +4,7 @@
 用法：
     python render_xhs.py <input.md> <output_dir/>
 
-依赖：pillow
+依赖：pillow, pygments
 """
 
 import re
@@ -13,6 +13,9 @@ import textwrap
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+from pygments import lex
+from pygments.lexers import get_lexer_by_name, guess_lexer, TextLexer
+from pygments.token import Token
 
 # ─── 配置 ───────────────────────────────────────────────────────────────────
 
@@ -24,7 +27,7 @@ CONTENT_WIDTH = WIDTH - 2 * PADDING_X
 BG_COLOR = "#faf8f5"
 TEXT_COLOR = "#2c2c2c"
 HEADING_COLOR = "#1a1a1a"
-ACCENT_COLOR = "#1e88e5"
+ACCENT_COLOR = "#a0220d"
 SEPARATOR_COLOR = "#ddd"
 
 # 字体大小
@@ -168,6 +171,7 @@ def parse_md_to_blocks(md_text):
 
         # 代码块（``` 开头）
         if line.strip().startswith('```'):
+            lang = line.strip()[3:].strip()
             code_lines = []
             i += 1
             while i < len(lines) and not lines[i].strip().startswith('```'):
@@ -176,7 +180,7 @@ def parse_md_to_blocks(md_text):
             if i < len(lines):
                 i += 1  # skip closing ```
             if code_lines:
-                blocks.append({"type": "code_block", "text": '\n'.join(code_lines)})
+                blocks.append({"type": "code_block", "text": '\n'.join(code_lines), "lang": lang})
             continue
 
         # 图片
@@ -216,17 +220,33 @@ def parse_md_to_blocks(md_text):
 
 # ─── 渲染 ───────────────────────────────────────────────────────────────────
 
+def _is_latin(ch):
+    """判断字符是否属于不可拆分的英文/数字序列。"""
+    return ch.isascii() and (ch.isalnum() or ch in "-_'")
+
+
 def wrap_text(text, font, max_width, draw):
-    """手动按像素宽度换行，支持中文。"""
+    """按像素宽度换行，英文单词不拆分。"""
     lines = []
     current_line = ""
-    for char in text:
-        test = current_line + char
+    i = 0
+    while i < len(text):
+        # 收集一个token（连续英文字母/数字 或 单个非英文字符）
+        if _is_latin(text[i]):
+            word = ""
+            while i < len(text) and _is_latin(text[i]):
+                word += text[i]
+                i += 1
+        else:
+            word = text[i]
+            i += 1
+
+        test = current_line + word
         bbox = draw.textbbox((0, 0), test, font=font)
         w = bbox[2] - bbox[0]
         if w > max_width and current_line:
             lines.append(current_line)
-            current_line = char
+            current_line = word
         else:
             current_line = test
     if current_line:
@@ -234,9 +254,47 @@ def wrap_text(text, font, max_width, draw):
     return lines
 
 
-BOLD_COLOR = "#1e88e5"  # 加粗文字用棕色强调色（与微信版统一）
+BOLD_COLOR = "#a0220d"  # 加粗文字用深红色强调色
 CODE_COLOR = "#d14"    # inline code 用代码红色
 CODE_BG = "#f5f5f5"    # code 背景色
+
+# 暖色调语法高亮（匹配深红强调色）
+_TOKEN_COLORS = {
+    Token.Keyword: "#c678dd",
+    Token.Keyword.Constant: "#d19a66",
+    Token.Keyword.Type: "#e5c07b",
+    Token.Name.Function: "#e06c75",
+    Token.Name.Class: "#e5c07b",
+    Token.Name.Decorator: "#e06c75",
+    Token.Name.Builtin: "#e5c07b",
+    Token.Name.Tag: "#e06c75",
+    Token.Name.Attribute: "#d19a66",
+    Token.String: "#98c379",
+    Token.Number: "#d19a66",
+    Token.Operator: "#e06c75",
+    Token.Comment: "#7f848e",
+    Token.Punctuation: "#abb2bf",
+    Token.Literal: "#d19a66",
+}
+
+
+def _token_color(ttype):
+    """根据 token 类型返回颜色，向上查找父类型。"""
+    while ttype:
+        if ttype in _TOKEN_COLORS:
+            return _TOKEN_COLORS[ttype]
+        ttype = ttype.parent
+    return "#abb2bf"
+
+
+def _get_lexer(lang):
+    """根据语言名获取 lexer，失败则返回 TextLexer。"""
+    if lang:
+        try:
+            return get_lexer_by_name(lang)
+        except Exception:
+            pass
+    return TextLexer()
 
 
 def parse_inline_segments(text):
@@ -244,8 +302,6 @@ def parse_inline_segments(text):
     style: 'normal', 'bold', 'code'
     """
     segments = []
-    # 先按 code 和 bold 分割
-    # 顺序：先处理 code（`...`），再处理 bold（**...**）
     parts = re.split(r'(`[^`]+`|\*\*[^*]+\*\*)', text)
     for part in parts:
         if not part:
@@ -255,7 +311,6 @@ def parse_inline_segments(text):
         elif part.startswith('**') and part.endswith('**'):
             segments.append((part[2:-2], 'bold'))
         else:
-            # 去掉残留的单个 * (italic)
             clean = re.sub(r'\*([^*]+)\*', r'\1', part)
             if clean:
                 segments.append((clean, 'normal'))
@@ -271,19 +326,30 @@ def wrap_rich_text(segments, fonts, max_width, draw):
 
     for text, style in segments:
         font = fonts["bold"] if style == 'bold' else fonts["body"]
-        for char in text:
-            bbox = draw.textbbox((0, 0), char, font=font)
-            char_w = bbox[2] - bbox[0]
-            if current_width + char_w > max_width and current_line:
+        # 按token遍历（英文单词不拆分）
+        i = 0
+        while i < len(text):
+            if _is_latin(text[i]):
+                word = ""
+                while i < len(text) and _is_latin(text[i]):
+                    word += text[i]
+                    i += 1
+            else:
+                word = text[i]
+                i += 1
+
+            bbox = draw.textbbox((0, 0), word, font=font)
+            word_w = bbox[2] - bbox[0]
+            if current_width + word_w > max_width and current_line:
                 lines.append(current_line)
                 current_line = []
                 current_width = 0
             # 追加到当前行
             if current_line and current_line[-1][1] == style:
-                current_line[-1] = (current_line[-1][0] + char, style)
+                current_line[-1] = (current_line[-1][0] + word, style)
             else:
-                current_line.append((char, style))
-            current_width += char_w
+                current_line.append((word, style))
+            current_width += word_w
 
     if current_line:
         lines.append(current_line)
@@ -339,11 +405,44 @@ def estimate_block_height(block, fonts, draw, md_dir=None):
         return 0
     if block["type"] == "table":
         row_h = int(FONT_SIZE_BODY * LINE_SPACING) + 10
-        return len(block["rows"]) * row_h + 20
+        # 预计算每行实际需要的行数（考虑换行）
+        rows = block["rows"]
+        if not rows:
+            return 0
+        num_cols = max(len(r) for r in rows)
+        col_w = CONTENT_WIDTH // max(num_cols, 1)
+        total_h = 20
+        for row in rows:
+            max_lines = 1
+            for cell in row[:num_cols]:
+                cell_text = re.sub(r'\*\*([^*]+)\*\*', r'\1', cell)
+                lines = wrap_text(cell_text, fonts["body"], col_w - 16, draw)
+                max_lines = max(max_lines, len(lines))
+            total_h += max_lines * row_h
+        return total_h
     if block["type"] == "code_block":
-        code_lines = block["text"].split('\n')
+        code_text = block["text"]
+        lang = block.get("lang", "")
         line_h = int(FONT_SIZE_BODY * 1.6)
-        return len(code_lines) * line_h + 40
+        code_max_w = CONTENT_WIDTH - 40
+        font = fonts["body"]
+        lexer = _get_lexer(lang)
+        # 按行分组 tokens
+        code_lines_tokens = [[]]
+        for ttype, value in lex(code_text, lexer):
+            parts = value.split('\n')
+            for pi, part in enumerate(parts):
+                if pi > 0:
+                    code_lines_tokens.append([])
+                if part:
+                    code_lines_tokens[-1].append(part)
+        # 对每行做 wrap 计算总渲染行数
+        total_render_lines = 0
+        for line_parts in code_lines_tokens:
+            line_text = ''.join(line_parts)
+            wrapped = wrap_text(line_text, font, code_max_w, draw) or [""]
+            total_render_lines += len(wrapped)
+        return total_render_lines * line_h + 40
     if block["type"] == "quote_line":
         # 去掉链接语法
         text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', block["text"])
@@ -386,7 +485,7 @@ def draw_block(block, fonts, draw, x, y, img_canvas=None, md_dir=None):
         line_h = int(FONT_SIZE_BODY * LINE_SPACING)
         total_h = len(lines) * line_h
         # 左侧竖线
-        draw.rectangle([(x, y + 2), (x + 4, y + total_h - 2)], fill="#1e88e5")
+        draw.rectangle([(x, y + 2), (x + 4, y + total_h - 2)], fill="#a0220d")
         for i, line in enumerate(lines):
             draw.text((x + 16, y + i * line_h), line, font=fonts["bold"], fill=HEADING_COLOR)
         return total_h + 16
@@ -430,30 +529,89 @@ def draw_block(block, fonts, draw, x, y, img_canvas=None, md_dir=None):
         row_h = int(FONT_SIZE_BODY * LINE_SPACING) + 10
         cy = y + 10
         for ri, row in enumerate(rows):
+            # 计算本行最大行数
+            max_lines = 1
+            row_wrapped = []
             for ci, cell in enumerate(row[:num_cols]):
-                cell_x = x + ci * col_w + 8
-                # 去掉 markdown 加粗
                 cell_text = re.sub(r'\*\*([^*]+)\*\*', r'\1', cell)
                 font = fonts["bold"] if ri == 0 else fonts["body"]
+                lines = wrap_text(cell_text, font, col_w - 16, draw)
+                row_wrapped.append(lines)
+                max_lines = max(max_lines, len(lines))
+            # 绘制每个单元格的多行文本
+            for ci, lines in enumerate(row_wrapped):
+                cell_x = x + ci * col_w + 8
+                font = fonts["bold"] if ri == 0 else fonts["body"]
                 color = HEADING_COLOR if ri == 0 else TEXT_COLOR
-                # 截断过长文本
-                while draw.textbbox((0, 0), cell_text, font=font)[2] > col_w - 16 and len(cell_text) > 1:
-                    cell_text = cell_text[:-1]
-                draw.text((cell_x, cy), cell_text, font=font, fill=color)
+                for li, line in enumerate(lines):
+                    draw.text((cell_x, cy + li * row_h), line, font=font, fill=color)
+            cell_h = max_lines * row_h
             # 行底线
-            draw.line([(x, cy + row_h - 5), (x + CONTENT_WIDTH, cy + row_h - 5)], fill=SEPARATOR_COLOR, width=1)
-            cy += row_h
-        return len(rows) * row_h + 20
+            draw.line([(x, cy + cell_h - 5), (x + CONTENT_WIDTH, cy + cell_h - 5)], fill=SEPARATOR_COLOR, width=1)
+            cy += cell_h
+        return cy - y + 10
 
     if block["type"] == "code_block":
-        code_lines = block["text"].split('\n')
+        code_text = block["text"]
+        lang = block.get("lang", "")
         line_h = int(FONT_SIZE_BODY * 1.6)
-        total_h = len(code_lines) * line_h + 40
+        code_max_w = CONTENT_WIDTH - 40
+        font = fonts["body"]
+        lexer = _get_lexer(lang)
+
+        # 将 tokens 按行分组，每行是 [(text, color), ...] 的列表
+        code_lines_tokens = [[]]
+        for ttype, value in lex(code_text, lexer):
+            color = _token_color(ttype)
+            parts = value.split('\n')
+            for pi, part in enumerate(parts):
+                if pi > 0:
+                    code_lines_tokens.append([])
+                if part:
+                    code_lines_tokens[-1].append((part, color))
+
+        # 对每行做 word-wrap，得到渲染行列表 [(text, color), ...]
+        render_lines = []
+        for line_tokens in code_lines_tokens:
+            if not line_tokens:
+                render_lines.append([])
+                continue
+            current_line = []
+            current_width = 0
+            for text, color in line_tokens:
+                i = 0
+                while i < len(text):
+                    if _is_latin(text[i]):
+                        word = ""
+                        while i < len(text) and _is_latin(text[i]):
+                            word += text[i]
+                            i += 1
+                    else:
+                        word = text[i]
+                        i += 1
+                    bbox = draw.textbbox((0, 0), word, font=font)
+                    word_w = bbox[2] - bbox[0]
+                    if current_width + word_w > code_max_w and current_line:
+                        render_lines.append(current_line)
+                        current_line = []
+                        current_width = 0
+                    if current_line and current_line[-1][1] == color:
+                        current_line[-1] = (current_line[-1][0] + word, color)
+                    else:
+                        current_line.append((word, color))
+                    current_width += word_w
+            render_lines.append(current_line)
+
+        total_h = len(render_lines) * line_h + 40
         # 背景
-        draw.rectangle([(x, y), (x + CONTENT_WIDTH, y + total_h)], fill="#2d2d2d")
+        draw.rectangle([(x, y), (x + CONTENT_WIDTH, y + total_h)], fill="#282c34")
         cy = y + 20
-        for cl in code_lines:
-            draw.text((x + 20, cy), cl, font=fonts["body"], fill="#e6e6e6")
+        for line_segs in render_lines:
+            cx = x + 20
+            for seg_text, seg_color in line_segs:
+                draw.text((cx, cy), seg_text, font=font, fill=seg_color)
+                bbox = draw.textbbox((0, 0), seg_text, font=font)
+                cx += bbox[2] - bbox[0]
             cy += line_h
         return total_h
 

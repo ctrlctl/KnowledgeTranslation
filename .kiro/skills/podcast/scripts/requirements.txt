@@ -2,3 +2,4 @@ feedparser
 yt-dlp
 openai-whisper
 Pillow
+Pygments

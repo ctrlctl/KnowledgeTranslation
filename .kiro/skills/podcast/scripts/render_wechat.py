@@ -11,6 +11,10 @@ import re
 import sys
 from pathlib import Path
 
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name, TextLexer
+from pygments.formatters import HtmlFormatter
+
 # ─── 样式配置（模拟微信公众号渲染风格）─────────────────────────────────
 
 STYLES = {
@@ -52,9 +56,9 @@ STYLES = {
         "font-family:Menlo,Monaco,Consolas,monospace;color:#d14;"
     ),
     "code_block": (
-        "display:block;overflow-x:auto;padding:1em;margin:1.5em 0;font-size:12px;"
-        "line-height:1.6;background:#2b2b2b;color:#f8f8f2;border-radius:4px;"
-        "font-family:Menlo,Monaco,Consolas,monospace;"
+        "display:block;padding:1em;margin:1.5em 0;font-size:12px;"
+        "line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;"
+        "font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"
     ),
     "ul": "margin:1em 0;padding-left:2em;",
     "li": "margin-bottom:0.5em;line-height:2;",
@@ -143,14 +147,22 @@ def md_to_wechat_html(md_text):
 
         # 代码块
         if line.strip().startswith('```'):
+            lang = line.strip()[3:].strip()
             code_lines = []
             i += 1
             while i < len(lines) and not lines[i].strip().startswith('```'):
-                code_lines.append(escape_html(lines[i]))
+                code_lines.append(lines[i])
                 i += 1
             i += 1  # skip closing ```
             code_content = '\n'.join(code_lines)
-            html_parts.append(f'<pre style="{STYLES["code_block"]}">{code_content}</pre>')
+            # 语法高亮
+            try:
+                lexer = get_lexer_by_name(lang) if lang else TextLexer()
+            except Exception:
+                lexer = TextLexer()
+            formatter = HtmlFormatter(nowrap=True, noclasses=True, style='nord')
+            highlighted = highlight(code_content, lexer, formatter)
+            html_parts.append(f'<pre style="{STYLES["code_block"]}">{highlighted}</pre>')
             continue
 
         # 引用块

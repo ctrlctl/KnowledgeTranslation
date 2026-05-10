@@ -22,20 +22,21 @@
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">实现方式</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">实现极其简单——只是一个标准工具定义：</p>
-<pre style="display:block;overflow-x:auto;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2b2b2b;color:#f8f8f2;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;">{
-  "name": "think",
-  "description": "Use the tool to think about something. It will not obtain new information or change the database, but just append the thought to the log. Use it when complex reasoning or some cache memory is needed.",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "thought": {
-        "type": "string",
-        "description": "A thought to think about."
-      }
-    },
-    "required": ["thought"]
-  }
-}</pre>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;name&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;think&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;description&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;Use the tool to think about something. It will not obtain new information or change the database, but just append the thought to the log. Use it when complex reasoning or some cache memory is needed.&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;input_schema&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">    </span><span style="color: #81a1c1">&quot;type&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;object&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #81a1c1">&quot;properties&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">      </span><span style="color: #81a1c1">&quot;thought&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">        </span><span style="color: #81a1c1">&quot;type&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;string&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">        </span><span style="color: #81a1c1">&quot;description&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;A thought to think about.&quot;</span>
+<span style="color: #d8dee9">      </span><span style="color: #eceff4">}</span>
+<span style="color: #d8dee9">    </span><span style="color: #eceff4">},</span>
+<span style="color: #d8dee9">    </span><span style="color: #81a1c1">&quot;required&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">[</span><span style="color: #a3be8c">&quot;thought&quot;</span><span style="color: #eceff4">]</span>
+<span style="color: #d8dee9">  </span><span style="color: #eceff4">}</span>
+<span style="color: #eceff4">}</span>
+</pre>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">工具不执行任何操作——不获取新信息、不改变数据库，只是将思考追加到日志。这给了模型一个"暂停并思考"的显式机制。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">性能表现</h2>
