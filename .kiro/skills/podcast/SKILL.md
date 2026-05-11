@@ -25,7 +25,9 @@ KnowledgeTranslation/
 │   ├── scripts/
 │   │   ├── podcast_tool.py   # 工具脚本
 │   │   ├── render_wechat.py  # 微信公众号 HTML 渲染脚本
+│   │   ├── render_web.py     # 网页浏览版 HTML 渲染脚本
 │   │   ├── render_xhs.py     # 小红书图片渲染脚本
+│   │   ├── sync_web_images.sh # 同步图片到 output/web 和 output/wechat
 │   │   └── requirements.txt  # Python依赖
 │   └── references/
 │       ├── feeds.json        # RSS订阅列表
@@ -45,10 +47,14 @@ KnowledgeTranslation/
 └── output/                   # 按格式整理的输出（从 production 直接复制）
     ├── markdown/             # 每篇的 .md 文件
     ├── wechat/               # 微信公众号 HTML
+    │   └── images/           # 图片（按文章名分子目录）
+    │       └── <slug>/fig_01.png...
     ├── xhs/                  # 小红书图片文件夹
     │   └── <slug>/01.png...
-    └── web/                  # 网页浏览版 HTML
+    └── web/                  # 网页浏览版 HTML（Cloudflare Pages 部署根目录）
         ├── index.html        # 索引页（按来源/主题筛选）
+        ├── images/           # 图片（按文章名分子目录，避免冲突）
+        │   └── <slug>/fig_01.png...
         └── <slug>.html       # 直接从 production 复制的 _web.html
 ```
 
@@ -56,7 +62,9 @@ KnowledgeTranslation/
 
 - **production/** 是笔记的源目录，每篇一个文件夹，包含所有生成物（md、wechat html、web html、xhs、transcript）
 - **output/** 是按格式分类的发布目录，从 production 直接复制（不做转换）
-- 处理完每篇笔记后，必须同步更新 output 目录
+- **output/web/** 和 **output/wechat/** 是扁平目录（所有 HTML 在同一层），因此图片路径需要按文章名分子目录存放（`images/<slug>/fig_01.png`），避免不同文章的同名图片冲突
+- `render_web.py` 和 `render_wechat.py` 会自动将 Markdown 中的 `images/fig_XX.png` 重写为 `images/<slug>/fig_XX.png`
+- 处理完每篇笔记后，必须同步更新 output 目录，并运行 `sync_web_images.sh` 同步图片
 
 ## 工作流
 
@@ -304,7 +312,8 @@ body, .markdown-body {
 2. **output/wechat/**：`production/<slug>/<slug>_wechat.html` → `output/wechat/<slug>.html`
 3. **output/xhs/**：`production/<slug>/xhs/` → `output/xhs/<slug>/`
 4. **output/web/**：`production/<slug>/<slug>_web.html` → `output/web/<slug>.html`
-5. **重新生成 output/web/index.html**：
+5. **同步图片**：运行 `bash .kiro/skills/podcast/scripts/sync_web_images.sh`，将 `production/*/images/` 按 `images/<slug>/` 结构同步到 `output/web/images/` 和 `output/wechat/images/`
+6. **重新生成 output/web/index.html**：
    - 遍历 output/web/ 下所有文章 HTML
    - 从文件名解析来源、日期、标题
    - 根据标题关键词自动分配英文主题标签（Agents, Coding, Evaluation, Alignment & Safety, Training, Inference & Scaling, Tooling & Infra, LLM Fundamentals, Open Source, Industry & Trends）

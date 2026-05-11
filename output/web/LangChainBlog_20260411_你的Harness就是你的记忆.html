@@ -24,7 +24,7 @@ a { color:#a0220d; }
 <h2 id="agent-harness-不会消失" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent Harness 不会消失</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">构建 agentic 系统的"最佳"方式在过去三年发生了巨大变化。ChatGPT 出来时，你能做的只是简单 RAG chain（LangChain）。然后模型好了一点，可以创建更复杂的 flow（LangGraph）。然后它们好了很多，催生了一种新型脚手架——agent harness。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent harness 的例子包括 Claude Code、Deep Agents、Pi（驱动 OpenClaw）、OpenCode、Codex、Letta Code 等等。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260411_你的Harness就是你的记忆/fig_01.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Agent harness 不会消失。</strong></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有时有一种观点认为模型会吸收越来越多的脚手架。<strong style="color:#a0220d;font-weight:bold;">这不是真的。</strong> 确实发生的（并将继续发生的）是 2023 年需要的很多脚手架不再需要了，但被其他类型的脚手架取代了。Agent 按定义是 LLM 与工具和其他数据源交互。围绕 LLM 促进这种交互的系统永远存在。需要证据？Claude Code 源码泄露时有 <strong style="color:#a0220d;font-weight:bold;">51.2 万行代码</strong>。那些代码就是 harness。即使是世界上最好模型的制造者也在大力投资 harness。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当 web search 被内置到 OpenAI 和 Anthropic 的 API 中时——它们不是"模型的一部分"。它们是坐在 API 后面的轻量 harness 的一部分，通过 tool calling 编排模型与搜索 API。</p>
@@ -40,16 +40,16 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="不拥有-harness-就不拥有记忆" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">不拥有 Harness 就不拥有记忆</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Harness 与记忆紧密绑定。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260411_你的Harness就是你的记忆/fig_02.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">如果你使用封闭 harness，特别是在 API 后面的，你不拥有你的记忆。</strong></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这表现在几个层面。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">轻度问题：</strong> 使用有状态 API（如 OpenAI 的 Responses API 或 Anthropic 的服务端 compaction），状态存储在他们的服务器上。想换模型并恢复之前的线程——不再可行。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260411_你的Harness就是你的记忆/fig_03.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">中度问题：</strong> 使用封闭 harness（如 Claude Agent SDK，底层用 Claude Code，不开源），这个 harness 以你未知的方式与记忆交互。也许它在客户端创建了一些 artifact——但形状是什么、harness 应该如何使用它们？未知，因此不可从一个 harness 转移到另一个。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_04.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260411_你的Harness就是你的记忆/fig_04.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">最严重的情况：整个 harness 包括长期记忆都在 API 后面。</strong></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这种情况下，你对记忆（包括长期记忆）零所有权或可见性。你不知道 harness（意味着不知道如何使用记忆）。更糟的是——你甚至不拥有记忆本身！也许某些部分通过 API 暴露，也许没有——你对此没有控制。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_05.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260411_你的Harness就是你的记忆/fig_05.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当人们说"模型会吸收越来越多的 harness"时——他们真正的意思是这些记忆相关的部分会进入模型提供商的 API 后面。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">这非常令人警惕——意味着记忆将被锁定到单一平台、单一模型。</strong></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">模型提供商有极大动机这样做，而且已经开始了。Anthropic 推出了 Claude Managed Agents，把所有东西都放在 API 后面，锁定到他们的平台。</p>

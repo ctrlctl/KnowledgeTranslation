@@ -44,14 +44,14 @@ a { color:#a0220d; }
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为模型或提供商注册一个 profile（或从 YAML 加载现有的），<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">create_deep_agent</code> 在你切换模型时自动适配。重要的是，你的调用点不变。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为 OpenAI、Anthropic 和 Google 模型提供默认值。你可以覆盖它们、在其上叠加自己的，或作为插件分发 profile。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也可以在 YAML 中声明 profile：</p>
-<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #616E87; font-style: italic"># 示例 profile 声明</span>
-<span style="color: #81A1C1">model</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> anthropic/claude-opus</span>
-<span style="color: #81A1C1">prompt_prefix</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #A3BE8C">&quot;...&quot;</span>
-<span style="color: #81A1C1">tools</span><span style="color: #ECEFF4">:</span>
-<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> </span><span style="color: #81A1C1">name</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> web_search</span>
-<span style="color: #D8DEE9">    </span><span style="color: #81A1C1">enabled</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> true</span>
-<span style="color: #81A1C1">middleware</span><span style="color: #ECEFF4">:</span>
-<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> planning_middleware</span>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #616e87; font-style: italic"># 示例 profile 声明</span>
+<span style="color: #81a1c1">model</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> anthropic/claude-opus</span>
+<span style="color: #81a1c1">prompt_prefix</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;...&quot;</span>
+<span style="color: #81a1c1">tools</span><span style="color: #eceff4">:</span>
+<span style="color: #d8dee9">  </span><span style="color: #eceff4">-</span><span style="color: #d8dee9"> </span><span style="color: #81a1c1">name</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> web_search</span>
+<span style="color: #d8dee9">    </span><span style="color: #81a1c1">enabled</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> true</span>
+<span style="color: #81a1c1">middleware</span><span style="color: #eceff4">:</span>
+<span style="color: #d8dee9">  </span><span style="color: #eceff4">-</span><span style="color: #d8dee9"> planning_middleware</span>
 </pre>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">目标是无论你选择哪个模型，Deep Agents 都给你工具和默认值来为你的任务创建最佳 harness。</p>
 </section>

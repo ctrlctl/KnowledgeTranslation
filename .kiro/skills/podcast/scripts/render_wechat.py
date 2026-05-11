@@ -269,6 +269,13 @@ def main():
     out_path = Path(sys.argv[2])
 
     md_text = md_path.read_text(encoding="utf-8")
+    # 将 images/ 相对路径改为 images/{article_stem}/ 以避免扁平目录下冲突
+    article_stem = md_path.stem
+    md_text = re.sub(
+        r'!\[([^\]]*)\]\(images/',
+        lambda m: f'![{m.group(1)}](images/{article_stem}/',
+        md_text
+    )
     html = md_to_wechat_html(md_text)
     out_path.write_text(html, encoding="utf-8")
     print(f"已生成: {out_path} ({len(html)} bytes)")

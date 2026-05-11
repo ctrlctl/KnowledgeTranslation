@@ -41,7 +41,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h3 id="构建模块增强型llm" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">构建模块：增强型LLM</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agentic 系统的基本构建模块是一个<strong style="color:#a0220d;font-weight:bold;">增强了检索、工具和记忆能力的 LLM</strong>。当前模型能主动使用这些能力——自己生成搜索查询、选择合适的工具、决定保留什么信息。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="增强型LLM" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_01.png" alt="增强型LLM" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：增强型LLM（The augmented LLM）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">实现时建议关注两个关键方面：</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">为你的具体用例定制这些能力</strong> 2. <strong style="color:#a0220d;font-weight:bold;">确保它们为 LLM 提供简单、文档完善的接口</strong></p>
@@ -50,7 +50,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h3 id="工作流prompt链" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作流：Prompt链</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Prompt 链将任务分解为一系列步骤，每次 LLM 调用处理上一步的输出。你可以在任何中间步骤添加程序化检查（"gate"），确保流程没有跑偏。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="Prompt链工作流" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_02.png" alt="Prompt链工作流" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Prompt链工作流（The prompt chaining workflow）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：任务可以清晰地分解为固定的子任务。核心目标是<strong style="color:#a0220d;font-weight:bold;">用延迟换取更高准确度</strong>——让每次 LLM 调用只处理一个更简单的任务。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>：</p>
@@ -58,7 +58,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h3 id="工作流路由" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作流：路由</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">路由对输入进行分类，然后将其导向专门的后续处理。这个模式实现了<strong style="color:#a0220d;font-weight:bold;">关注点分离</strong>，让你能为每类输入构建更专门的 prompt。不做路由的话，为一类输入优化 prompt 往往会损害其他类型的表现。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="路由工作流" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_03.png" alt="路由工作流" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：路由工作流（The routing workflow）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：任务存在明确的类别，分开处理效果更好，且分类本身能做准确（用 LLM 或传统分类模型都行）。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>：</p>
@@ -67,7 +67,7 @@ a { color:#a0220d; }
 <h3 id="工作流并行化" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作流：并行化</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">LLM 有时可以同时处理一个任务的不同部分，然后程序化地聚合输出。并行化有两种关键变体：</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">分段（Sectioning）</strong>：将任务拆分为独立子任务并行运行</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">投票（Voting）</strong>：对同一任务运行多次以获得多样化输出</li></ul>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_04.png" alt="并行化工作流" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_04.png" alt="并行化工作流" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：并行化工作流（The parallelization workflow）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：子任务可以并行化以提速，或需要多个视角/尝试来获得更高置信度。对于需要考虑多个维度的复杂任务，让每个维度由单独的 LLM 调用处理，通常比塞在一次调用里效果好。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>：</p>
@@ -78,7 +78,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h3 id="工作流编排者-工人" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作流：编排者-工人</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在编排者-工人（Orchestrator-workers）工作流中，一个中央 LLM 动态分解任务、委派给工人 LLM、并综合它们的结果。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_05.png" alt="编排者-工人工作流" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_05.png" alt="编排者-工人工作流" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：编排者-工人工作流（The orchestrator-workers workflow）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：复杂任务中你无法预测需要哪些子任务（例如编码中，需要修改的文件数量和每个文件的修改性质取决于具体任务）。它和并行化的拓扑结构类似，关键区别是<strong style="color:#a0220d;font-weight:bold;">灵活性</strong>——子任务不是预定义的，而是由编排者根据具体输入决定。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>：</p>
@@ -86,7 +86,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h3 id="工作流评估者-优化者" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作流：评估者-优化者</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在评估者-优化者（Evaluator-optimizer）工作流中，一个 LLM 调用生成响应，另一个在循环中提供评估和反馈。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_06.png" alt="评估者-优化者工作流" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_06.png" alt="评估者-优化者工作流" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：评估者-优化者工作流（The evaluator-optimizer workflow）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：有明确的评估标准，且迭代改进能提供可衡量的价值。两个适用信号：第一，人给反馈后 LLM 的输出能明显改善；第二，LLM 自己也能提供这样的反馈。跟人类作者反复打磨文档是一个道理。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>：</p>
@@ -96,13 +96,13 @@ a { color:#a0220d; }
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">随着 LLM 在关键能力上逐渐成熟——理解复杂输入、推理和规划、可靠地使用工具、从错误中恢复——Agent 开始在生产环境中落地。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 的起点是用户的命令或交互讨论。任务明确后，agent <strong style="color:#a0220d;font-weight:bold;">独立规划和运行</strong>，可能返回人类获取更多信息或判断。执行过程中，关键是 agent 在每一步从环境获取"ground truth"（如工具调用结果或代码执行）来评估进展。Agent 可以在检查点或遇到阻碍时暂停等待人类反馈。任务通常在完成时终止，但也常包含停止条件（如最大迭代次数）以保持控制。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 能处理复杂任务，但<strong style="color:#a0220d;font-weight:bold;">实现往往很直接</strong>——通常只是 LLM 在循环中基于环境反馈使用工具。因此，清晰、周到地设计工具集及其文档至关重要。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_07.png" alt="自主Agent" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_07.png" alt="自主Agent" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：自主Agent（Autonomous agent）</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">何时使用</strong>：开放式问题，无法预测所需步骤数，无法硬编码固定路径。LLM 可能运行很多轮，你必须对其决策有一定程度的信任。Agent 的自主性使其非常适合在受信环境中扩展任务。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">自主性也意味着更高成本和错误累积的可能。我们建议在沙箱环境中进行广泛测试，配合适当的 guardrails。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">示例</strong>（来自我们自己的实现）：</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">解决 SWE-bench 任务的 coding agent——根据任务描述编辑多个文件</li><li style="margin-bottom:0.5em;line-height:2;">"computer use"参考实现——Claude 操作计算机完成任务</li></ul>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_08.png" alt="Coding Agent高层流程" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20241219_构建有效的Agent/fig_08.png" alt="Coding Agent高层流程" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Coding Agent高层流程（High-level flow of a coding agent）</em></p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="组合与定制这些模式" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">组合与定制这些模式</h2>

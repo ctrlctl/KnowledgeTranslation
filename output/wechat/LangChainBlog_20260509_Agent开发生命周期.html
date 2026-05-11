@@ -10,7 +10,7 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他们建立了一套 <strong style="color:#1e88e5;font-weight:bold;">agent 开发生命周期</strong>，把实验转化为可重复的发布-学习-改进系统。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这个生命周期有四个部分：</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">Build → Test → Deploy → Monitor</strong></p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_01.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">顺序是刻意的。测试应该在 agent 进入生产之前开始，而不是之后。团队需要在部署前测试 agent，以受控方式部署，监控生产中的行为，然后把学到的东西反馈到下一轮构建和评估中。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对单个 agent，这个流程可以很轻量。跨多个 agent 时，它就变成了基础设施和治理挑战。团队需要共享的方式来控制成本、管理工具访问、检查 tool call、复用上下文，以及决定哪里需要人类介入。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">让 agent 工作一次</strong>和<strong style="color:#1e88e5;font-weight:bold;">把 agent 开发变成可重复实践</strong>之间的差距，就在于是否有正确的开发生命周期。</p>
@@ -18,7 +18,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Build：构建阶段</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">构建阶段是团队决定要创建什么类型的 agent 系统、使用什么抽象层级的地方。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">工具选择范围很广。有些是 code-first 的，有些是 no-code 或 low-code 的。有些聚焦抽象，有些聚焦给 agent 提供工作环境——prompt、工具、skill 和状态。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_02.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Code-first 这边，团队通常用开源框架和 harness。LangChain 生态里包括 LangChain、LangGraph 和 Deep Agents。生态外的例子有 CrewAI 和 Claude Agents SDK。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些工具在栈的不同层级运作：</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">Agent 框架</strong>主要聚焦抽象。帮开发者组合模型调用、工具、prompt、检索、结构化输出和 agent 循环。LangChain 和 CrewAI 属于这一类。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">Agent 运行时</strong>聚焦执行。支持需要状态、控制流、持久性和人类介入的 agent。LangGraph 是 LangChain 生态中最典型的例子——它让你构建可以分支、循环、暂停、恢复和持久化状态的 agentic 系统。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">Agent harness</strong> 聚焦"做事"。提供 agent 执行长时间任务所需的周边结构：prompt、skill、MCP server、hook、中间件，有时还有文件系统。Deep Agents 和 Claude Agent SDK 是这种模式的例子。</li></ul>
@@ -31,7 +31,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Test：测试阶段</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 agent 部署之前，团队需要一种方式来判断它是否真的准备好了。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这不意味着在任何人使用 agent 之前就构建完美的 eval 套件。实际上这很少现实。它意味着有<strong style="color:#1e88e5;font-weight:bold;">足够的 eval 来捕获明显失败、比较版本、避免盲目发布变更</strong>。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_03.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">大多数 eval 工作流从一小组代表性任务的数据集开始。有些例子来自预期用例，有些来自手动测试、dogfooding、支持工单、历史 trace 或已知边缘情况。随着时间推移，生产 trace 会让这些数据集更强大，但测试应该在进入生产之前就开始。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">数据集和指标</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">数据集是团队保存所学的方式。没有它们，同样的失败往往在 prompt 变更、模型升级或工具更新后重新出现。</p>
@@ -50,7 +50,7 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 构建和评估完成后，需要一个能可靠运行的环境。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对简单 agent，部署可能和部署传统应用类似。但很多 agent 需要的不只是无状态服务器。它们运行更长时间，调用工具，等待人类输入，写文件，从中断中恢复，跨多次交互维护状态。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这就是为什么<strong style="color:#1e88e5;font-weight:bold;">运行时</strong>很重要。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_04.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_04.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">生产级 agent 运行时通常需要支持<strong style="color:#1e88e5;font-weight:bold;">持久执行</strong>和<strong style="color:#1e88e5;font-weight:bold;">人在回路</strong>模式。持久执行意味着 agent 可以 checkpoint 进度并恢复，而不是在出错时丢失工作。人在回路意味着 agent 可以在需要审批、澄清或审查时暂停。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">现成方案包括 LangSmith Deployment（为 Deep Agents 和 LangGraph agent 提供基础设施）、AWS AgentCore（另一个托管 agent 运行时）。有些团队也在 Temporal 之上构建自己的运行时。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">沙箱</h3>
@@ -66,7 +66,7 @@
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Monitor：监控阶段</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 部署后，团队需要了解它们在生产中的实际行为。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_05.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_05.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是监控 agent 与监控传统软件不同的地方。延迟、成本、错误率、正常运行时间等指标仍然重要，但只是图景的一部分。Agent 可以返回技术上成功的响应但仍然失败了任务本身——它可能调用了错误的工具、依赖了错误的上下文、跳过了必需的审批步骤，或者产生了听起来合理但实际错误的答案。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">要理解这些失败，团队需要 <strong style="color:#1e88e5;font-weight:bold;">trace</strong>。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Trace 捕获 agent 的完整轨迹：它收到的输入、做的模型调用、调用的工具、收到的输出，以及最终产生的响应或动作。这是你理解 agent 实际做了什么所需的细节级别。</p>
@@ -88,7 +88,7 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最好的组织快速且系统性地走过 agent 开发生命周期。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他们不等完美 agent 才发布。他们构建有用的东西，测试到足以理解其行为，以受控方式部署，监控生产表现，然后把学到的东西反馈到下一个版本。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这不意味着草率发布。关键是<strong style="color:#1e88e5;font-weight:bold;">有可见性</strong>。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_06.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_06.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有数据集、实验、tracing、反馈和仪表盘的团队可以直接从真实使用中学习。他们可以在广泛推出前测试变更，识别生产中什么坏了，把失败转化为 eval，在不依赖猜测的情况下改进 agent。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这就是团队如何 hill-climb，以及 agent 系统如何随时间改进。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最有效的团队找到最难的例子，理解 agent 为什么失败，然后调整 prompt、工具配置、检索策略、模型、中间件或工作流。他们重新跑 eval，部署更好的版本，监控给他们下一批边缘情况和失败。</p>
@@ -97,7 +97,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Govern：治理</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">治理围绕整个 agent 开发生命周期。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对单个 agent，轻量控制可能就够了。随着组织部署更多 agent，治理变得必要。没有它，团队很快就会有难以发现、难以监控、运行昂贵、权限不清的 agent。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_07.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_Agent开发生命周期/fig_07.png" alt="" /></p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">成本</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">第一个治理挑战是<strong style="color:#1e88e5;font-weight:bold;">成本</strong>。Agent 可能变得昂贵——多次模型调用、长上下文窗口、重复工具使用、重试，或长时间运行。组织需要通过预算、使用监控、告警和可见性来跟踪和管理支出。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工具访问</h3>

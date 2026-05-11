@@ -37,18 +37,18 @@ a { color:#a0220d; }
 <h3 id="feature-list功能清单" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Feature List（功能清单）</h3>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了解决 agent 一口气做完或过早宣布完成的问题，initializer agent 被提示编写一个全面的功能需求文件，扩展用户的初始 prompt。在 claude.ai 克隆的例子中，这意味着超过 200 个功能点，例如"用户可以打开新聊天、输入查询、按回车、看到 AI 响应"。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些功能最初全部标记为 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">"passes": false</code>，这样后续的 coding agent 就有一个清晰的完整功能蓝图。</p>
-<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #ECEFF4">{</span>
-<span style="color: #D8DEE9">  </span><span style="color: #81A1C1">&quot;category&quot;</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #A3BE8C">&quot;functional&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">  </span><span style="color: #81A1C1">&quot;description&quot;</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #A3BE8C">&quot;New chat button creates a fresh conversation&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">  </span><span style="color: #81A1C1">&quot;steps&quot;</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #ECEFF4">[</span>
-<span style="color: #D8DEE9">    </span><span style="color: #A3BE8C">&quot;Navigate to main interface&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">    </span><span style="color: #A3BE8C">&quot;Click the &#39;New Chat&#39; button&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">    </span><span style="color: #A3BE8C">&quot;Verify a new conversation is created&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">    </span><span style="color: #A3BE8C">&quot;Check that chat area shows welcome state&quot;</span><span style="color: #ECEFF4">,</span>
-<span style="color: #D8DEE9">    </span><span style="color: #A3BE8C">&quot;Verify conversation appears in sidebar&quot;</span>
-<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">],</span>
-<span style="color: #D8DEE9">  </span><span style="color: #81A1C1">&quot;passes&quot;</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #81A1C1; font-weight: bold">false</span>
-<span style="color: #ECEFF4">}</span>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #eceff4">{</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;category&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;functional&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;description&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #a3be8c">&quot;New chat button creates a fresh conversation&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;steps&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #eceff4">[</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Navigate to main interface&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Click the &#39;New Chat&#39; button&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Verify a new conversation is created&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Check that chat area shows welcome state&quot;</span><span style="color: #eceff4">,</span>
+<span style="color: #d8dee9">    </span><span style="color: #a3be8c">&quot;Verify conversation appears in sidebar&quot;</span>
+<span style="color: #d8dee9">  </span><span style="color: #eceff4">],</span>
+<span style="color: #d8dee9">  </span><span style="color: #81a1c1">&quot;passes&quot;</span><span style="color: #eceff4">:</span><span style="color: #d8dee9"> </span><span style="color: #81a1c1; font-weight: bold">false</span>
+<span style="color: #eceff4">}</span>
 </pre>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键设计决策：</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Coding agent 只能修改 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">passes</code> 字段的状态</li><li style="margin-bottom:0.5em;line-height:2;">使用强措辞指令："删除或编辑测试是不可接受的，因为这可能导致功能缺失或 bug"</li><li style="margin-bottom:0.5em;line-height:2;">选择 JSON 而非 Markdown——模型不太容易不当修改 JSON 文件</li></ul>

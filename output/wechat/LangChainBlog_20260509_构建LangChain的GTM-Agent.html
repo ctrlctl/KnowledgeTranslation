@@ -8,7 +8,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">背景与关键成果</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">LangChain 的每次外呼过去都是这样开始的：销售代表在多个标签页之间切换——Salesforce 看账户记录、Gong 看通话历史、LinkedIn 看联系人、公司网站看背景。写第一个字之前要花 15 分钟做调研，而且没有简单方法知道队友是否昨天已经联系过。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他们构建了一个 GTM agent，端到端运行整个流程：在新 Salesforce lead 出现时触发，检查是否应该联系，收集上下文（包括会议历史），然后发送 Slack 草稿（附带推理和来源）供代表审批。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_07.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_构建LangChain的GTM-Agent/fig_07.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：GTM Agent 整体架构</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">关键成果：</strong></p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Lead 到合格商机的转化率<strong style="color:#1e88e5;font-weight:bold;">提升 250%</strong>（2025年12月到2026年3月）</li><li style="margin-bottom:0.5em;line-height:2;">代表对低意向 lead 的跟进增加 97%，高意向 lead 增加 18%</li><li style="margin-bottom:0.5em;line-height:2;">每位销售代表每月节省 <strong style="color:#1e88e5;font-weight:bold;">40 小时</strong>，团队总计 1,320 小时</li><li style="margin-bottom:0.5em;line-height:2;">50% 日活、86% 周活使用率</li></ul>
@@ -24,7 +24,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">系统架构</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">GTM agent 做两件事：(1) 研究 lead 并写个性化邮件草稿；(2) 聚合账户级信号，展示代表应该关注哪里。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Inbound Lead 处理</h3>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_10.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_构建LangChain的GTM-Agent/fig_10.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Lead 处理引擎</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">新 lead 出现在 Salesforce 时，agent 立即接管。它首先寻找<strong style="color:#1e88e5;font-weight:bold;">不发送的理由</strong>——如果有人刚提了支持工单，或队友本周已经联系过，发送自动邮件就是错误。Agent 被编程为谨慎。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">通过检查后，它做代表过去手动做的调研：拉取完整 Salesforce 记录、阅读 Gong 转录、检查 LinkedIn。如果内部历史不多，它用 Exa 去网上了解公司当前在 AI 方面做什么。</p>
@@ -32,7 +32,7 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代表在 Slack DM 中看到完成的草稿，带有发送、编辑或取消按钮，还能看到 agent 的推理过程。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">团队后来加了 48 小时 SLA：如果代表在窗口内没有批准或拒绝草稿，它自动发送。这显著提高了对否则会无回复滑过的 lead 的跟进率。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">账户智能</h3>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_11.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_构建LangChain的GTM-Agent/fig_11.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：账户智能引擎</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代表各自拥有 50 到 100+ 个账户。在这个量级，事情容易变安静，扩展机会容易滑过。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每周一早上，agent 从 Salesforce 和 BigQuery 拉数据，然后检查外部世界的融资轮次、产品发布和新 AI 计划。报告为两个受众定制：</p>
@@ -40,12 +40,12 @@
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent 模式</h2>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">记忆</h3>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_13.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_构建LangChain的GTM-Agent/fig_13.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：记忆循环</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当代表在 Slack 中编辑草稿时，系统比较原始版本和修改版本。如果变更是实质性的，LLM 分析 diff 并提取结构化风格观察：什么变了、暗示代表什么偏好、可选的引用示例。这些观察存储在 PostgreSQL 中，按代表键控，每次未来运行在起草前读取它们。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">反馈循环是自动的。每次编辑教会 agent，下一份草稿反映它。</strong> 每周 cron 压缩这些记忆以防膨胀。</p>
 <h3 style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #1e88e5;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Subagent 委派</h3>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_14.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260509_构建LangChain的GTM-Agent/fig_14.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：账户智能 subagent 架构</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">账户智能通过<strong style="color:#1e88e5;font-weight:bold;">编译的 subagent</strong> 运行：轻量 agent，有约束的工具集和结构化输出 schema，作为与主 agent 的契约。</p>
 <ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">销售研究 subagent：访问 Apollo、Exa 和 BigQuery，返回结构化潜客和市场上下文</li><li style="margin-bottom:0.5em;line-height:2;">部署工程师 subagent：使用 Salesforce、Gong 和支持工具，返回使用趋势、开放工单和扩展信号</li></ul>

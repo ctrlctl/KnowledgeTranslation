@@ -23,11 +23,11 @@
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">架构概览</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们的 Research 系统使用<strong style="color:#1e88e5;font-weight:bold;">编排者-工人（orchestrator-worker）模式</strong>的 multi-agent 架构：主 agent 协调过程，同时委派给并行运行的专门化 sub-agent。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="Multi-agent 架构图" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250613_构建Multi-Agent研究系统/fig_01.png" alt="Multi-agent 架构图" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：用户查询流经主 agent，主 agent 创建专门化 sub-agent 并行搜索不同方面</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">用户提交查询时，主 agent 分析它、制定策略、生成 sub-agent 同时探索不同方面。Sub-agent 作为智能过滤器，迭代使用搜索工具收集信息，然后返回结果给主 agent 编译最终答案。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">与传统 RAG（静态检索相似 chunk）不同，我们的架构使用<strong style="color:#1e88e5;font-weight:bold;">多步搜索</strong>——动态发现相关信息、适应新发现、分析结果以形成高质量答案。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="完整工作流程图" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250613_构建Multi-Agent研究系统/fig_02.png" alt="完整工作流程图" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Research 系统完整工作流</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">完整流程：</strong></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. 用户提交查询 → 创建 LeadResearcher agent 2. LeadResearcher 思考方法并将计划保存到 Memory（因为超过 200K token 时 context 会被截断） 3. 创建专门化 Sub-agent（数量不定）执行具体研究任务 4. 每个 Sub-agent 独立执行网络搜索，用 interleaved thinking 评估工具结果 5. Sub-agent 返回发现给 LeadResearcher 6. LeadResearcher 综合结果，决定是否需要更多研究 7. 信息充足后，传给 CitationAgent 处理引用 8. 返回带引用的最终研究结果</p>
@@ -76,7 +76,7 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">结论</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">构建 AI agent 时，最后一英里往往成为大部分旅程。在开发机器上工作的代码库需要大量工程才能成为可靠的生产系统。Agentic 系统中错误的复合性质意味着对传统软件来说的小问题可能完全使 agent 脱轨。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">尽管有这些挑战，multi-agent 系统已证明对开放式研究任务有价值。用户表示 Claude 帮助他们发现未考虑过的商业机会、导航复杂的医疗选项、解决棘手的技术 bug、通过发现他们独自不会找到的研究联系节省数天工作。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="Research 功能最常见使用方式" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250613_构建Multi-Agent研究系统/fig_03.png" alt="Research 功能最常见使用方式" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Research 功能最常见使用方式的 Clio embedding 图</em></p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">附录：额外技巧</h2>

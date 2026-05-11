@@ -15,7 +15,7 @@
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每个硬件平台有不同特性，需要特定优化。尽管如此，Anthropic 对模型实现有<strong style="color:#1e88e5;font-weight:bold;">严格的等价标准</strong>——用户无论由哪个平台服务，都应获得相同质量的响应。这种复杂性意味着任何基础设施变更都需要跨所有平台和配置进行仔细验证。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">事件时间线</h2>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250917_三个近期问题的事后分析/fig_01.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">Claude API 上的事件示意时间线。黄色：检测到问题，红色：退化加剧，绿色：修复部署。</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">三个 bug 的重叠性质使诊断特别困难。第一个 bug 于 8 月 5 日引入，影响约 0.8% 的 Sonnet 4 请求。另外两个 bug 来自 8 月 25 日和 26 日的部署。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">虽然初始影响有限，但 8 月 29 日的负载均衡变更开始增加受影响流量。这导致更多用户遇到问题，而其他人继续看到正常性能，产生了令人困惑且矛盾的报告。</p>
@@ -38,15 +38,15 @@
 <h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">深入 XLA 编译器 bug</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Claude 生成文本时，为每个可能的下一个词计算概率，然后从概率分布中随机采样。使用 <strong style="color:#1e88e5;font-weight:bold;">top-p 采样</strong>避免无意义输出——只考虑累积概率达到阈值（通常 0.99 或 0.999）的词。在 TPU 上，模型跨多个芯片运行，概率计算发生在不同位置。排序这些概率需要芯片间协调数据，这很复杂。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2024 年 12 月，发现 TPU 实现在 temperature 为零时偶尔会丢弃最高概率 token。部署了一个 workaround 修复此情况。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250917_三个近期问题的事后分析/fig_02.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">2024 年 12 月修补 temperature=0 时意外丢弃 token bug 的代码片段。</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">根本原因涉及<strong style="color:#1e88e5;font-weight:bold;">混合精度算术</strong>。模型以 bf16（16 位浮点）计算下一 token 概率。但向量处理器是 fp32 原生的，所以 TPU 编译器（XLA）可以通过将某些操作转换为 fp32（32 位）来优化运行时。此优化由 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">xla_allow_excess_precision</code> 标志控制，默认为 true。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这导致了不匹配：应该在最高概率 token 上达成一致的操作以不同精度级别运行。精度不匹配意味着它们不同意哪个 token 概率最高，导致最高概率 token 有时完全从考虑中消失。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">8 月 26 日，部署了采样代码重写来修复精度问题并改进达到 top-p 阈值的概率处理。但在修复这些问题时，暴露了一个更棘手的问题。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250917_三个近期问题的事后分析/fig_03.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">代码片段：作为 8 月 11 日变更一部分合并的最小化复现器，追溯了 2024 年 12 月 workaround 的"bug"根因。实际上这是 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">xla_allow_excess_precision</code> 标志的预期行为。</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">修复移除了 12 月的 workaround，因为认为已解决了根本原因。这导致了 <strong style="color:#1e88e5;font-weight:bold;">approximate top-k</strong> 操作中更深层的 bug——一个快速找到最高概率 token 的性能优化。这个近似有时返回完全错误的结果，但只在特定 batch size 和模型配置下。12 月的 workaround 一直在无意中掩盖这个问题。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_04.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/AnthropicEngineering_20250917_三个近期问题的事后分析/fig_04.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">与开发该算法的 XLA:TPU 工程师分享的底层 approximate top-k bug 复现器。代码在 CPU 上运行时返回正确结果。</em></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Bug 的行为令人沮丧地不一致。它随不相关因素变化——之前或之后运行了什么操作、是否启用了调试工具。同一个 prompt 可能在一个请求上完美工作，在下一个上失败。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">调查中还发现精确 top-k 操作不再有曾经的性能惩罚。从近似切换到<strong style="color:#1e88e5;font-weight:bold;">精确 top-k</strong>，并将一些额外操作标准化为 fp32 精度。模型质量不可妥协，接受了轻微的效率影响。</p>

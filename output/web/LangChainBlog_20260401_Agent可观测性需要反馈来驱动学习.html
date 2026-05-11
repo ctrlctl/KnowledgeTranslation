@@ -25,7 +25,7 @@ a { color:#a0220d; }
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agent 可观测性更深层的角色是<strong style="color:#a0220d;font-weight:bold;">驱动学习</strong>。但 trace 本身不能创造这个循环。你还需要反馈——告诉你 agent 的行为是有用的、被接受的、被拒绝的、低效的、有风险的还是错误的信号。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这里的"学习"不仅是模型训练意义上的学习，而是整个 agent 系统的学习：模型应该做什么、harness 应该如何引导它、它需要什么上下文、哪些失败模式在反复出现、哪些行为实际上对用户有效。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Trace 不仅仅是发生了什么的记录，反馈也不仅仅是最后的一个评分。它们合在一起，是改进系统的原材料。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_01.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习/fig_01.png" alt="" /></p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="学习发生在多个层面" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">学习发生在多个层面</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Agentic 系统可以在多个层面"学习"和改进。</p>
@@ -33,7 +33,7 @@ a { color:#a0220d; }
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Harness 层面的学习。</strong> Harness 是模型周围的一切：prompt、工具 schema、权限检查、控制流、记忆更新逻辑、路由、重试和 guardrail。一个 trace 可能显示 agent 有正确的模型能力但错误的脚手架。也许工具描述有歧义，也许 agent 需要一个"先读后写"的约束，也许 system prompt 做了错误的权衡。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">上下文层面的学习。</strong> Agent 对给它们的信息极其敏感：检索的文档、记忆、用户偏好、工具结果、之前的对话轮次、环境状态。一个 trace 可能显示模型在给定错误或缺失上下文的情况下做了合理的决策。这种情况下，学习循环应该改进检索、存储、压缩或丢弃什么上下文。这通常被称为记忆。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">重要的一点是：<strong style="color:#a0220d;font-weight:bold;">所有这些学习循环都由 trace 驱动。</strong> 如果你不知道 agent 看到了什么、做了什么、接下来发生了什么，你就无法可靠地知道该改进什么。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_02.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习/fig_02.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这就是为什么 agent 可观测性驱动 agent 评估。Trace 是 agent 行为变得可见的地方。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="学习可以自动化也可以手动" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">学习可以自动化也可以手动</h2>
@@ -53,7 +53,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="反馈可以来自很多地方" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">反馈可以来自很多地方</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">反馈不一定意味着人类手动给每个 trace 评分。实际上，有用的反馈有几种形式。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_03.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习/fig_03.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最明显的是<strong style="color:#a0220d;font-weight:bold;">直接用户反馈</strong>：点赞、点踩、星级评分或书面修正。这个信号容易理解，但通常很稀疏。大多数用户不会留下明确反馈。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后是<strong style="color:#a0220d;font-weight:bold;">间接用户反馈</strong>。对于 coding agent，这可能是接受的代码行数、被回滚的 diff、编辑后通过的测试、或用户是否保留了生成的更改。对于客服 agent，可能是用户是否重新打开了工单。对于研究 agent，可能是用户是否复制了答案或再次问了同样的问题。这些信号比明确评分更嘈杂，但通常数量多得多。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你也可以用 <strong style="color:#a0220d;font-weight:bold;">LLM-as-judge</strong> 生成反馈。Judge 可以评分答案是否有帮助、agent 是否遵循了策略、或轨迹是否看起来可疑。这很有用，因为它可以大规模运行，特别是作为生产 trace 的在线评估器。它不完美，应该被校准，但它给团队一种在人类审查太慢的地方创建结构化反馈的方式。</p>
@@ -62,7 +62,7 @@ a { color:#a0220d; }
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="可观测性平台需要什么" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">可观测性平台需要什么</h2>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果可观测性要驱动学习，平台需要三样东西。</p>
-<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_04.png" alt="" /></p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习/fig_04.png" alt="" /></p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">第一，需要存储 trace。</strong> 这是基础层。你需要 agent 做了什么的完整轨迹：模型调用、工具调用、输入、输出、元数据、时间、错误和中间状态。理想情况下，你可以从任何技术栈摄入 trace，不限于单一框架。LangSmith 支持从 30+ 不同框架追踪，也可以通过 OpenTelemetry tracing 从兼容应用摄入 trace。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">第二，需要存储反馈。</strong> 反馈不应该存在与 trace 断开的单独电子表格或分析系统中。它应该直接附加到它评估的 run、trace 或 thread 上。这让你可以按反馈过滤、比较好的和坏的轨迹、从真实失败构建数据集、追踪更改是否改善了重要的行为。</p>
 <p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">第三，需要生成反馈。</strong> 一些反馈来自用户，但很多有用的反馈应该由系统本身产生。这包括规则、评估器、采样、标注队列、告警和对历史 trace 的回填。LangSmith 支持自动化规则和在线评估，包括在生产 trace 上运行的 LLM-as-judge 评估器。</p>
