@@ -119,10 +119,23 @@ def scan_rss(feed_info):
 
 
 SCAN_DIR = Path(__file__).parent.parent / "references" / "scan_cache"
+SEEN_LINKS_FILE = Path(__file__).parent.parent / "references" / "seen_links.json"
+
+
+def load_seen_links():
+    """Load the set of previously seen links."""
+    if SEEN_LINKS_FILE.exists():
+        return set(json.loads(SEEN_LINKS_FILE.read_text()))
+    return set()
+
+
+def save_seen_links(seen):
+    """Persist the seen links set."""
+    SEEN_LINKS_FILE.write_text(json.dumps(sorted(seen), ensure_ascii=False, indent=0))
 
 
 def scan_single_feed(feed_index):
-    """Scan a single feed by index, save results to scan_cache/<index>.json."""
+    """Scan a single feed by index, save only NEW results to scan_cache/<index>.json."""
     if not FEEDS_FILE.exists():
         print("feeds.json not found", file=sys.stderr)
         sys.exit(1)
@@ -132,6 +145,7 @@ def scan_single_feed(feed_index):
         sys.exit(1)
 
     SCAN_DIR.mkdir(parents=True, exist_ok=True)
+    seen = load_seen_links()
     feed_info = feeds[feed_index]
     print(f"抓取: {feed_info['name']}...", file=sys.stderr)
     try:
@@ -143,18 +157,25 @@ def scan_single_feed(feed_index):
         print(f"失败: {e}", file=sys.stderr)
         episodes = []
 
+    new_episodes = [ep for ep in episodes if ep.get("link") and ep["link"] not in seen]
+    for ep in new_episodes:
+        seen.add(ep["link"])
+
     out_path = SCAN_DIR / f"{feed_index}.json"
-    out_path.write_text(json.dumps(episodes, ensure_ascii=False, indent=2))
-    print(f"已保存 {len(episodes)} 条到 {out_path}")
+    out_path.write_text(json.dumps(new_episodes, ensure_ascii=False, indent=2))
+    save_seen_links(seen)
+    print(f"已保存 {len(new_episodes)} 条新内容（跳过 {len(episodes) - len(new_episodes)} 条已见）")
 
 
 def scan_feeds():
-    """Scan all feeds sequentially, saving each to scan_cache/<index>.json."""
+    """Scan all feeds sequentially, saving only NEW items to scan_cache/<index>.json."""
     if not FEEDS_FILE.exists():
         print("feeds.json not found", file=sys.stderr)
         sys.exit(1)
     feeds = json.loads(FEEDS_FILE.read_text())
     SCAN_DIR.mkdir(parents=True, exist_ok=True)
+    seen = load_seen_links()
+    total_new = 0
 
     for i, feed_info in enumerate(feeds):
         print(f"[{i}/{len(feeds)}] 抓取: {feed_info['name']}...", file=sys.stderr)
@@ -166,12 +187,18 @@ def scan_feeds():
         except Exception as e:
             print(f"  失败: {e}", file=sys.stderr)
             episodes = []
-        out_path = SCAN_DIR / f"{i}.json"
-        out_path.write_text(json.dumps(episodes, ensure_ascii=False, indent=2))
-        print(f"  已保存 {len(episodes)} 条", file=sys.stderr)
 
-    # Print summary only
-    print(json.dumps({"total_feeds": len(feeds), "cache_dir": str(SCAN_DIR)}))
+        new_episodes = [ep for ep in episodes if ep.get("link") and ep["link"] not in seen]
+        for ep in new_episodes:
+            seen.add(ep["link"])
+
+        out_path = SCAN_DIR / f"{i}.json"
+        out_path.write_text(json.dumps(new_episodes, ensure_ascii=False, indent=2))
+        print(f"  {len(new_episodes)} 条新 / {len(episodes)} 条总", file=sys.stderr)
+        total_new += len(new_episodes)
+
+    save_seen_links(seen)
+    print(json.dumps({"total_feeds": len(feeds), "new_items": total_new, "cache_dir": str(SCAN_DIR)}))
 
 
 # ─── FETCH ARTICLE ──────────────────────────────────────────────────────────

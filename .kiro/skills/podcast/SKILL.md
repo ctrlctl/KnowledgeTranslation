@@ -30,7 +30,8 @@ KnowledgeTranslation/
 │   └── references/
 │       ├── feeds.json        # RSS订阅列表
 │       ├── recommendations.json  # 推荐结果
-│       └── scan_cache/       # 每个feed的抓取缓存（按索引命名）
+│       ├── seen_links.json   # 已扫描链接（增量去重用）
+│       └── scan_cache/       # 每个feed的抓取缓存（仅新条目）
 ├── production/               # 生产笔记（与 output 平级）
 │   └── <来源>_<YYYYMMDD>_<中文标题>/
 │       ├── <slug>.md             # Markdown ADHD版本
@@ -65,29 +66,24 @@ KnowledgeTranslation/
 
 #### 增量模式
 
-如果 `recommendations.json` 已存在，scan 为增量模式：
-- 抓取后，对比已有 recommendations.json 中的 link 字段
-- 只对**新出现的条目**进行评分
-- 新推荐追加到 recommendations.json（保留旧条目）
+脚本维护 `seen_links.json`，记录所有已扫描过的链接。每次 scan 自动跳过已见链接，只输出新条目。无需手动比对。
 
-#### 步骤 A：抓取所有 feed 到本地缓存
+#### 步骤 A：抓取所有 feed（增量）
 
 ```bash
 .venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py scan
 ```
 
-脚本逐个抓取 feeds.json 中的源，每个 feed 的结果保存为独立文件：
+脚本逐个抓取 feeds.json 中的源，**自动过滤已见链接**，只将新条目保存到：
 `.kiro/skills/podcast/references/scan_cache/<index>.json`
 
-脚本只输出摘要（总 feed 数、缓存目录），不输出全部内容。
+输出摘要包含每个 feed 的新条目数和总条目数。如果 `new_items: 0`，说明没有新内容。
 
 #### 步骤 B：逐个读取缓存文件并评分
 
-先读取已有的 `recommendations.json`（如果存在），提取所有已推荐的 link 集合。
-
 对 scan_cache/ 下的每个文件，**逐个**读取并评分：
 
-1. 读取 `scan_cache/0.json`，**跳过 link 已存在于 recommendations.json 的条目**，对剩余条目打分，记录≥5分的
+1. 读取 `scan_cache/0.json`，对条目打分，记录≥5分的
 2. 读取 `scan_cache/1.json`，同上
 3. ...依次处理所有文件
 
@@ -114,7 +110,7 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 .venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py scan-feed <index>
 ```
 
-按 feeds.json 中的索引（从0开始）抓取单个源。
+按 feeds.json 中的索引（从0开始）抓取单个源（同样增量）。
 
 ### 2. pick — 处理指定单集
 
