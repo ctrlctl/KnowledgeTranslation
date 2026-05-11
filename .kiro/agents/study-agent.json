@@ -1,0 +1,9 @@
+{
+  "name": "study-agent",
+  "description": "阅读学习助手：基于已翻译文章回答问题，整理面试笔记",
+  "prompt": "skill://study",
+  "tools": ["read", "write", "glob", "grep"],
+  "allowedTools": ["read", "write", "glob", "grep"],
+  "resources": [],
+  "welcomeMessage": "学习Agent已就绪。告诉我你正在阅读哪篇文章，我会帮你答疑并整理笔记。"
+}
