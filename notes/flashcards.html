@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 知识卡片</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Serif SC', Georgia, serif;
+  background: #faf8f5;
+  color: #2c2c2c;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2em 1em;
+}
+h1 { font-size: 20px; margin-bottom: 0.5em; }
+.stats { font-size: 13px; color: #888; margin-bottom: 1.5em; }
+.card {
+  width: 100%;
+  max-width: 560px;
+  min-height: 200px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.card-label {
+  font-size: 12px;
+  color: #a0220d;
+  font-weight: bold;
+  margin-bottom: 0.8em;
+}
+.card-question {
+  font-size: 17px;
+  line-height: 1.9;
+  margin-bottom: 1.2em;
+}
+.card-hint {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 1em;
+}
+.input-area {
+  width: 100%;
+  max-width: 560px;
+  margin-top: 1em;
+}
+.input-area textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.8em;
+  font-size: 15px;
+  font-family: inherit;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  line-height: 1.7;
+  background: #fff;
+}
+.input-area textarea:focus {
+  outline: none;
+  border-color: #a0220d;
+}
+.submit-btn {
+  margin-top: 0.8em;
+  padding: 0.6em 1.5em;
+  font-size: 14px;
+  background: #a0220d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.submit-btn:hover { opacity: 0.85; }
+.answer-box {
+  width: 100%;
+  max-width: 560px;
+  margin-top: 1.2em;
+  background: #f5f5f0;
+  border-radius: 10px;
+  padding: 1.5em;
+  display: none;
+}
+.answer-label {
+  font-size: 12px;
+  color: #1a6b42;
+  font-weight: bold;
+  margin-bottom: 0.6em;
+}
+.answer-content {
+  font-size: 15px;
+  line-height: 1.9;
+}
+.your-answer {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 1px solid #e0e0e0;
+}
+.your-answer-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 0.4em;
+}
+.your-answer-content {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.7;
+  font-style: italic;
+}
+.buttons {
+  display: none;
+  gap: 1em;
+  margin-top: 1em;
+  width: 100%;
+  max-width: 560px;
+}
+.buttons button {
+  flex: 1;
+  padding: 0.8em;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.buttons button:hover { opacity: 0.85; }
+.btn-forgot { background: #f0e0dc; color: #a0220d; }
+.btn-got { background: #dceee6; color: #1a6b42; }
+.source-text {
+  font-size: 12px;
+  color: #999;
+  margin-top: 0.8em;
+}
+.done { text-align: center; font-size: 16px; color: #666; margin-top: 2em; }
+.filters {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+.filter-btn {
+  font-size: 12px;
+  padding: 0.3em 0.7em;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #666;
+}
+.filter-btn.active {
+  background: #a0220d;
+  color: #fff;
+  border-color: #a0220d;
+}
+.manage {
+  margin-top: 2em;
+  width: 100%;
+  max-width: 560px;
+}
+.manage summary { font-size: 13px; color: #888; cursor: pointer; }
+.manage-btns { display: flex; gap: 0.5em; flex-wrap: wrap; margin-top: 0.5em; }
+.manage-btns button {
+  font-size: 12px;
+  padding: 0.4em 0.8em;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+</style>
+</head>
+<body>
+
+<h1>Agent 知识卡片</h1>
+<div class="filters" id="filters"></div>
+<div class="stats" id="stats"></div>
+
+<div class="card" id="card">
+  <div class="card-label">问题</div>
+  <div class="card-question" id="question"></div>
+  <div class="card-hint" id="hint"></div>
+</div>
+
+<div class="input-area" id="inputArea">
+  <textarea id="userInput" placeholder="输入你记得的关键词..."></textarea>
+  <button class="submit-btn" onclick="submit()">提交看答案</button>
+</div>
+
+<div class="answer-box" id="answerBox">
+  <div class="answer-label">正确答案</div>
+  <div class="answer-content" id="answerContent"></div>
+  <div class="your-answer">
+    <div class="your-answer-label">你的回答</div>
+    <div class="your-answer-content" id="yourAnswer"></div>
+  </div>
+  <div class="source-text" id="sourceText"></div>
+  <div id="historyArea"></div>
+</div>
+
+<div class="buttons" id="buttons">
+  <button class="btn-forgot" onclick="answer(false)">没想起来 ✗</button>
+  <button class="btn-got" onclick="answer(true)">记住了 ✓</button>
+</div>
+
+<details class="manage">
+  <summary>管理</summary>
+  <div class="manage-btns">
+    <button onclick="exportData()">导出备份</button>
+    <button onclick="document.getElementById('importFile').click()">导入</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</details>
+
+<script>
+const CARDS = [
+  {
+    q: "Agent系统设计的三步决策是什么？",
+    hint: "三步，每步2-3个关键词",
+    a: "1. 选复杂度级别（单次调用 \u2192 工作流 \u2192 Agent）\n2. 设计工具 ACI（防呆、减少格式开销、测试迭代）\n3. 加安全边界（停止条件、Guardrails、人工介入点）",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "什么时候该用Agent而不是工作流？",
+    hint: "一个核心判断 + 四个信号",
+    a: "核心判断：能不能提前画出流程图？不能\u2192Agent。\n\n四个信号：\n1. 步骤数不确定\n2. 需要环境反馈决定下一步\n3. 同一任务不同实例走不同路径\n4. 需要错误恢复能力",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "什么时候不该用Agent？（反面信号）",
+    hint: "四种情况",
+    a: "\u2022 每次走一样的步骤 \u2192 工作流\n\u2022 不需要工具调用 \u2192 单次LLM调用\n\u2022 对延迟敏感 \u2192 agent多轮循环太慢\n\u2022 错误代价极高且不可逆 \u2192 人工审批流",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "ACI设计的五个原则？",
+    hint: "五个原则，每个几个字概括",
+    a: "1. 站在模型角度想（仅凭描述能否无歧义使用）\n2. 防呆 Poka-yoke（改接口让犯错不可能）\n3. 减少格式开销（不要求预知未来/转义）\n4. 接近自然格式（训练数据中常见的格式）\n5. 测试迭代（跑示例看模型犯错，改工具不改prompt）",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "防呆设计（Poka-yoke）是什么？举个例子。",
+    hint: "一句话定义 + 一个具体例子",
+    a: "让犯错变得不可能，而不是靠人小心。\n\n例：模型cd到子目录后用相对路径出错。\n解决：参数名改为 absolute_path，接口只接受绝对路径。\n改完后模型再没犯过这个错。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "Agent适用场景的四个共性是什么？",
+    hint: "四个条件",
+    a: "1. 需要对话和行动结合\n2. 有明确的成功标准\n3. 能形成反馈循环\n4. 人工监督能有效介入",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "Anthropic实现Agent的三个核心原则？",
+    hint: "简单性 / 透明度 / ???",
+    a: "1. 保持agent设计的简单性\n2. 通过显式展示规划步骤来保证透明度\n3. 通过充分的工具文档和测试，精心打造ACI",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "Agent的本质架构是什么？（一句话）",
+    hint: "三个关键词组合",
+    a: "LLM 在循环中基于环境反馈使用工具。\n\n即：while loop + tool call + environment feedback\n\n复杂度不在架构本身，而在工具设计和错误处理。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "为什么Guardrails要和主逻辑分离？",
+    hint: "用什么模式？为什么不能让同一个LLM自检？",
+    a: "用并行化模式：一个LLM干活，另一个独立审查。\n\n如果同一个LLM既回答又自检，它容易自我说服。\n审查者不受执行者推理影响，检测效果更好。\n本质是关注点分离。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Alignment & Safety"
+  },
+  {
+    q: "Agent循环的停止条件有哪些？",
+    hint: "五种机制",
+    a: "1. 正常终止：任务完成\n2. 最大迭代次数\n3. 连续N步无进展检测（重复相同操作）\n4. 超时兜底\n5. 检查点暂停等待人类反馈",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "文件编辑工具：diff vs 重写 vs search-replace 的trade-off？",
+    hint: "三种方式各自的优缺点",
+    a: "\u2022 Diff：token少但需要预算行数（预知未来）\u2192 高出错率\n\u2022 重写整个文件：无格式要求但token多 \u2192 低出错率\n\u2022 Search-replace：折中，只需旧文本+新文本 \u2192 中等\n\n原则：给模型足够token思考，避免格式开销。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Coding"
+  },
+  {
+    q: "框架（如LangChain）的主要问题是什么？",
+    hint: "两个核心问题 + Anthropic的建议",
+    a: "多加了一层抽象，把底层prompt和response藏起来了。\n\n问题：\n\u2022 出了问题很难调试（看不到每轮的实际交互）\n\u2022 诱导在简单方案够用时添加不必要复杂度\n\n建议：从直接使用LLM API开始，很多模式几行代码就能实现。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "Agentic系统的核心trade-off是什么？",
+    hint: "用___换___，三级选择",
+    a: "用延迟和成本换取更好的任务表现。\n\n三级选择：\n\u2022 定义明确 \u2192 工作流（可预测、一致）\n\u2022 需要灵活性 \u2192 Agent（模型驱动决策）\n\u2022 很多应用 \u2192 优化单次LLM调用就够了",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Agents"
+  },
+  {
+    q: "Guardrails（护栏）在Agent语境下是什么？",
+    hint: "三个层面",
+    a: "对LLM行为施加的安全约束和边界检查机制：\n\n1. 输入侧：检测prompt injection、不当内容、越权请求\n2. 输出侧：检查幻觉、有害内容、违反业务规则的操作\n3. 执行侧：限制行动范围（最大迭代次数、禁止某些工具、沙箱隔离）",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Alignment & Safety"
+  },
+  {
+    q: "SWE-bench是什么？评估流程是怎样的？",
+    hint: "是什么 + agent拿到什么 + 怎么验证",
+    a: "评估LLM自主解决真实软件工程问题的benchmark。\n\n流程：\n1. 从GitHub开源仓库收集真实issue + 对应PR fix\n2. Agent只拿到：issue描述 + 代码仓库\n3. Agent独立产出patch\n4. 用PR对应的测试用例验证patch是否正确\n\n人类的PR fix是验证标准，agent看不到。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Evaluation"
+  },
+  {
+    q: "Docstring是什么？在ACI设计中为什么重要？",
+    hint: "定义 + 与工具设计的关系",
+    a: "函数/类开头的文档字符串，描述做什么、参数、返回值。\n\n在ACI中：工具描述就是给LLM看的docstring。\n要写得像给初级开发者写文档一样清晰：\n包含使用示例、边界情况、输入格式、与其他工具的边界。",
+    source: "AnthropicEngineering_20241219_构建有效的Agent",
+    topic: "Tooling & Infra"
+  }
+];
+
+const STORAGE_KEY = 'agent_flashcards_v2';
+const HISTORY_KEY = 'agent_flashcards_history';
+const API_BASE = 'https://flashcards.lqita507.workers.dev';
+const AUTH_TOKEN = '233996';
+
+async function loadFromCloud() {
+  try {
+    const res = await fetch(API_BASE + '/api/load');
+    const data = await res.json();
+    if (data && data.weights) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data.weights));
+      if (data.history) localStorage.setItem(HISTORY_KEY, JSON.stringify(data.history));
+      return data;
+    }
+  } catch(e) { console.log('Cloud load failed, using local'); }
+  return null;
+}
+
+async function saveToCloud() {
+  try {
+    await fetch(API_BASE + '/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AUTH_TOKEN },
+      body: JSON.stringify({ weights, history })
+    });
+  } catch(e) { console.log('Cloud save failed'); }
+}
+
+function loadWeights() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) return JSON.parse(saved);
+  return CARDS.map(() => 0);
+}
+function saveWeights() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(weights));
+  saveToCloud();
+}
+
+function loadHistory() {
+  const saved = localStorage.getItem(HISTORY_KEY);
+  if (saved) return JSON.parse(saved);
+  return {};
+}
+function saveHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+let weights = loadWeights();
+while (weights.length < CARDS.length) weights.push(0);
+let history = loadHistory();
+
+// 启动时从云端同步
+loadFromCloud().then(data => {
+  if (data && data.weights) {
+    weights = data.weights;
+    while (weights.length < CARDS.length) weights.push(0);
+    if (data.history) history = data.history;
+    buildQueue(); updateStats(); showCard();
+  }
+});
+
+let queue = [];
+let currentIdx = -1;
+let activeFilter = null; // null = 全部
+let filterType = 'source'; // 'source' or 'topic'
+
+function getSources() {
+  return [...new Set(CARDS.map(c => c.source))];
+}
+
+function getTopics() {
+  return [...new Set(CARDS.map(c => c.topic))];
+}
+
+function renderFilters() {
+  const sources = getSources();
+  const topics = getTopics();
+  let html = '<button class="filter-btn active" onclick="setFilter(null)">全部</button>';
+  html += '<span style="color:#ccc;margin:0 0.3em;">|</span>';
+  topics.forEach(t => {
+    html += `<button class="filter-btn" onclick="setFilter('${t}','topic')">${t}</button>`;
+  });
+  html += '<span style="color:#ccc;margin:0 0.3em;">|</span>';
+  sources.forEach(s => {
+    const label = s.replace(/^[^_]+_\d+_/, '');
+    html += `<button class="filter-btn" onclick="setFilter('${s}','source')">${label}</button>`;
+  });
+  document.getElementById('filters').innerHTML = html;
+}
+
+function setFilter(value, type) {
+  activeFilter = value;
+  filterType = type || 'source';
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  // 高亮当前按钮
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    if (!value && btn.textContent === '全部') btn.classList.add('active');
+    else if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${value}'`)) btn.classList.add('active');
+  });
+  buildQueue();
+  updateStats();
+  showCard();
+}
+
+function buildQueue() {
+  queue = CARDS.map((_, i) => i);
+  if (activeFilter) {
+    if (filterType === 'topic') {
+      queue = queue.filter(i => CARDS[i].topic === activeFilter);
+    } else {
+      queue = queue.filter(i => CARDS[i].source === activeFilter);
+    }
+  }
+  queue.sort((a, b) => {
+    if (weights[b] !== weights[a]) return weights[b] - weights[a];
+    return Math.random() - 0.5;
+  });
+}
+
+function updateStats() {
+  let pool = CARDS.map((_, i) => i);
+  if (activeFilter) {
+    if (filterType === 'topic') {
+      pool = pool.filter(i => CARDS[i].topic === activeFilter);
+    } else {
+      pool = pool.filter(i => CARDS[i].source === activeFilter);
+    }
+  }
+  const total = pool.length;
+  const mastered = pool.filter(i => weights[i] <= -2).length;
+  const struggling = pool.filter(i => weights[i] >= 2).length;
+  document.getElementById('stats').textContent =
+    `共 ${total} 张 \u00b7 已掌握 ${mastered} \u00b7 需加强 ${struggling}`;
+}
+
+function showCard() {
+  if (queue.length === 0) {
+    document.getElementById('card').innerHTML = '<div class="done">\ud83c\udf89 本轮复习完成！刷新页面开始新一轮。</div>';
+    document.getElementById('inputArea').style.display = 'none';
+    document.getElementById('answerBox').style.display = 'none';
+    document.getElementById('buttons').style.display = 'none';
+    return;
+  }
+  currentIdx = queue.shift();
+  document.getElementById('question').textContent = CARDS[currentIdx].q;
+  document.getElementById('hint').textContent = '\ud83d\udca1 ' + CARDS[currentIdx].hint;
+  document.getElementById('inputArea').style.display = 'block';
+  document.getElementById('answerBox').style.display = 'none';
+  document.getElementById('buttons').style.display = 'none';
+  document.getElementById('userInput').value = '';
+  document.getElementById('userInput').focus();
+}
+
+function submit() {
+  const userText = document.getElementById('userInput').value.trim();
+  if (!userText) {
+    document.getElementById('userInput').placeholder = '至少写几个关键词再提交...';
+    return;
+  }
+  // 记录历史
+  const key = String(currentIdx);
+  if (!history[key]) history[key] = [];
+  history[key].push({ text: userText, time: new Date().toLocaleString('zh-CN') });
+  saveHistory();
+
+  document.getElementById('inputArea').style.display = 'none';
+  document.getElementById('answerBox').style.display = 'block';
+  document.getElementById('answerContent').innerHTML = CARDS[currentIdx].a.replace(/\n/g, '<br>');
+  document.getElementById('yourAnswer').textContent = userText;
+
+  // 显示历史记录
+  const histList = history[key];
+  let histHtml = '';
+  if (histList.length > 1) {
+    histHtml = '<div style="margin-top:0.8em;padding-top:0.8em;border-top:1px solid #e0e0e0;font-size:12px;color:#999;">\u5386\u53f2\u56de\u7b54\uff1a';
+    for (let i = histList.length - 2; i >= Math.max(0, histList.length - 4); i--) {
+      histHtml += '<div style="margin-top:0.3em;color:#777;">' + histList[i].time + '\uff1a' + histList[i].text.replace(/</g,'&lt;') + '</div>';
+    }
+    histHtml += '</div>';
+  }
+  document.getElementById('historyArea').innerHTML = histHtml;
+
+  document.getElementById('sourceText').textContent = '\u6765\u6e90\uff1a' + CARDS[currentIdx].source;
+  document.getElementById('buttons').style.display = 'flex';
+}
+
+function answer(got) {
+  if (got) {
+    weights[currentIdx] = Math.max(weights[currentIdx] - 1, -3);
+  } else {
+    weights[currentIdx] = Math.min(weights[currentIdx] + 1, 5);
+  }
+  saveWeights();
+  updateStats();
+  showCard();
+}
+
+// 快捷键：Enter提交，← →评分
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'Enter' && !e.shiftKey && document.getElementById('inputArea').style.display !== 'none') {
+    e.preventDefault();
+    submit();
+  }
+  if (document.getElementById('buttons').style.display === 'flex') {
+    if (e.code === 'ArrowLeft') answer(false);
+    if (e.code === 'ArrowRight') answer(true);
+  }
+});
+
+function resetWeights() {
+  if (confirm('\u786e\u5b9a\u91cd\u7f6e\u6240\u6709\u6743\u91cd\uff1f')) {
+    weights = CARDS.map(() => 0);
+    saveWeights(); buildQueue(); updateStats(); showCard();
+  }
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify({ cards: CARDS, weights }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'flashcards_backup.json'; a.click();
+}
+function importData(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = JSON.parse(e.target.result);
+    if (data.weights) { weights = data.weights; while (weights.length < CARDS.length) weights.push(0); saveWeights(); buildQueue(); updateStats(); showCard(); }
+  };
+  reader.readAsText(file);
+}
+
+buildQueue(); updateStats(); showCard(); renderFilters();
+</script>
+</body>
+</html>
