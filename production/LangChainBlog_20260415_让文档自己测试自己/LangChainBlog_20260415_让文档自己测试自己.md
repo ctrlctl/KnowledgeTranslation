@@ -1,0 +1,99 @@
+<style>
+body, .markdown-body {
+  font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", Georgia, serif;
+  font-size: 15px;
+  line-height: 2;
+  max-width: 38em;
+  margin: 0 auto;
+  padding: 2em;
+  color: #2c2c2c;
+  background: #faf8f5;
+}
+</style>
+
+# 让文档自己测试自己
+
+> 原文：[How We Made Our Docs Test Themselves](https://www.langchain.com/blog/our-docs-test-themselves)
+> 来源：LangChain Blog | 2026-04-15
+> 作者：Naomi Pentrel
+
+---
+
+## 索引
+
+- [问题：不可测试的内联代码](#问题不可测试的内联代码)
+- [方案：Deep Agents + Skills](#方案deep-agents--skills)
+- [SKILL.md 的结构](#skillmd-的结构)
+
+---
+
+## 问题：不可测试的内联代码
+
+过时的代码示例是文档的普遍问题。每个发布教程、API 指南或集成示例的团队，最终都会看到示例随依赖变更和 API 演进而失效。在 AI 和 LLM 领域，这个问题尤其严重——新模型、更新的 SDK、变化的最佳实践意味着上个月能用的东西今天可能不行了。
+
+让代码示例**可测试**能解决这个问题：在 CI 中运行它们，断言它们正确执行，失败时让构建失败。但设置代码示例使其可测试并不简单，需要前期投入。这个设置成本可能让人望而却步，项目永远不会启动。
+
+**把这个工作委派给 agent 是完美方案。**
+
+内联代码示例写起来方便——测试代码、复制片段、粘贴到 markdown、发布。问题是它们是静态的，API 变更时你可能忘记更新使用该 API 的代码示例。
+
+要让文档中的代码示例可测试，手动流程是这样的：
+
+1. 将内联代码提取到独立文件
+2. 添加 setup 和 teardown 代码
+3. 添加标记来指定代码片段
+4. 使用工具提取代码片段
+5. 将提取的代码片段作为可复用 snippet 包含在文档中
+6. 用 CI 定期运行独立代码片段
+
+---
+
+## 方案：Deep Agents + Skills
+
+LangChain 用 Deep Agents CLI 来卸载迁移工作流。**不需要写代码。**
+
+Deep Agents CLI 是一个命令行 agent，可以与之对话。它的核心能力之一是使用 **skill** 中的信息来执行任务。Skill 是可复用的指令，当任务匹配 skill 描述时 agent 会加载它们。
+
+他们为 agent 编写了每个步骤：
+
+1. **移动代码到独立文件**，按产品区域组织在 `src/code-samples/{product}` 下
+2. **添加 setup 和 teardown** 使代码片段成为完整可运行示例
+3. **Lint 代码**
+4. **添加标记**，用 `:snippet-start:` 和 `:snippet-end:` 定义代码片段
+5. **运行代码示例**测试它们
+6. **生成 snippet** 并包含在文档中
+
+在此之上，还需要一个 GitHub Action 定期运行测试，测试失败时创建 ticket。
+
+使用时，只需在文档仓库中打开 Deep Agents CLI，说"migrate the inline code in `streaming.mdx` to testable code samples"，agent 就会使用这个 skill——创建正确的文件、添加正确的标签、运行正确的命令、在文档文件中包含代码片段。
+
+---
+
+## SKILL.md 的结构
+
+Skill 文件位于 `.deepagents/skills/docs-code-samples/SKILL.md`。
+
+frontmatter 包含 `description`，告诉 agent 何时使用它：
+
+```yaml
+---
+name: docs-code-samples
+description: Use this skill when migrating inline code samples from LangChain docs (MDX files) into external, testable code files...
+---
+```
+
+正文包含 agent 的完整上下文：
+
+- 何时使用该 skill
+- 目录结构和文件布局
+- 逐步迁移指令
+- 要运行的命令及顺序
+- 约定（命名、标签、导入）
+
+---
+
+## 要点
+
+- **文档代码示例可以测试**——大多数团队不做这件事，导致内容过时
+- **不需要大量手动工作**——用 agent + skill 自动化迁移流程
+- Skill 本质上就是写给同事的分步指令，agent 按指令执行

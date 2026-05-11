@@ -1,9 +1,9 @@
 [
   {
     "feed": "LangChain Blog",
-    "title": "Building A Company Due Diligence Agent With Deep Agents Langsmith And Parallel",
+    "title": "The Agent Development Lifecycle",
     "summary": "",
-    "link": "https://www.langchain.com/blog/building-a-company-due-diligence-agent-with-deep-agents-langsmith-and-parallel",
+    "link": "https://www.langchain.com/blog/the-agent-development-lifecycle",
     "audio": "",
     "type": "article"
   },
@@ -28,6 +28,14 @@
     "title": "How We Built Langchains Gtm Agent",
     "summary": "",
     "link": "https://www.langchain.com/blog/how-we-built-langchains-gtm-agent",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "LangChain Blog",
+    "title": "Building A Company Due Diligence Agent With Deep Agents Langsmith And Parallel",
+    "summary": "",
+    "link": "https://www.langchain.com/blog/building-a-company-due-diligence-agent-with-deep-agents-langsmith-and-parallel",
     "audio": "",
     "type": "article"
   },
@@ -132,14 +140,6 @@
     "title": "Your Harness Your Memory",
     "summary": "",
     "link": "https://www.langchain.com/blog/your-harness-your-memory",
-    "audio": "",
-    "type": "article"
-  },
-  {
-    "feed": "LangChain Blog",
-    "title": "Human Judgment In The Agent Improvement Loop",
-    "summary": "",
-    "link": "https://www.langchain.com/blog/human-judgment-in-the-agent-improvement-loop",
     "audio": "",
     "type": "article"
   }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>笔记</title>
+<style>
+body { margin:0; padding:0; background:#faf8f5; }
+a { color:#a0220d; }
+</style>
+</head>
+<body>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:2em;max-width:42em;margin:0 auto;box-sizing:border-box;word-wrap:break-word;line-height:2;">
+<a style="display:block;margin-bottom:1.5em;font-size:14px;color:#a0220d;text-decoration:none;" href="index.html">← 返回索引</a>
+
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">捐赠我们的开源对齐工具</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.anthropic.com/research/donating-open-source-petri" target="_blank">Donating our open-source alignment tool</a> 来源：Anthropic Research | 2026-05-07 作者：Anthropic</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="索引" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#petri-是什么">Petri 是什么</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#petri-30-的主要变化">Petri 3.0 的主要变化</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#捐赠给-meridian-labs">捐赠给 Meridian Labs</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="petri-是什么" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Petri 是什么</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2025 年 10 月，Anthropic 发布了 <a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.anthropic.com/research/petri-open-source-auditing" target="_blank">Petri</a>——一个开源的对齐测试工具箱，可以应用于任何大语言模型。Petri 作为 Anthropic Fellows 项目的一部分开发，可以快速、简便地测试 AI 模型是否存在令人担忧的倾向，如<strong style="color:#a0220d;font-weight:bold;">欺骗、谄媚和配合有害请求</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Petri 自 Claude Sonnet 4.5 以来一直是每个 Claude 模型对齐评估的一部分。它的工作方式是：一个单独的"审计员"模型模拟一系列对齐相关场景，让被测模型在其中行动，然后另一个"裁判"模型对产生的对话记录进行错位行为评分。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">外部组织也在使用 Petri——例如英国 AI 安全研究所（AISI）将其作为评估模型破坏 AI 研究倾向的<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://arxiv.org/abs/2604.00788" target="_blank">主要工具</a>。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="petri-30-的主要变化" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Petri 3.0 的主要变化</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">适应性（Adaptability）</strong>：重大架构变更，将审计员模型和目标模型拆分为可独立调整的组件，允许用户适配更多用途。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2. <strong style="color:#a0220d;font-weight:bold;">真实性（Realism）</strong>：尽管对齐研究者努力让测试看起来真实，模型往往能从设置中的各种人为痕迹推断出自己正在被测试。如果模型意识到正在被评估，研究者就无法看到模型<em style="font-style:italic;">一般情况下</em>的行为。Petri 的附加组件 <strong style="color:#a0220d;font-weight:bold;">"Dish"</strong> 让设置更加真实——例如使用模型真实的 system prompt 和真实的 scaffold（包裹模型帮助其达成目标的软件），就像在真正的模型部署中一样。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">3. <strong style="color:#a0220d;font-weight:bold;">深度（Depth）</strong>：Petri 现在与另一个开源对齐工具 <a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.anthropic.com/research/bloom" target="_blank">Bloom</a> 集成，Bloom 可以对特定选定行为进行更深入的评估（相比 Petri 更广泛的方法）。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="捐赠给-meridian-labs" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">捐赠给 Meridian Labs</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Anthropic 将 Petri 的开发移交给了 <a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://meridianlabs.ai/" target="_blank">Meridian Labs</a>——一个 AI 评估非营利组织。这一举措类似于之前将 MCP（Model Context Protocol）<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation" target="_blank">捐赠</a>给 Linux 基金会——确保 Petri 独立于任何 AI 实验室，使其结果被行业内外视为中立和可信的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">作为 Meridian Labs 的一部分，Petri 加入了 <a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://inspect.aisi.org.uk/" target="_blank">Inspect</a> 和 <a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://meridianlabs-ai.github.io/inspect_scout/" target="_blank">Scout</a> 等其他工具，构建一个对实验室、独立研究者和政府都开放的技术栈——在可靠的 AI 模型行为测试比以往任何时候都重要的时刻。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="要点" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">要点</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Petri</strong> 是开源对齐测试工具，用"审计员+裁判"模式评估模型的错位行为</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Dish</strong> 附加组件解决了"模型知道自己在被测试"的问题，用真实 prompt 和 scaffold 运行测试</li><li style="margin-bottom:0.5em;line-height:2;">捐赠给独立非营利组织确保评估结果的中立性和可信度</li><li style="margin-bottom:0.5em;line-height:2;">与 Bloom 集成实现从广度筛查到深度评估的完整流程</li></ul>
+</section>
+</body>
+</html>

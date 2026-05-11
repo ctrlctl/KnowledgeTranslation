@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>笔记</title>
+<style>
+body { margin:0; padding:0; background:#faf8f5; }
+a { color:#a0220d; }
+</style>
+</head>
+<body>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:2em;max-width:42em;margin:0 auto;box-sizing:border-box;word-wrap:break-word;line-height:2;">
+<a style="display:block;margin-bottom:1.5em;font-size:14px;color:#a0220d;text-decoration:none;" href="index.html">← 返回索引</a>
+
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">构建 LangChain 的 GTM Agent</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.langchain.com/blog/how-we-built-langchains-gtm-agent" target="_blank">How We Built LangChain's GTM Agent</a> 来源：LangChain Blog | 2026-05-09 作者：Vishnu Suresh & Jess Ou</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="索引" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#背景与关键成果">背景与关键成果</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#约束与成功标准">约束与成功标准</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#系统架构">系统架构</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#agent-模式">Agent 模式</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#评估与反馈">评估与反馈</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#经验总结">经验总结</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="背景与关键成果" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">背景与关键成果</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">LangChain 的每次外呼过去都是这样开始的：销售代表在多个标签页之间切换——Salesforce 看账户记录、Gong 看通话历史、LinkedIn 看联系人、公司网站看背景。写第一个字之前要花 15 分钟做调研，而且没有简单方法知道队友是否昨天已经联系过。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他们构建了一个 GTM agent，端到端运行整个流程：在新 Salesforce lead 出现时触发，检查是否应该联系，收集上下文（包括会议历史），然后发送 Slack 草稿（附带推理和来源）供代表审批。</p>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_07.png" alt="" /></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：GTM Agent 整体架构</em></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">关键成果：</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Lead 到合格商机的转化率<strong style="color:#a0220d;font-weight:bold;">提升 250%</strong>（2025年12月到2026年3月）</li><li style="margin-bottom:0.5em;line-height:2;">代表对低意向 lead 的跟进增加 97%，高意向 lead 增加 18%</li><li style="margin-bottom:0.5em;line-height:2;">每位销售代表每月节省 <strong style="color:#a0220d;font-weight:bold;">40 小时</strong>，团队总计 1,320 小时</li><li style="margin-bottom:0.5em;line-height:2;">50% 日活、86% 周活使用率</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="约束与成功标准" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">约束与成功标准</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在写任何代码之前，团队定义了 agent 实际需要做什么。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">不可妥协的要求：</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">人在回路</strong>：没有经过代表明确审查和批准，什么都不发送。一封时机不对的邮件可以毁掉数月的关系建设。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">联系历史感知</strong>：Agent 需要在起草任何内容之前检查代表或队友是否已经联系过。</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">核心能力：</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">关系感知的个性化</strong>：草稿应反映账户当前状态（客户 vs 温暖潜客 vs 冷联系人），不能一视同仁。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">可解释性</strong>：代表应能看到关键输入，理解 agent 为什么选择特定角度。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">学习循环</strong>：Agent 应从代表编辑中学习，让草稿随时间改进，无需手动更新 prompt。</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">度量</strong>：每个代表动作（发送、编辑、取消）都记录到 LangSmith 并附加到底层 trace，用于评估质量、捕获退化、量化什么在起作用。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="系统架构" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">系统架构</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">GTM agent 做两件事：(1) 研究 lead 并写个性化邮件草稿；(2) 聚合账户级信号，展示代表应该关注哪里。</p>
+<h3 id="inbound-lead-处理" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Inbound Lead 处理</h3>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_10.png" alt="" /></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：Lead 处理引擎</em></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">新 lead 出现在 Salesforce 时，agent 立即接管。它首先寻找<strong style="color:#a0220d;font-weight:bold;">不发送的理由</strong>——如果有人刚提了支持工单，或队友本周已经联系过，发送自动邮件就是错误。Agent 被编程为谨慎。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">通过检查后，它做代表过去手动做的调研：拉取完整 Salesforce 记录、阅读 Gong 转录、检查 LinkedIn。如果内部历史不多，它用 Exa 去网上了解公司当前在 AI 方面做什么。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">邮件草稿的写法取决于关系状态。Agent 遵循定义好的 outbound <strong style="color:#a0220d;font-weight:bold;">skill</strong>——一个在起草前加载的 playbook。现有客户、温暖潜客和冷联系人各得到不同内容。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代表在 Slack DM 中看到完成的草稿，带有发送、编辑或取消按钮，还能看到 agent 的推理过程。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">团队后来加了 48 小时 SLA：如果代表在窗口内没有批准或拒绝草稿，它自动发送。这显著提高了对否则会无回复滑过的 lead 的跟进率。</p>
+<h3 id="账户智能" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">账户智能</h3>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_11.png" alt="" /></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：账户智能引擎</em></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代表各自拥有 50 到 100+ 个账户。在这个量级，事情容易变安静，扩展机会容易滑过。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每周一早上，agent 从 Salesforce 和 BigQuery 拉数据，然后检查外部世界的融资轮次、产品发布和新 AI 计划。报告为两个受众定制：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">销售团队</strong>：聚合产品使用、开发者生态、网络活动、招聘趋势和公司新闻的信号，标记高管变动、包安装量激增、是否在招 AI 工程师</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">部署工程师</strong>：聚焦账户健康——产品使用、最近客户通话亮点、即将到来的续约日期、信用额度即将用完的情况</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="agent-模式" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent 模式</h2>
+<h3 id="记忆" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">记忆</h3>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_13.png" alt="" /></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：记忆循环</em></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当代表在 Slack 中编辑草稿时，系统比较原始版本和修改版本。如果变更是实质性的，LLM 分析 diff 并提取结构化风格观察：什么变了、暗示代表什么偏好、可选的引用示例。这些观察存储在 PostgreSQL 中，按代表键控，每次未来运行在起草前读取它们。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">反馈循环是自动的。每次编辑教会 agent，下一份草稿反映它。</strong> 每周 cron 压缩这些记忆以防膨胀。</p>
+<h3 id="subagent-委派" style="margin-top:1.5em;margin-bottom:0.6em;font-size:16px;font-weight:bold;color:#1a1a1a;border-left:3px solid #a0220d;padding-left:0.6em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Subagent 委派</h3>
+<p style="text-align:center;margin:1.5em 0;"><img style="max-width:100%;margin:1.5em auto;display:block;border-radius:4px;" src="images/fig_14.png" alt="" /></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><em style="font-style:italic;">图：账户智能 subagent 架构</em></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">账户智能通过<strong style="color:#a0220d;font-weight:bold;">编译的 subagent</strong> 运行：轻量 agent，有约束的工具集和结构化输出 schema，作为与主 agent 的契约。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">销售研究 subagent：访问 Apollo、Exa 和 BigQuery，返回结构化潜客和市场上下文</li><li style="margin-bottom:0.5em;line-height:2;">部署工程师 subagent：使用 Salesforce、Gong 和支持工具，返回使用趋势、开放工单和扩展信号</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">父 agent 为每个账户生成一个 subagent，保持工具隔离和输出可预测。因为 subagent 独立运行，可以<strong style="color:#a0220d;font-weight:bold;">并行执行</strong>。LangSmith Deployment 处理水平扩展和持久执行。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="评估与反馈" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">评估与反馈</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在为新工作流写任何生产代码之前，团队在 LangSmith 中定义成功的样子。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从一小组代表性场景开始，基于代表实际面对的情况。功能就绪后，扩展评估集覆盖更难的情况：深入 agentic AI 的研究者、试图重新激活的现有客户、有 Gong 转录的账户、医疗等重术语垂直领域。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">两层评估：</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">基于规则的断言</strong>检查基础：正确的工具、正确的顺序、没有重复草稿 2. <strong style="color:#a0220d;font-weight:bold;">LLM judge</strong> 评分语气、字数和格式</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">两者都作为 CI 中完整 eval 套件的一部分运行。任何无法解释的 agent 行为漂移都被视为值得调查的 bug。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但 eval 只讲了部分故事。真正重要的是代表日常如何使用草稿。团队跟踪每个 Slack 动作并直接附加到 LangSmith 中的 trace。随时间推移，这让他们能关联写作模式与真实结果：哪些风格驱动打开率，哪些主题行获得回复。当某些东西在足够多代表中成立时，就编码进 agent 的默认行为。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="经验总结" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">经验总结</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">从成功定义开始，不是代码。</strong> 在写生产代码前定义好什么是好的，围绕它构建场景库。到发布时，你有一个能捕获退化、标记漂移、在 CI 中自动运行的 eval 测试套件。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2. <strong style="color:#a0220d;font-weight:bold;">人在回路不只是安全机制。</strong> 它是数据收集机制。每个代表动作（发送、编辑、取消）都成为可学习的信号。记忆系统和反馈循环之所以有效，是因为代表在流程中。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">3. <strong style="color:#a0220d;font-weight:bold;">从一开始就连接系统记录。</strong> 跨公司的有机采用之所以发生，是因为 agent 已经有了人们需要的数据访问权限。工程师和客户成功团队的使用是自然扩散的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">4. <strong style="color:#a0220d;font-weight:bold;">长时间运行的工作流需要正确的基础设施。</strong> 这个 agent 需要从多个源拉取、跨源推理、并行运行 subagent、跨轮次维护状态。选择为这种编排构建的 agent harness（Deep Agents）省去了从头重建基础设施的工作。</p>
+</section>
+</body>
+</html>
