@@ -199,7 +199,11 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 
 **版本3：网页浏览 HTML**
 - 文件：`production/<slug>/<slug>_web.html`
-- 从 Markdown 渲染，与 wechat 版本共用渲染逻辑但有以下区别：
+- 执行渲染脚本：
+```bash
+.venv/bin/python .kiro/skills/podcast/scripts/render_web.py "production/<slug>/<slug>.md" "production/<slug>/<slug>_web.html"
+```
+- 与 wechat 版本共用解析逻辑（代码块换行、图片插入、表格等），区别：
 
 | 特性 | wechat | web |
 |------|--------|-----|
@@ -208,8 +212,6 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 | 页面壳 | 无（纯 section 片段） | 有（完整 HTML + viewport + 背景色 #faf8f5 + 「← 返回索引」） |
 | TOC 锚点 | 无（纯文本 span） | 有（点击跳转到对应 h2/h3，匹配时去除时间戳 [MM:SS]） |
 | h2/h3 id | 无 | 有（自动生成） |
-
-- 可复用 `render_wechat.py` 的解析逻辑，通过参数或独立脚本 `render_web.py` 生成
 
 **版本4：小红书图片**
 - 文件夹：`production/<slug>/xhs/`

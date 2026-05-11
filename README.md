@@ -58,11 +58,12 @@ Agent会自动判断内容类型：
     ├── scripts/
     │   ├── podcast_tool.py            # 工具脚本
     │   └── requirements.txt
-    ├── references/
-    │   ├── feeds.json                 # 订阅源列表
-    │   ├── recommendations.json       # 推荐结果（结构化）
-    │   └── recommendations.md         # 推荐结果（可读）
-    └── notes/                         # 输出的笔记
+    └── references/
+        ├── feeds.json                 # 订阅源列表
+        ├── recommendations.json       # 推荐结果（结构化）
+        └── recommendations.md         # 推荐结果（可读）
+production/                            # 生产笔记输出
+output/                                # 按格式分类的发布目录
 ```
 
 ## 订阅源管理
