@@ -208,6 +208,165 @@ def fetch_article(url):
     print(fetch_html(url))
 
 
+# ─── FETCH IMAGES ───────────────────────────────────────────────────────────
+
+def fetch_images(source, output_dir):
+    """Extract and download all images from HTML (file path or URL). Output JSON mapping."""
+    from html import unescape
+    from urllib.parse import urljoin, urlparse, parse_qs
+
+    if os.path.isfile(source):
+        html = Path(source).read_text(encoding="utf-8", errors="ignore")
+        base_url = ""
+    else:
+        html = fetch_html(source)
+        base_url = source
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    def resolve_url(src):
+        """Resolve a src to a downloadable URL, handling Next.js _next/image wrappers."""
+        src = unescape(src)  # decode &amp; etc.
+        if src.startswith("data:"):
+            return None
+        if not src.startswith("http"):
+            if base_url:
+                src = urljoin(base_url, src)
+            else:
+                return None
+        # Unwrap Next.js image optimizer URLs
+        parsed = urlparse(src)
+        if "/_next/image" in parsed.path:
+            qs = parse_qs(parsed.query)
+            if "url" in qs:
+                src = qs["url"][0]
+        return src
+
+    # Extract img src from HTML
+    img_urls = []
+    for m in re.finditer(r'<img[^>]+src="([^"]+)"', html, re.IGNORECASE):
+        url = resolve_url(m.group(1))
+        if url and url not in img_urls:
+            img_urls.append(url)
+
+    # Also check srcset (take largest entry)
+    for m in re.finditer(r'<img[^>]+srcset="([^"]+)"', html, re.IGNORECASE):
+        srcset = m.group(1)
+        parts = [p.strip().split()[0] for p in srcset.split(",") if p.strip()]
+        if parts:
+            url = resolve_url(parts[-1])
+            if url and url not in img_urls:
+                img_urls.append(url)
+
+    results = []
+    for i, url in enumerate(img_urls, 1):
+        ext = Path(urlparse(url).path).suffix or ".png"
+        if ext.lower() not in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"):
+            ext = ".png"
+        filename = f"fig_{i:02d}{ext}"
+        filepath = output_path / filename
+        try:
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                filepath.write_bytes(resp.read())
+            results.append({"index": i, "file": filename, "original_url": url})
+            print(f"  ✓ {filename} ← {url[:80]}", file=sys.stderr)
+        except Exception as e:
+            print(f"  ✗ {filename} 失败: {e}", file=sys.stderr)
+            results.append({"index": i, "file": filename, "original_url": url, "error": str(e)})
+
+    print(json.dumps(results, ensure_ascii=False, indent=2))
+
+
+# ─── CHUNK ARTICLE ──────────────────────────────────────────────────────────
+
+def chunk_article(source_html, output_prefix):
+    """Split article HTML into chunks by h2/h3 sections, save to temp files."""
+    from html import unescape
+
+    html = Path(source_html).read_text(encoding="utf-8", errors="ignore")
+
+    # Extract article body
+    m = re.search(r'<article>(.*?)</article>', html, re.DOTALL)
+    if not m:
+        # Fallback: use full HTML
+        body = html
+    else:
+        body = m.group(1)
+
+    # Split by h2/h3 headings (keep heading with its content)
+    parts = re.split(r'(<h[23][^>]*>.*?</h[23]>)', body, flags=re.DOTALL)
+
+    chunks = []
+    current_heading = ""
+    current_content = ""
+
+    def text_of(html_str):
+        t = re.sub(r'<[^>]+>', ' ', html_str)
+        return unescape(re.sub(r'\s+', ' ', t).strip())
+
+    def save_chunk():
+        nonlocal current_heading, current_content
+        text = text_of(current_content)
+        if len(text.split()) < 20:
+            return  # skip trivially small chunks
+        chunks.append({"heading": current_heading, "text": text})
+
+    for part in parts:
+        if re.match(r'<h[23]', part):
+            # Save previous chunk
+            if current_content.strip():
+                save_chunk()
+            current_heading = text_of(part)
+            current_content = ""
+        else:
+            current_content += part
+
+    # Save last chunk
+    if current_content.strip():
+        save_chunk()
+
+    # Merge small chunks or split large ones
+    final_chunks = []
+    for chunk in chunks:
+        words = len(chunk["text"].split())
+        if words > 1500:
+            # Split by paragraphs into ~800-1200 word sub-chunks
+            sentences = chunk["text"].split('. ')
+            sub = ""
+            sub_idx = 0
+            for s in sentences:
+                if len((sub + s).split()) > 1000 and sub:
+                    final_chunks.append({"heading": f"{chunk['heading']} (part {sub_idx+1})", "text": sub.strip()})
+                    sub_idx += 1
+                    sub = s + ". "
+                else:
+                    sub += s + ". "
+            if sub.strip():
+                final_chunks.append({"heading": f"{chunk['heading']} (part {sub_idx+1})", "text": sub.strip()})
+        else:
+            final_chunks.append(chunk)
+
+    # Save each chunk to a file
+    output_dir = Path(output_prefix).parent
+    output_dir.mkdir(parents=True, exist_ok=True)
+    prefix = Path(output_prefix).name
+
+    manifest = []
+    for i, chunk in enumerate(final_chunks, 1):
+        filepath = output_dir / f"{prefix}_chunk_{i:02d}.txt"
+        filepath.write_text(chunk["text"], encoding="utf-8")
+        manifest.append({
+            "index": i,
+            "heading": chunk["heading"],
+            "words": len(chunk["text"].split()),
+            "file": str(filepath)
+        })
+
+    print(json.dumps(manifest, ensure_ascii=False, indent=2))
+
+
 # ─── TRANSCRIBE ─────────────────────────────────────────────────────────────
 
 def transcribe(url, title="episode", model="base"):
@@ -256,6 +415,14 @@ def main():
     fa = sub.add_parser("fetch-article", help="抓取文章HTML")
     fa.add_argument("url")
 
+    fi = sub.add_parser("fetch-images", help="从HTML中提取并下载所有图片")
+    fi.add_argument("source", help="HTML文件路径或URL")
+    fi.add_argument("output_dir", help="图片保存目录")
+
+    ca = sub.add_parser("chunk-article", help="将文章HTML按章节分块存入临时文件")
+    ca.add_argument("source_html", help="source.html文件路径")
+    ca.add_argument("output_prefix", help="输出前缀，如 /tmp/slug")
+
     tr = sub.add_parser("transcribe", help="下载并转录音频")
     tr.add_argument("url")
     tr.add_argument("-t", "--title", default="episode")
@@ -269,6 +436,10 @@ def main():
         scan_single_feed(args.index)
     elif args.command == "fetch-article":
         fetch_article(args.url)
+    elif args.command == "fetch-images":
+        fetch_images(args.source, args.output_dir)
+    elif args.command == "chunk-article":
+        chunk_article(args.source_html, args.output_prefix)
     elif args.command == "transcribe":
         transcribe(args.url, title=args.title, model=args.model)
     else:

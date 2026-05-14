@@ -45,6 +45,20 @@ python podcast_tool.py scan
 python podcast_tool.py fetch-article "https://example.com/article"
 ```
 
+### fetch-images
+
+从HTML文件或URL中提取所有图片并下载到指定目录。
+
+```bash
+# 推荐：直接从原文URL抓取（很多网站图片通过JS动态加载，静态HTML中不包含）
+python podcast_tool.py fetch-images "https://example.com/article" "./images/"
+
+# 备选：从本地HTML文件抓取（仅适用于静态渲染的页面）
+python podcast_tool.py fetch-images "production/<slug>/source.html" "./images/"
+```
+
+输出JSON映射到stdout（序号、文件名、原始URL）。自动处理Next.js `_next/image` 优化URL和HTML实体编码。
+
 ### transcribe
 
 下载音频/视频并用Whisper转录，输出带时间戳的文本到stdout。
