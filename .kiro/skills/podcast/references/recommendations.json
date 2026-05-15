@@ -377,6 +377,23 @@
     "index": 46
   },
   {
+    "score": 8,
+    "type": "article",
+    "feed": "Anthropic Research",
+    "title": "Teaching Claude why: New research on reducing agentic misalignment",
+    "link": "https://www.anthropic.com/research/teaching-claude-why",
+    "index": 92
+  },
+  {
+    "index": 97,
+    "score": 8,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Delta Channels: Evolving Agent Runtime",
+    "link": "https://www.langchain.com/blog/delta-channels-evolving-agent-runtime",
+    "reason": "agent runtime架构演进，直接涉及state管理和orchestration设计"
+  },
+  {
     "score": 7,
     "type": "article",
     "feed": "Anthropic Research",
@@ -526,6 +543,32 @@
     "index": 64
   },
   {
+    "score": 7,
+    "type": "article",
+    "feed": "Simon Willison",
+    "title": "Using Claude Code: The Unreasonable Effectiveness of HTML",
+    "link": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/#atom-everything",
+    "index": 93
+  },
+  {
+    "index": 98,
+    "score": 7,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Introducing Managed Deep Agents",
+    "link": "https://www.langchain.com/blog/introducing-managed-deep-agents",
+    "reason": "managed agent服务架构，涉及agent编排和生产部署"
+  },
+  {
+    "index": 99,
+    "score": 7,
+    "type": "article",
+    "feed": "LangChain Blog",
+    "title": "Deep Agents 0.6",
+    "link": "https://www.langchain.com/blog/deep-agents-0-6",
+    "reason": "deep agent版本更新，可能包含架构改进和reliability提升"
+  },
+  {
     "score": 6,
     "type": "article",
     "feed": "Anthropic Research",
@@ -667,6 +710,32 @@
     "index": 81
   },
   {
+    "score": 6,
+    "type": "article",
+    "feed": "Anthropic Research",
+    "title": "Natural Language Autoencoders: Turning Claude's thoughts into text",
+    "link": "https://www.anthropic.com/research/natural-language-autoencoders",
+    "index": 94
+  },
+  {
+    "index": 100,
+    "score": 6,
+    "type": "article",
+    "feed": "Latent Space",
+    "title": "The End of Finetuning",
+    "link": "https://www.latent.space/p/ainews-the-end-of-finetuning",
+    "reason": "finetuning vs prompting/agent的技术路线讨论"
+  },
+  {
+    "index": 101,
+    "score": 6,
+    "type": "article",
+    "feed": "Simon Willison",
+    "title": "Not so locked in any more",
+    "link": "https://simonwillison.net/2026/May/14/not-so-locked-in/",
+    "reason": "coding agent驱动的大规模代码重写实践案例"
+  },
+  {
     "score": 5,
     "type": "article",
     "feed": "LangChain Blog",
@@ -750,39 +819,11 @@
     "index": 91
   },
   {
-    "score": 8,
-    "type": "article",
-    "feed": "Anthropic Research",
-    "title": "Teaching Claude why: New research on reducing agentic misalignment",
-    "link": "https://www.anthropic.com/research/teaching-claude-why",
-    "new": true,
-    "index": 92
-  },
-  {
-    "score": 7,
-    "type": "article",
-    "feed": "Simon Willison",
-    "title": "Using Claude Code: The Unreasonable Effectiveness of HTML",
-    "link": "https://simonwillison.net/2026/May/8/unreasonable-effectiveness-of-html/#atom-everything",
-    "new": true,
-    "index": 93
-  },
-  {
-    "score": 6,
-    "type": "article",
-    "feed": "Anthropic Research",
-    "title": "Natural Language Autoencoders: Turning Claude's thoughts into text",
-    "link": "https://www.anthropic.com/research/natural-language-autoencoders",
-    "new": true,
-    "index": 94
-  },
-  {
     "score": 5,
     "type": "article",
     "feed": "Mistral AI Engineering",
     "title": "Remote agents in Vibe: Powered by Mistral Medium 3.5",
     "link": "https://mistral.ai/news/vibe-remote-agents-mistral-medium-3-5",
-    "new": true,
     "index": 95
   },
   {
@@ -792,7 +833,15 @@
     "title": "Doing Vibe Physics — Alex Lupsasca, OpenAI",
     "link": "https://www.latent.space/p/lupsasca",
     "audio": "https://api.substack.com/feed/podcast/196292432/5a1552f1791348300399bbce5a75a0a7.mp3",
-    "new": true,
     "index": 96
+  },
+  {
+    "index": 102,
+    "score": 5,
+    "type": "article",
+    "feed": "Simon Willison",
+    "title": "llm 0.32a2",
+    "link": "https://simonwillison.net/2026/May/12/llm/",
+    "reason": "LLM CLI工具更新，涉及OpenAI responses API集成"
   }
 ]

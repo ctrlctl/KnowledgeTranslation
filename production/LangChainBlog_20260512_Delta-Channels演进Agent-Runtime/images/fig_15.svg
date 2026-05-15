@@ -1,0 +1,70 @@
+<svg width="780" height="340" viewBox="0 0 780 340" xmlns="http://www.w3.org/2000/svg" role="img">
+  <rect x="0" y="0" width="780" height="340" rx="16" fill="#0B1120" stroke="#1A2740" stroke-width="1"/>
+  <text x="36" y="34" font-family="Inter, sans-serif" font-size="13" font-weight="700" letter-spacing="0.08em" fill="#7FC8FF">WORKLOAD A</text>
+  <rect x="0" y="44" width="780" height="52" fill="#0d1628"/>
+  <line x1="0" y1="44" x2="780" y2="44" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="252" y="62" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.08em" fill="#6B8299" text-anchor="middle">TOKENS</text>
+  <text x="557" y="62" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.08em" fill="#6B8299" text-anchor="middle">CHECKPOINTER STORAGE</text>
+  <line x1="355" y1="48" x2="355" y2="68" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="0" y1="72" x2="780" y2="72" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#6B8299">TURNS</text>
+  <text x="130"  y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#6B8299">MESSAGES</text>
+  <text x="250"   y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#6B8299">FILESYSTEM</text>
+  <text x="370"  y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#f09595">DELTA DISABLED</text>
+  <text x="496" y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#5DCAA5">DELTA ENABLED</text>
+  <text x="622"  y="88" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.07em" fill="#6B8299">REDUCTION</text>
+  <line x1="36" y1="96" x2="744" y2="96" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="115" y1="72" x2="115" y2="324" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="235" y1="72" x2="235" y2="324" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="355" y1="72" x2="355" y2="324" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="481" y1="72" x2="481" y2="324" stroke="#1A2740" stroke-width="0.5"/>
+  <line x1="607" y1="72" x2="607" y2="324" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="120" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#C8DDF0">10</text>
+  <text x="130"  y="120" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~3k</text>
+  <text x="250"    y="120" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~24k</text>
+  <text x="370"   y="120" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#f09595">2 MB</text>
+  <text x="496"  y="120" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#5DCAA5">0 MB</text>
+  <rect x="622" y="104" width="54" height="22" rx="4" fill="#0f2a1a" stroke="#0f6e56" stroke-width="1"/>
+  <text x="649" y="119" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" text-anchor="middle">6.4×</text>
+  <line x1="36" y1="134" x2="744" y2="134" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="158" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#C8DDF0">25</text>
+  <text x="130"  y="158" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~8k</text>
+  <text x="250"    y="158" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~69k</text>
+  <text x="370"   y="158" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#f09595">11 MB</text>
+  <text x="496"  y="158" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#5DCAA5">1 MB</text>
+  <rect x="622" y="142" width="54" height="22" rx="4" fill="#0f2a1a" stroke="#0f6e56" stroke-width="1"/>
+  <text x="649" y="157" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" text-anchor="middle">11.9×</text>
+  <line x1="36" y1="172" x2="744" y2="172" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="196" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#C8DDF0">50</text>
+  <text x="130"  y="196" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~15k</text>
+  <text x="250"    y="196" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~118k</text>
+  <text x="370"   y="196" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#f09595">41 MB</text>
+  <text x="496"  y="196" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#5DCAA5">2 MB</text>
+  <rect x="622" y="180" width="54" height="22" rx="4" fill="#0f2a1a" stroke="#0f6e56" stroke-width="1"/>
+  <text x="649" y="195" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" text-anchor="middle">16.7×</text>
+  <line x1="36" y1="210" x2="744" y2="210" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="234" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#C8DDF0">100</text>
+  <text x="130"  y="234" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~30k</text>
+  <text x="250"    y="234" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~236k</text>
+  <text x="370"   y="234" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#f09595">161 MB</text>
+  <text x="496"  y="234" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#5DCAA5">6 MB</text>
+  <rect x="622" y="218" width="54" height="22" rx="4" fill="#0f2a1a" stroke="#0f6e56" stroke-width="1"/>
+  <text x="649" y="233" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" text-anchor="middle">25.2×</text>
+  <line x1="36" y1="248" x2="744" y2="248" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="36" y="272" font-family="Inter, sans-serif" font-size="15" font-weight="500" fill="#C8DDF0">200</text>
+  <text x="130"  y="272" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~61k</text>
+  <text x="250"    y="272" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~471k</text>
+  <text x="370"   y="272" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#f09595">636 MB</text>
+  <text x="496"  y="272" font-family="Inter, sans-serif" font-size="15" font-weight="400" fill="#5DCAA5">19 MB</text>
+  <rect x="622" y="256" width="54" height="22" rx="4" fill="#0f2a1a" stroke="#0f6e56" stroke-width="1"/>
+  <text x="649" y="271" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" text-anchor="middle">34.0×</text>
+  <line x1="36" y1="286" x2="744" y2="286" stroke="#1A2740" stroke-width="0.5"/>
+  <rect x="1" y="286" width="778" height="38" fill="#0d1628"/>
+  <text x="36" y="310" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">500</text>
+  <text x="130"  y="310" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~152k</text>
+  <text x="250"    y="310" font-family="Inter, sans-serif" font-size="15" fill="#6B8299">~1.4M</text>
+  <text x="370"   y="310" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#e24b4a">4.04 GB</text>
+  <text x="496"  y="310" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#1D9E75">101 MB</text>
+  <rect x="622" y="294" width="60" height="22" rx="4" fill="#0f2a1a" stroke="#1D9E75" stroke-width="1"/>
+  <text x="652" y="309" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#5DCAA5" text-anchor="middle">40.9×</text>
+</svg>

@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Everything is Conductor",
+    "summary": "an ultra quiet day lets us highlight a smaller trend.",
+    "link": "https://www.latent.space/p/ainews-everything-is-conductor",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "AI-Native Healthcare: 100M Doctor Visits, 10–20 Hours Saved, Prior Auth in Minutes — Janie Lee & Chai Asawa, Abridge",
+    "summary": "How Abridge is quietly turning the patient and clinician conversation into the operating system of healthcare",
+    "link": "https://www.latent.space/p/abridge",
+    "audio": "https://api.substack.com/feed/podcast/197417280/b93c7f9e3f6aa190dccb6430c6676422.mp3",
+    "type": "media"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Codex Rises, Claude Meters Programmatic Usage",
+    "summary": "a quiet day lets us report on a long trend of the major coding agents",
+    "link": "https://www.latent.space/p/ainews-codex-rises-claude-meters",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] The End of Finetuning",
+    "summary": "a quiet day lets us reflect on whither finetuning",
+    "link": "https://www.latent.space/p/ainews-the-end-of-finetuning",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Latent Space",
+    "title": "[AINews] Thinking Machines' Native Interaction Models - TML-Interaction-Small 276B-A12B - advances SOTA Realtime Voice and kills standard VAD",
+    "summary": "well done, Team Thinky.",
+    "link": "https://www.latent.space/p/ainews-thinking-machines-native-interaction",
+    "audio": "",
+    "type": "article"
+  }
+]

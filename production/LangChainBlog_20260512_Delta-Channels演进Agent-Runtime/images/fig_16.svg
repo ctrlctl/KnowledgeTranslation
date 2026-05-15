@@ -1,0 +1,102 @@
+<svg width="760" height="520" viewBox="0 0 760 520" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>Workload A: checkpoint storage vs agent turns</title>
+  <desc>Line chart comparing checkpoint storage for deepagents 0.5.8 vs 0.6 (DeltaChannel), minimal workload, 10–500 turns.</desc>
+
+  <rect x="0" y="0" width="760" height="520" rx="16" fill="#0B1120" stroke="#1A2740" stroke-width="1"/>
+
+  <!-- Title -->
+  <text x="380" y="36" font-family="Inter, sans-serif" font-size="13" font-weight="700" letter-spacing="0.08em" fill="#7FC8FF" text-anchor="middle">WORKLOAD A: CHECKPOINT STORAGE VS AGENT TURNS</text>
+
+  <!--
+    Chart area: x: 96–660, y: 58–390 → h=332, w=564
+    Right margin: 100px for end labels
+    Y: 0–4500 MB, gridlines at 0,1000,2000,3000,4000
+    y = 390 - (MB/4500)*332
+
+    X (evenly spaced): 10→96, 25→208, 50→320, 100→432, 200→544, 500→660
+
+    0.5.8:   1.99, 10.97, 41.30, 161.07, 636.17, 4137 (4.04 GB)
+    0.6:     0.31, 0.92,  2.48,  6.40,   18.71,  101.29
+
+    y(0.5.8):
+      10  → 390-(1.99/4500)*332   = 389.9 ≈ 390
+      25  → 390-(10.97/4500)*332  = 389.2 ≈ 389
+      50  → 390-(41.30/4500)*332  = 387.0 ≈ 387
+      100 → 390-(161.07/4500)*332 = 378.1 ≈ 378
+      200 → 390-(636.17/4500)*332 = 342.0 ≈ 342
+      500 → 390-(4137/4500)*332   = 84.2  ≈ 84
+
+    y(0.6):
+      all near 390 until 500 → 390-(101.29/4500)*332 = 382.5 ≈ 383
+  -->
+
+  <!-- Gridlines + Y labels -->
+  <line x1="96" y1="390" x2="660" y2="390" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="84" y="395" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="end">0</text>
+
+  <line x1="96" y1="316" x2="660" y2="316" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="84" y="321" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="end">1k</text>
+
+  <line x1="96" y1="243" x2="660" y2="243" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="84" y="248" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="end">2k</text>
+
+  <line x1="96" y1="169" x2="660" y2="169" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="84" y="174" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="end">3k</text>
+
+  <line x1="96" y1="96" x2="660" y2="96" stroke="#1A2740" stroke-width="0.5"/>
+  <text x="84" y="101" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="end">4k</text>
+
+  <!-- Y axis label -->
+  <text x="22" y="224" font-family="Inter, sans-serif" font-size="13" font-weight="700" letter-spacing="0.06em" fill="#6B8299" text-anchor="middle" transform="rotate(-90, 22, 224)">CHECKPOINTER STORAGE (MB)</text>
+
+  <!-- X axis -->
+  <line x1="96" y1="390" x2="660" y2="390" stroke="#1A2740" stroke-width="1"/>
+
+  <!-- X tick labels -->
+  <text x="96"  y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">10</text>
+  <text x="208" y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">25</text>
+  <text x="320" y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">50</text>
+  <text x="432" y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">100</text>
+  <text x="544" y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">200</text>
+  <text x="660" y="410" font-family="Inter, sans-serif" font-size="15" fill="#6B8299" text-anchor="middle">500</text>
+
+  <!-- X axis label -->
+  <text x="378" y="436" font-family="Inter, sans-serif" font-size="13" font-weight="700" letter-spacing="0.06em" fill="#6B8299" text-anchor="middle">AGENT TURNS</text>
+
+  <!-- 0.5.8 line -->
+  <polyline points="96,390 208,389 320,387 432,378 544,342 660,84"
+    fill="none" stroke="#e24b4a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- 0.6 line -->
+  <polyline points="96,390 208,390 320,390 432,390 544,390 660,383"
+    fill="none" stroke="#1D9E75" stroke-width="2.5" stroke-dasharray="7 4" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- 0.5.8 dots -->
+  <circle cx="96"  cy="390" r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="208" cy="389" r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="320" cy="387" r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="432" cy="378" r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="544" cy="342" r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="660" cy="84"  r="7" fill="#e24b4a" stroke="#0B1120" stroke-width="2"/>
+
+  <!-- 0.6 dots -->
+  <circle cx="96"  cy="390" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="208" cy="390" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="320" cy="390" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="432" cy="390" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="544" cy="390" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+  <circle cx="660" cy="383" r="7" fill="#1D9E75" stroke="#0B1120" stroke-width="2"/>
+
+  <!-- End labels -->
+  <text x="672" y="80"  font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#e24b4a">4.0 GB</text>
+  <text x="672" y="380" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#1D9E75">101 MB</text>
+
+  <!-- Legend -->
+  <line x1="96" y1="472" x2="118" y2="472" stroke="#e24b4a" stroke-width="2.5"/>
+  <circle cx="107" cy="472" r="6" fill="#e24b4a" stroke="#0B1120" stroke-width="1.5"/>
+  <text x="126" y="477" font-family="Inter, sans-serif" font-size="13" fill="#6B8299">0.5.8 (no delta)</text>
+
+  <line x1="320" y1="472" x2="342" y2="472" stroke="#1D9E75" stroke-width="2.5" stroke-dasharray="7 4"/>
+  <circle cx="331" cy="472" r="6" fill="#1D9E75" stroke="#0B1120" stroke-width="1.5"/>
+  <text x="350" y="477" font-family="Inter, sans-serif" font-size="13" fill="#6B8299">0.6 (DeltaChannel)</text>
+</svg>

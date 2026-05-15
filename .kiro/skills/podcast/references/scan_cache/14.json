@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "feed": "Simon Willison",
+    "title": "Not so locked in any more",
+    "summary": "<p>This <a href=\"https://simonwillison.net/2026/May/14/mitchell-hashimoto/\">Mitchell Hashimoto quote</a> about Bun migrating from Zig to Rust reminded me of a similar conversation I had at a conference last week.</p>\n<p>I was talking to someone who worked for a medium sized technology company with a pair of legacy/<a href=\"https://simonwillison.net/2018/Jul/17/mark-norman-francis/\">legendary</a> iPhone and Android apps.</p>\n<p>They told me they had just completed a coding-agent driven rewrite of",
+    "link": "https://simonwillison.net/2026/May/14/not-so-locked-in/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Quoting Mitchell Hashimoto",
+    "summary": "<blockquote cite=\"https://twitter.com/mitchellh/status/2055039647924007222\"><p>[...] On the interesting side is how fungible programming languages are nowadays. Programming languages used to be LOCK IN, and they're increasingly not so. You think the Bun rewrite in Rust is good for Rust? Bun has shown they can be in probably any language they want in roughly a week or two. Rust is expendable. Its useful until its not then it can be thrown out. That's interesting!</p></blockquote>\n<p class=\"cite\">",
+    "link": "https://simonwillison.net/2026/May/14/mitchell-hashimoto/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "datasette-ip-rate-limit 0.1a0",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/datasette/datasette-ip-rate-limit/releases/tag/0.1a0\">datasette-ip-rate-limit 0.1a0</a></p>\n        <p>The <a href=\"https://datasette.io/\">datasette.io</a> site was being hammered by poorly-behaved crawlers, so I had Codex (GPT-5.5 xhigh) build a configurable rate limiting plugin to block IPs that were hammering specific areas of the site too quickly.</p>\n<p>Here's <a href=\"https://github.com/simonw/datasette.io/blob/b6022bf9987661b94a26d3",
+    "link": "https://simonwillison.net/2026/May/14/datasette-ip-rate-limit/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Welcome to the Datasette blog",
+    "summary": "<p><strong><a href=\"https://datasette.io/blog/2026/new-blog/\">Welcome to the Datasette blog</a></strong></p>\nWe have a bunch of neat Datasette announcements in the pipeline so we decided it was time the project grew an official blog.</p>\n<p>I built this using OpenAI Codex desktop, which turns out to have the Markdown session transcript export feature I've always wanted. Here's <a href=\"https://gist.github.com/simonw/885b11eee46822622b8031a1f4e5f3a3\">the session that built the blog</a>. See also ",
+    "link": "https://simonwillison.net/2026/May/13/welcome-to-the-datasette-blog/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Quoting Boris Mann",
+    "summary": "<blockquote cite=\"https://bsky.app/profile/bmann.ca/post/3mlp2ipupv22z\"><p>“11 AI agents” is meaningless as a phrase. </p>\n<p>If I said “I have 11 spreadsheets” or “I have 11 browser tabs” to do my work, it means about the same thing.</p></blockquote>\n<p class=\"cite\">&mdash; <a href=\"https://bsky.app/profile/bmann.ca/post/3mlp2ipupv22z\">Boris Mann</a></p>\n\n    <p>Tags: <a href=\"https://simonwillison.net/tags/ai-agents\">ai-agents</a>, <a href=\"https://simonwillison.net/tags/ai\">ai</a>, <a href=\"h",
+    "link": "https://simonwillison.net/2026/May/13/boris-mann/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "CSP Allow-list Experiment",
+    "summary": "<p><strong>Tool:</strong> <a href=\"https://tools.simonwillison.net/csp-allow\">CSP Allow-list Experiment</a></p>\n        <p>An experiment that shows that you can load an app in a CSP-protected sandboxed iframe (see <a href=\"https://simonwillison.net/2026/Apr/3/test-csp-iframe-escape/\">previous note</a>) and have a custom <code>fetch()</code> that intercepts CSP errors and passes them up to the parent window... which can then prompt the user to add that domain to an allow-list and then refresh the",
+    "link": "https://simonwillison.net/2026/May/13/csp-allow/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "datasette 1.0a29",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/simonw/datasette/releases/tag/1.0a29\">datasette 1.0a29</a></p>\n        <blockquote>\n<ul>\n<li>New <code>TokenRestrictions.abbreviated(datasette)</code> <a href=\"https://docs.datasette.io/en/latest/internals.html#tokenrestrictions\">utility method</a> for creating <code>\"_r\"</code> dictionaries. <a href=\"https://github.com/simonw/datasette/issues/2695\">#2695</a></li>\n<li>Table headers and column options are now visible even if a table contain",
+    "link": "https://simonwillison.net/2026/May/12/datasette/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Quoting Mo Bitar",
+    "summary": "<blockquote cite=\"https://www.tiktok.com/@atmoio/video/7638649825382190350\"><p>Now, if your CEO has never heard the phrase Ralph Loop, oh man, you are less than 30 days away from your next promotion. I'm not even exaggerating. Walk into his office, close the door, and say, hey chief, been experimenting with something. It's called Ralph Loops. And I think it could change literally everything. And he's gonna say, what's a Ralph loop? And you will say, give me $18,000 worth of API credits and I'll ",
+    "link": "https://simonwillison.net/2026/May/12/mo-bitar/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "Quoting Mitchell Hashimoto",
+    "summary": "<blockquote cite=\"https://lobste.rs/s/oznirn/redis_cost_ambition#c_dzrja0\"><p>The thing about 90% of TDMs [Technical Decision Makers] is that they're motivated primarily by NOT GETTING FIRED. These aren't people who browser Lobsters or push to GH on the weekend. These are people that work 9 to 5, get paid, go home, and NEVER THINK ABOUT WORK AGAIN. So to achieve all that, they follow secular trends supported by analysts and broad public sentiment. Oh, Gartner said that \"AI strategy\" is most impo",
+    "link": "https://simonwillison.net/2026/May/12/mitchell-hashimoto/#atom-everything",
+    "audio": "",
+    "type": "article"
+  },
+  {
+    "feed": "Simon Willison",
+    "title": "llm 0.32a2",
+    "summary": "<p><strong>Release:</strong> <a href=\"https://github.com/simonw/llm/releases/tag/0.32a2\">llm 0.32a2</a></p>\n        <p>A bunch of useful stuff in this <a href=\"https://llm.datasette.io/\">LLM</a> alpha, but the most important detail is this one:</p>\n<blockquote>\n<p>Most reasoning-capable OpenAI models now use the <a href=\"https://platform.openai.com/docs/api-reference/responses\"><code>/v1/responses</code></a> endpoint instead of <code>/v1/chat/completions</code>. This enables interleaved reasonin",
+    "link": "https://simonwillison.net/2026/May/12/llm/#atom-everything",
+    "audio": "",
+    "type": "article"
+  }
+]

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>笔记</title>
+<style>
+body { margin:0; padding:0; background:#faf8f5; }
+a { color:#a0220d; }
+</style>
+</head>
+<body>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:2em;max-width:42em;margin:0 auto;box-sizing:border-box;word-wrap:break-word;line-height:2;">
+<a style="display:block;margin-bottom:1.5em;font-size:14px;color:#a0220d;text-decoration:none;" href="index.html">← 返回索引</a>
+
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">托管 Deep Agents：最快的生产级 Deep Agent 上线路径</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.langchain.com/blog/introducing-managed-deep-agents" target="_blank">Introducing Managed Deep Agents</a> 来源：LangChain Blog | 2026-05-13 作者：Victor Moreira</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="索引" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#核心要点">核心要点</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#为什么需要-managed-deep-agents">为什么需要 Managed Deep Agents</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#托管-runtime">托管 Runtime</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#agent-上下文与文件">Agent 上下文与文件</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#工具与沙箱">工具与沙箱</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#langsmith-可观测性">LangSmith 可观测性</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#工作原理">工作原理</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#适用场景">适用场景</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#开始使用">开始使用</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="核心要点" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心要点</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">构建 agent 越来越容易，<strong style="color:#a0220d;font-weight:bold;">运维 agent 仍然是难点</strong>。长时间运行的 agent 需要持久执行、工具访问、沙箱、记忆和追踪——自己搭建这些会占用构建实际 agent 的时间。</li><li style="margin-bottom:0.5em;line-height:2;">Managed Deep Agents 给开源 harness 一个在 LangSmith 中的<strong style="color:#a0220d;font-weight:bold;">持久化运行环境</strong>。你把 agent 定义留在自己的 repo 里，我们处理 runtime：线程、checkpointing、streaming、上下文和可观测性。</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Context Hub</strong> 给 agent 一个托管的地方来存储和更新它所知道的内容，让它能从真实使用中改进——而不仅仅是从部署时放进 prompt 的内容。</li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="为什么需要-managed-deep-agents" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么需要 Managed Deep Agents</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">构建一个有用的 agent 越来越容易。在生产环境中运行它们仍然很难。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">长时间运行的 agent 需要的不仅仅是一次模型调用。它们需要持久执行、streaming、记忆、文件、工具访问、人工审批、沙箱、追踪，以及一种随时间改进的方式。团队可以自己构建这些基础设施，但在 agent 还没有触达用户之前，这就已经是很大的负担了。你最终要在 agent 本身之外维护 runtime 基础设施、文件存储、工具配置、沙箱执行、线程状态、追踪和反馈循环。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 将运维层打包在开源 Deep Agents harness 周围，让开发者可以<strong style="color:#a0220d;font-weight:bold;">专注于 agent 行为</strong>，而不是重建它周围的 runtime。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="托管-runtime" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">托管 Runtime</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 让你无需搭建自定义 agent server 就能创建托管的 Deep Agent。Runtime 支持持久线程、streaming 运行、checkpointing 和 human-in-the-loop 工作流。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你可以使用 API 来创建 agent、更新配置、创建线程、从你自己的产品或平台工作流中 stream 运行。API 面在 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">/v1/deepagents</code> 下。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="agent-上下文与文件" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent 上下文与文件</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 保持熟悉的 Deep Agents 项目结构，包括 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">AGENTS.md</code>、<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">skills/</code>、<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">subagents/</code> 和 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">tools.json</code>。这些文件定义了 agent 的行为方式、可用工具、可加载的专门技能，以及可以委派工作的子 agent。Managed Deep Agents 在 LangSmith 中存储和版本化这些文件，让 agent 定义可以随时间演进。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Context Hub</strong> 给 agent 一个托管的地方来跨运行保留和更新它需要的上下文。这对需要跟踪用户偏好、项目细节、研究笔记、操作流程或其他工作上下文的 agent 很重要。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你可以选择启用 <strong style="color:#a0220d;font-weight:bold;">LangSmith Engine</strong> 来审查 agent traces，发现 agent prompts 和代码中的 bug 和改进空间。在运行之间，agent 可以回顾对话、从真实使用中学习、更新 Context Hub 文件。随着时间推移，这让 agent 能从它实际做的工作中改进。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">例如，对于一个支持分诊 agent，LangSmith Engine 可以注意到用户不断询问同一个内部流程，然后更新它的操作笔记。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="工具与沙箱" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工具与沙箱</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">工具通过 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">tools.json</code> 配置——与 Deep Agents 使用的模型相同。你可以在 <code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">tools.json</code> 中定义的任何工具上启用 Human-in-the-loop。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 还支持<strong style="color:#a0220d;font-weight:bold;">沙箱支持的执行</strong>，用于需要代码、shell 命令和文件 I/O 的工作流。这对需要分析数据、操作文件、运行脚本或创建产出物的 agent 很有用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">不需要为每个 agent 重建工具和沙箱设置，你可以把配置保留在托管 runtime 中，通过 LangSmith 操作它。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="langsmith-可观测性" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">LangSmith 可观测性</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 的运行自动在 LangSmith 中被追踪。团队可以检查工具调用、调试行为、审查中间步骤，理解 agent 如何随时间改进。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这给开发者提供了他们已经用于 agent 和 LLM 应用的相同可观测性工作流，现在直接连接到托管 runtime。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="工作原理" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">工作原理</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">上线路径是 API-first。你用 Managed Deep Agents API 创建或更新 agent，然后上传或引用定义它的文件——包括指令、skills、subagents 和工具配置。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从那里，你可以创建线程并从你的应用 stream 运行，无需部署自定义 agent server。agent 运行时，你可以在 LangSmith 中检查 traces 和 agent 上下文。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="适用场景" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">适用场景</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 为需要长时间工作、使用工具、保留上下文和产出产出物的 agent 设计。几个例子：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">支持和分诊 agent</strong>：跨长时间线程工作，跟踪先前上下文，需要时升级，从重复问题中更新自己的操作笔记</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">研究 agent</strong>：收集来源、写笔记、保留中间发现，跨多个 session 产出交付物</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Coding agent</strong>：需要文件系统、shell 命令、工具访问和可恢复执行来处理较长任务</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">数据分析 agent</strong>：运行代码、保留产出物，跨探索性工作流维护上下文</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">内部运维 agent</strong>：从重复使用中改进自己的上下文，如入职助手、政策 agent 或工作流协调器</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这些 agent 需要的不仅仅是一个 prompt 和一次工具调用。它们需要一个能支持<strong style="color:#a0220d;font-weight:bold;">持久工作</strong>的 runtime。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="开始使用" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">开始使用</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 是想要 Deep Agents + LangSmith 托管 runtime 基础设施的团队的最快路径。你可以把 agent 定义留在自己的 repo 里，然后用 API 在 LangSmith 中创建和操作托管 agent。这意味着开发者可以用开源 harness 构建，同时依赖 LangSmith 提供持久执行、托管上下文、沙箱支持的工作流——全部集成 LangSmith 可观测性。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Managed Deep Agents 目前在 private beta 中。如果你在构建需要持久执行、工具、沙箱、追踪和托管生产路径的 deep agent，可以加入 private beta 等待列表。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+</section>
+</body>
+</html>
