@@ -16,44 +16,66 @@ a { color:#a0220d; }
 <h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为不同模型调优深度Agent</h1>
 <blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://www.langchain.com/blog/tuning-deep-agents-different-models" target="_blank">Tuning Deep Agents Different Models</a> 来源：LangChain Blog | 2026-04-30 作者：LangChain</p></blockquote>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 id="索引" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#核心观点">核心观点</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#为什么这很重要">为什么这很重要</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#效果测量">效果测量</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#每个模型改了什么">每个模型改了什么</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#harness-profile-如何工作">Harness Profile 如何工作</a></li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">索引</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#profile的效果测量结果">Profile的效果测量结果</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#每个模型改了什么">每个模型改了什么</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#profile底层如何工作">Profile底层如何工作</a></li></ul>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 id="核心观点" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">核心观点</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Deep Agents 之前以通用方式设计，旨在跨模型家族良好工作。现在添加了<strong style="color:#a0220d;font-weight:bold;">模型特定的 profile</strong>来调整 prompt、工具和中间件。这允许更好地符合特定模型家族的 prompting 指南。为 OpenAI、Anthropic 和 Google 模型开箱即用地提供 profile，在 tau2-bench 子集上比默认 harness <strong style="color:#a0220d;font-weight:bold;">提升了 10-20 分</strong>。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">此前，<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">deepagents</code> 附带一组旨在跨所有 LLM 良好工作的固定 prompt、工具和中间件。构建者可以换入不同模型或用额外工具扩展 harness，但基础 prompt、工具和中间件是固定的，未针对每个模型优化。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">一个 harness 不可能对每个模型都是最优的。</strong> 所以 LangChain 让按模型变化 harness 变得容易。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">TL;DR：</strong> Deep Agents之前以通用方式设计，跨模型系列工作良好。今天我们添加了<strong style="color:#a0220d;font-weight:bold;">模型特定的profile</strong>来调整prompt、工具和中间件。这让我们能更好地遵循特定模型系列的prompting指南。我们为OpenAI、Anthropic和Google模型开箱即用地提供profile，在tau2-bench子集上比默认harness提升了10-20分。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在今天之前，deepagents附带一组旨在跨所有LLM良好工作的prompt、工具和中间件。构建者可以换入不同模型或用额外工具和system prompt扩展harness。但基础prompt、工具和中间件是固定的，没有针对每个模型优化。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这很重要，因为：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Prompting指南因模型而异。</strong> OpenAI的Codex Prompting Guide规定了特定的工具实现和名称（<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">apply_patch</code>、<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">shell_command</code>），对Codex模型有显著影响。Anthropic的Claude prompting指导强调不同的惯例。即使在同一系列内，Opus 4.6→4.7迁移指南也标记了值得做的prompt级别更改。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">评估排行榜显示同一模型在不同harness中可以产生非常不同的性能。</strong> Terminal-Bench 2.0是最干净的公开例子。Claude Code harness在Opus 4.6提交中排名最后。我们在之前的工作中看到了类似的harness工程效果：仅通过应用harness层面的更改（如prompt和中间件hook），就将gpt-5.2-codex从52.8%提升到66.5%（从Top 30到Top 5）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">单一harness不可能对每个模型都是最优的。</strong> 所以我们让按模型变化harness变得容易。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 id="为什么这很重要" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么这很重要</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">不同模型家族有不同的最佳实践：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">工具调用格式和约定不同</li><li style="margin-bottom:0.5em;line-height:2;">规划和推理的 prompt 策略不同</li><li style="margin-bottom:0.5em;line-height:2;">中间件需求不同</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">通过 harness profile，构建者可以：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">按 agent 管理 profile</li><li style="margin-bottom:0.5em;line-height:2;">版本化它们</li><li style="margin-bottom:0.5em;line-height:2;">轻松测试配置差异</li></ul>
-<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 id="效果测量" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">效果测量</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 tau2-bench（多轮工具使用 + 指令遵循）的精选子集上测量性能。使用前沿模型尚未饱和的更难任务的精选子集，以更好地测量 harness 级别变化对 agent 的影响。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">使用 Codex 和 Claude prompting 指南作为每个 profile 应用什么变化的来源。</p>
+<h2 id="profile的效果测量结果" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Profile的效果测量结果</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了判断这有多重要，我们在tau2-bench子集（多轮工具使用+指令遵循）上测量了性能。我们使用了前沿模型尚未饱和的更难任务的策划子集，以便更好地衡量harness层面更改对agent的影响。</p>
+<table style="width:100%;border-collapse:collapse;margin:1.5em 0;font-size:14px;"><tr><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">模型</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">基础Deep Agents Harness</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">使用自定义Profile</th></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">GPT 5.3 Codex</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">33%</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">53%</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">Claude Opus 4.7</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">43%</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">53%</td></tr></table>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
 <h2 id="每个模型改了什么" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">每个模型改了什么</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Codex</strong> 的主要变化包括：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">针对 Codex 特定的工具调用格式优化</li><li style="margin-bottom:0.5em;line-height:2;">调整规划和执行指令</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Opus</strong> 的主要变化全部集中在工具使用和规划的 prompting 上。例如，向 prompt 添加了关于工具使用模式和规划策略的特定片段。</p>
-<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 id="harness-profile-如何工作" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Harness Profile 如何工作</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Harness profile 是一个声明式覆盖层，用于 harness 中按模型变化的部分：system prompt 前缀/后缀、工具包含和命名、中间件选择、subagent 配置和 skills。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为模型或提供商注册一个 profile（或从 YAML 加载现有的），<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">create_deep_agent</code> 在你切换模型时自动适配。重要的是，你的调用点不变。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为 OpenAI、Anthropic 和 Google 模型提供默认值。你可以覆盖它们、在其上叠加自己的，或作为插件分发 profile。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也可以在 YAML 中声明 profile：</p>
-<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #616E87; font-style: italic"># 示例 profile 声明</span>
-<span style="color: #81A1C1">model</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> anthropic/claude-opus</span>
-<span style="color: #81A1C1">prompt_prefix</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> </span><span style="color: #A3BE8C">&quot;...&quot;</span>
-<span style="color: #81A1C1">tools</span><span style="color: #ECEFF4">:</span>
-<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> </span><span style="color: #81A1C1">name</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> web_search</span>
-<span style="color: #D8DEE9">    </span><span style="color: #81A1C1">enabled</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> true</span>
-<span style="color: #81A1C1">middleware</span><span style="color: #ECEFF4">:</span>
-<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> planning_middleware</span>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们使用Codex和Claude prompting指南作为每个profile应用什么更改的来源。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">对于Codex，主要更改包括：</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">工具更改</strong>：用推荐的<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">apply_patch</code>工具覆盖deepagents中默认的<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">file_edit</code>实现，并将deepagents中的<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">execute</code>工具名称别名为<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">shell_command</code></li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">Prompt更改</strong>：主要围绕工具调用和规划，使用prompting指南中的细节。例如："在任何tool call之前，决定你需要的所有文件和资源。将读取、搜索和其他独立操作批量化为并行tool call，而不是逐个发出。"</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">对于Opus，主要更改都是围绕工具使用和规划的prompt。</strong> 例如：</p>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;">&lt;tool_result_reflection&gt;
+收到工具结果后，仔细反思其质量并确定最优下一步，
+然后再继续。用你的思考来基于新信息规划和迭代，
+然后采取最佳下一步行动。
+&lt;/tool_result_reflection&gt;
+
+&lt;tool_usage&gt;
+当任务依赖于文件、测试或系统输出的状态时，
+使用工具直接观察该状态，而不是从记忆中推理它可能包含什么。
+读取文件再描述它们。运行测试再声称它们通过。
+搜索代码库再断言某个符号存在或不存在。
+用工具主动调查是默认工作模式，不是后备方案。
+&lt;/tool_usage&gt;
 </pre>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">目标是无论你选择哪个模型，Deep Agents 都给你工具和默认值来为你的任务创建最佳 harness。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们的结论是：<strong style="color:#a0220d;font-weight:bold;">暴露一个按模型自定义harness的接口，是帮助构建者管理每个agent的profile、版本化它们、并轻松测试配置差异的有用原语。</strong></p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="profile底层如何工作" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Profile底层如何工作</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Harness profile是harness中按模型变化部分的声明式覆盖层：system prompt前缀/后缀、工具包含和命名、中间件选择、subagent配置和skills。你为模型或提供商注册profile（或从YAML加载现有的），<code style="font-size:13px;padding:2px 5px;background:#f0ede8;border-radius:3px;font-family:Menlo,Monaco,Consolas,monospace;color:#d14;">create_deep_agent</code>在你换模型时自动适配。重要的是，你的调用点不变。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们为OpenAI、Anthropic和Google模型提供默认值。你可以覆盖它们、在上面叠加你自己的、或将profile作为插件分发。</p>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #81A1C1; font-weight: bold">from</span><span style="color: #D8DEE9"> </span><span style="color: #8FBCBB">deepagents</span><span style="color: #D8DEE9"> </span><span style="color: #81A1C1; font-weight: bold">import</span> <span style="color: #D8DEE9">HarnessProfile</span><span style="color: #ECEFF4">,</span> <span style="color: #D8DEE9">register_harness_profile</span>
+
+<span style="color: #D8DEE9">register_harness_profile</span><span style="color: #ECEFF4">(</span>
+    <span style="color: #A3BE8C">&quot;openai:gpt-5.4&quot;</span><span style="color: #ECEFF4">,</span>
+    <span style="color: #D8DEE9">HarnessProfile</span><span style="color: #ECEFF4">(</span>
+        <span style="color: #D8DEE9">system_prompt_suffix</span><span style="color: #81A1C1; font-weight: bold">=</span><span style="color: #A3BE8C">&quot;Respond in under 100 words.&quot;</span><span style="color: #ECEFF4">,</span>
+        <span style="color: #D8DEE9">excluded_tools</span><span style="color: #81A1C1; font-weight: bold">=</span><span style="color: #ECEFF4">{</span><span style="color: #A3BE8C">&quot;execute&quot;</span><span style="color: #ECEFF4">},</span>
+        <span style="color: #D8DEE9">excluded_middleware</span><span style="color: #81A1C1; font-weight: bold">=</span><span style="color: #ECEFF4">{</span><span style="color: #A3BE8C">&quot;SummarizationMiddleware&quot;</span><span style="color: #ECEFF4">},</span>
+    <span style="color: #ECEFF4">),</span>
+<span style="color: #ECEFF4">)</span>
+</pre>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">或在YAML中声明：</p>
+<pre style="display:block;padding:1em;margin:1.5em 0;font-size:12px;line-height:1.6;background:#2e3440;color:#d8dee9;border-radius:4px;font-family:Menlo,Monaco,Consolas,monospace;white-space:pre-wrap;word-wrap:break-word;"><span style="color: #616E87; font-style: italic"># openai.yaml</span>
+<span style="color: #81A1C1">base_system_prompt</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> You are helpful.</span>
+<span style="color: #81A1C1">system_prompt_suffix</span><span style="color: #ECEFF4">:</span><span style="color: #D8DEE9"> Respond briefly.</span>
+<span style="color: #81A1C1">excluded_tools</span><span style="color: #ECEFF4">:</span>
+<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> execute</span>
+<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> grep</span>
+<span style="color: #81A1C1">excluded_middleware</span><span style="color: #ECEFF4">:</span>
+<span style="color: #D8DEE9">  </span><span style="color: #ECEFF4">-</span><span style="color: #D8DEE9"> SummarizationMiddleware</span>
+</pre>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">目标是无论你选择哪个模型，Deep Agents都给你工具和默认值来为你的任务创建最佳harness。</p>
 </section>
 </body>
 </html>

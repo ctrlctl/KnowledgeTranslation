@@ -11,7 +11,7 @@ body, .markdown-body {
 }
 </style>
 
-# Effective Harnesses for Long-Running Agents：长时间运行Agent的有效Harness
+# Effective Harnesses for Long-Running Agents：长时间运行 Agent 的有效 Harness
 
 > 原文：[Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 > 来源：Anthropic Engineering | 2025-11-26
@@ -19,115 +19,105 @@ body, .markdown-body {
 
 ---
 
-## 目录
+## 索引
 
-- [核心问题：跨上下文窗口的连续工作](#核心问题跨上下文窗口的连续工作)
-- [两部分解决方案](#两部分解决方案)
+- [长时间运行 Agent 的问题](#长时间运行-agent-的问题)
 - [环境管理](#环境管理)
-- [增量进展](#增量进展)
-- [测试](#测试)
-- [每次启动的标准流程](#每次启动的标准流程)
-- [失败模式与解决方案总结](#失败模式与解决方案总结)
-- [未来方向](#未来方向)
+- [快速进入状态](#快速进入状态)
+- [未来工作](#未来工作)
 
 ---
 
-## 核心问题：跨上下文窗口的连续工作
+随着 AI agent 能力越来越强，开发者开始让它们承担需要数小时甚至数天才能完成的复杂任务。然而，如何让 agent 在多个 context window 之间持续推进工作，仍然是一个未解决的问题。
 
-随着 AI agent 越来越强，开发者开始让它们处理需要数小时甚至数天的复杂任务。但让 agent 在多个上下文窗口之间保持一致的进展，仍然是一个未解决的问题。
+长时间运行 agent 的核心挑战在于：它们必须在离散的 session 中工作，而每个新 session 开始时对之前发生的事情毫无记忆。想象一个轮班制的软件项目——每位新上班的工程师对上一班发生了什么完全不知情。由于 context window 有限，而大多数复杂项目无法在单个 window 内完成，agent 需要一种方式来弥合 coding session 之间的断层。
 
-核心挑战在于：agent 必须在离散的 session 中工作，每个新 session 开始时对之前发生的事情毫无记忆。想象一个软件项目由轮班工程师负责，每个新工程师到岗时完全不知道上一班做了什么。因为上下文窗口有限，而大多数复杂项目无法在单个窗口内完成，agent 需要一种方式来弥合 session 之间的鸿沟。
-
----
-
-## 两部分解决方案
-
-Anthropic 开发了一个两部分方案，让 Claude Agent SDK 能够有效地跨多个上下文窗口工作：
-
-1. **Initializer agent**：在第一次运行时设置环境
-2. **Coding agent**：在每个后续 session 中做增量进展，同时为下一个 session 留下清晰的 artifact
+我们开发了一个**双管齐下的方案**，让 [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview) 能够跨多个 context window 高效工作：一个 **initializer agent** 在首次运行时搭建环境，一个 **coding agent** 负责在每个 session 中推进增量进展，同时为下一个 session 留下清晰的工件。代码示例见配套的 [quickstart](https://github.com/anthropics/claude-quickstarts/tree/main/autonomous-coding)。
 
 ---
 
-### 为什么 compaction 不够
+## 长时间运行 Agent 的问题
 
-即使有 compaction（将早期对话压缩摘要以节省上下文空间），像 Opus 4.5 这样的前沿模型在循环运行时，仅凭一个高层 prompt（如"构建一个 claude.ai 的克隆"）仍然无法构建出生产级 web 应用。
+Claude Agent SDK 是一个强大的通用 agent harness，擅长编码以及其他需要模型使用工具来收集上下文、规划和执行的任务。它具备 compaction（上下文压缩）等上下文管理能力，让 agent 可以在不耗尽 context window 的情况下持续工作。理论上，有了这套机制，agent 应该能够无限期地做有用的工作。
 
-Claude 的失败表现为两种模式：
+然而，**compaction 并不够**。开箱即用的情况下，即使是 Opus 4.5 这样的前沿编码模型，在 Claude Agent SDK 上跨多个 context window 循环运行，如果只给一个高层级 prompt（比如"构建一个 claude.ai 的克隆"），也无法构建出生产级质量的 web 应用。
 
-**模式一：试图一口气做完所有事。** Agent 倾向于 one-shot 整个应用。这经常导致模型在实现过程中耗尽上下文，留下一个半完成、未文档化的功能。下一个 session 的 agent 只能猜测之前发生了什么，花大量时间试图让基础应用重新运行。即使有 compaction，它也不总是能向下一个 agent 传递足够清晰的指令。
+Claude 的失败表现为两种模式。第一种：agent 倾向于一次做太多事——本质上是试图一次性完成整个应用。这经常导致模型在实现过程中耗尽 context，让下一个 session 面对一个半完成、没有文档的功能。新 agent 不得不猜测之前发生了什么，花大量时间让基础应用重新跑起来。即使有 compaction 也会出现这个问题，因为 compaction 并不总能把完全清晰的指令传递给下一个 agent。
 
-**模式二：过早宣布完成。** 在一些功能已经构建之后，后续的 agent 实例会环顾四周，看到已有进展，然后宣布任务完成。
+第二种失败模式通常出现在项目后期。当一些功能已经构建完成后，后续的 agent 实例会环顾四周，看到已经有了进展，然后宣布任务完成。
+
+这把问题分解为两部分。首先，我们需要搭建一个初始环境，为 prompt 要求的*所有*功能奠定基础，引导 agent 逐步、逐功能地工作。其次，我们应该提示每个 agent 朝目标做增量进展，同时在 session 结束时让环境保持干净状态。所谓"干净状态"，指的是适合合并到 main 分支的代码：没有重大 bug，代码有序且文档完善，开发者可以直接开始新功能而不需要先清理别人留下的烂摊子。
+
+在内部实验中，我们用一个两部分方案解决了这些问题：
+
+1. **Initializer agent**：第一个 agent session 使用专门的 prompt，要求模型搭建初始环境：一个 `init.sh` 脚本、一个记录 agent 工作日志的 `claude-progress.txt` 文件，以及一个展示新增文件的初始 git commit。
+2. **Coding agent**：后续每个 session 要求模型做增量进展，然后留下结构化的更新记录。^1
+
+这里的**关键洞察**是找到一种方式，让 agent 在启动新的 context window 时能快速理解工作状态——通过 `claude-progress.txt` 文件配合 git 历史来实现。这些实践的灵感来自于观察高效软件工程师每天在做什么。
 
 ---
 
 ## 环境管理
 
-### Feature List（功能清单）
+在更新后的 [Claude 4 prompting guide](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices#multi-context-window-workflows) 中，我们分享了多 context window 工作流的最佳实践，包括一种"第一个 context window 使用不同 prompt"的 harness 结构。这个"不同的 prompt"要求 initializer agent 搭建好环境，提供未来 coding agent 高效工作所需的所有上下文。下面我们深入介绍这种环境的几个关键组件。
 
-为了解决 agent 一口气做完或过早宣布完成的问题，initializer agent 被提示编写一个全面的功能需求文件，扩展用户的初始 prompt。在 claude.ai 克隆的例子中，这意味着超过 200 个功能点，例如"用户可以打开新聊天、输入查询、按回车、看到 AI 响应"。
+### Feature list（功能清单）
 
-这些功能最初全部标记为 `"passes": false`，这样后续的 coding agent 就有一个清晰的完整功能蓝图。
+为了解决 agent 试图一次性完成应用或过早宣布项目完成的问题，我们提示 initializer agent 编写一份全面的功能需求文件，对用户的初始 prompt 进行展开。在 claude.ai 克隆的例子中，这意味着超过 200 个功能，比如"用户可以打开新对话、输入查询、按回车、看到 AI 回复"。这些功能最初全部标记为"failing"，这样后续的 coding agent 就能清楚地看到完整功能的全貌。
 
 ```json
 {
-  "category": "functional",
-  "description": "New chat button creates a fresh conversation",
-  "steps": [
-    "Navigate to main interface",
-    "Click the 'New Chat' button",
-    "Verify a new conversation is created",
-    "Check that chat area shows welcome state",
-    "Verify conversation appears in sidebar"
-  ],
-  "passes": false
+    "category": "functional",
+    "description": "New chat button creates a fresh conversation",
+    "steps": [
+      "Navigate to main interface",
+      "Click the 'New Chat' button",
+      "Verify a new conversation is created",
+      "Check that chat area shows welcome state",
+      "Verify conversation appears in sidebar"
+    ],
+    "passes": false
 }
 ```
 
-关键设计决策：
+我们提示 coding agent 只能通过修改 `passes` 字段的状态来编辑这个文件，并使用强硬措辞的指令，比如"删除或编辑测试是不可接受的，因为这可能导致功能缺失或 bug"。经过一些实验，我们最终选择了 JSON 格式，因为模型不太容易不当地修改或覆盖 JSON 文件（相比 Markdown 文件）。
 
-- Coding agent 只能修改 `passes` 字段的状态
-- 使用强措辞指令："删除或编辑测试是不可接受的，因为这可能导致功能缺失或 bug"
-- 选择 JSON 而非 Markdown——模型不太容易不当修改 JSON 文件
+### Incremental progress（增量进展）
 
----
+有了这个初始环境脚手架，coding agent 的下一轮迭代被要求每次只做一个功能。这种增量方式对于解决 agent 一次做太多事的倾向至关重要。
 
-## 增量进展
+在增量工作的基础上，模型在每次代码变更后让环境保持干净状态仍然很关键。在实验中，我们发现引导这种行为的最佳方式是要求模型用描述性的 commit message 将进展提交到 git，并在 progress 文件中写下进展摘要。这让模型可以用 git revert 回退坏的代码变更，恢复到代码库的正常状态。
 
-有了初始环境脚手架后，coding agent 被要求**一次只做一个功能**。这种增量方式对于解决 agent 试图一次做太多事的倾向至关重要。
+这些方法也提高了效率，因为 agent 不再需要猜测之前发生了什么、花时间让基础应用重新跑起来。
 
-增量工作时，模型还必须在每次代码修改后将环境留在干净状态。实验发现，最好的方式是要求模型：
+### Testing（测试）
 
-- **提交 git commit**，附带描述性的 commit message
-- **在 progress 文件中写入进展摘要**
+我们观察到的最后一个主要失败模式是 Claude 倾向于在没有充分测试的情况下就标记功能为完成。如果没有明确提示，Claude 会做代码变更，甚至用单元测试或 `curl` 命令对开发服务器做测试，但无法识别功能在端到端层面并不工作。
 
-这让模型可以用 git 回滚坏的代码修改，恢复到代码库的工作状态。这些方法也提高了效率——消除了 agent 猜测之前发生了什么、花时间让应用重新运行的需要。
+在构建 web 应用的场景中，一旦明确提示 Claude 使用浏览器自动化工具、像人类用户一样做所有测试，它在端到端验证方面表现就很好。
 
----
+![](images/fig_02.gif)
+*Claude 通过 Puppeteer MCP server 截取的 claude.ai 克隆测试截图。*
 
-## 测试
+给 Claude 提供这类测试工具显著提升了性能，因为 agent 能够发现并修复仅从代码层面看不出来的 bug。
 
-另一个主要失败模式：Claude 倾向于在没有充分测试的情况下将功能标记为完成。没有明确提示时，Claude 会做代码修改，甚至用单元测试或 curl 命令测试开发服务器，但无法识别功能端到端不工作。
-
-**解决方案：提供浏览器自动化工具。** 在构建 web 应用的场景中，明确提示 Claude 使用浏览器自动化工具（如 Puppeteer MCP）并像人类用户一样测试，显著提高了性能。Agent 能够识别和修复仅从代码中看不出来的 bug。
-
-仍有局限：Claude 的视觉能力和浏览器自动化工具的限制使得某些 bug 难以发现。例如，Claude 无法通过 Puppeteer MCP 看到浏览器原生的 alert 弹窗，依赖这些弹窗的功能往往更容易出 bug。
+一些问题仍然存在，比如 Claude 的视觉能力和浏览器自动化工具的局限性使得某些类型的 bug 难以发现。例如，Claude 无法通过 Puppeteer MCP 看到浏览器原生的 alert 弹窗，依赖这些弹窗的功能因此更容易出 bug。
 
 ---
 
-## 每次启动的标准流程
+## 快速进入状态
 
-有了上述所有机制后，每个 coding agent 被提示在开始时执行一系列步骤：
+有了以上所有机制，每个 coding agent 被提示在开始时执行一系列步骤来了解当前状况，有些很基础但仍然有帮助：
 
-1. 运行 `pwd` 查看工作目录
-2. 读取 git log 和 progress 文件，了解最近的工作
-3. 读取 feature list 文件，选择优先级最高的未完成功能开始工作
+1. *运行 `pwd` 查看你的工作目录。你只能编辑这个目录中的文件。*
+2. *阅读 git 日志和 progress 文件，了解最近做了什么。*
+3. *阅读 features list 文件，选择优先级最高的未完成功能开始工作。*
 
-还要求 initializer agent 编写一个 `init.sh` 脚本来运行开发服务器，然后在实现新功能之前先跑一个基本的端到端测试。
+这种方式为 Claude 在每个 session 中节省了一些 token，因为它不需要自己摸索如何测试代码。让 initializer agent 写一个能启动开发服务器的 `init.sh` 脚本也很有帮助，这样可以在实现新功能之前先跑一个基本的端到端测试。
 
-在 claude.ai 克隆的例子中，agent 总是先启动本地开发服务器，用 Puppeteer MCP 开始新聊天、发送消息、接收响应。这确保 Claude 能快速识别应用是否处于损坏状态，并立即修复现有 bug。如果 agent 直接开始实现新功能，可能会让问题更严重。
+在 claude.ai 克隆的例子中，这意味着 agent 总是先启动本地开发服务器，用 Puppeteer MCP 开一个新对话、发送消息、接收回复。这确保了 Claude 能快速发现应用是否处于损坏状态，并立即修复现有 bug。如果 agent 直接开始实现新功能，很可能会让问题更严重。
 
-典型 session 开头的 assistant 消息：
+一个典型 session 的开头是这样的：
 
 ```
 [Assistant] I'll start by getting my bearings and understanding the current state of the project.
@@ -138,33 +128,43 @@ Claude 的失败表现为两种模式：
 [Tool Use] <bash - git log --oneline -20>
 [Assistant] Now let me check if there's an init.sh script to restart the servers.
 <Starts the development server>
-[Assistant] Excellent! Now let me navigate to the application and verify fundamental features are still working.
+[Assistant] Excellent! Now let me navigate to the application and verify that some fundamental features are still working.
 <Tests basic functionality>
-[Assistant] Based on my verification testing, fundamental functionality is working well. Now let me review the tests.json file to understand what needs to be implemented next.
+[Assistant] Based on my verification testing, I can see that the fundamental functionality is working well. The core chat features, theme switching, conversation loading, and error handling are all functioning correctly. Now let me review the tests.json file more comprehensively to understand what needs to be implemented next.
 <Starts work on a new feature>
 ```
 
 ---
 
-## 失败模式与解决方案总结
+**Agent 失败模式与解决方案**
 
 | 问题 | Initializer Agent 行为 | Coding Agent 行为 |
 |------|----------------------|------------------|
-| Agent 过早宣布整个项目完成 | 设置 feature list 文件：基于输入 spec，建立结构化 JSON 文件，包含端到端功能描述列表 | 在 session 开始时读取 feature list，选择单个功能开始工作 |
-| Agent 留下有 bug 或未文档化进展的环境 | 初始化 git 仓库和 progress notes 文件 | Session 开始时读取 progress notes 和 git commit log，对开发服务器运行基本测试。Session 结束时写 git commit 和 progress 更新 |
-| Agent 过早标记功能为完成 | 设置 feature list 文件 | 自我验证所有功能。只有在仔细测试后才将功能标记为 "passing" |
-| Agent 需要花时间弄清如何运行应用 | 编写 `init.sh` 脚本来运行开发服务器 | Session 开始时读取 `init.sh` |
+| Claude 过早宣布整个项目完成 | 搭建 feature list 文件：基于输入规格，建立一个结构化 JSON 文件，列出端到端功能描述 | 在 session 开始时读取 feature list 文件，选择单个功能开始工作 |
+| Claude 留下带 bug 或未记录进展的环境 | 写入初始 git 仓库和 progress notes 文件 | 在 session 开始时读取 progress notes 文件和 git commit 日志，对开发服务器跑基本测试以捕获未记录的 bug。在 session 结束时写 git commit 和 progress 更新 |
+| Claude 过早标记功能为完成 | 搭建 feature list 文件 | 自行验证所有功能。只有在仔细测试后才标记功能为"passing" |
+| Claude 需要花时间弄清楚如何运行应用 | 写一个能启动开发服务器的 `init.sh` 脚本 | 在 session 开始时读取 `init.sh` |
+
+*总结长时间运行 AI agent 的四种常见失败模式及解决方案。*
 
 ---
 
-## 未来方向
+## 未来工作
 
-这项研究展示了长时间运行 agent harness 中的一组可能解决方案。但仍有开放问题：
+这项研究展示了长时间运行 agent harness 中的一组可能方案，让模型能够跨多个 context window 做增量进展。然而，仍有一些开放问题。
 
-- **单 agent vs 多 agent**：目前不清楚单一通用 coding agent 在跨上下文中表现最好，还是多 agent 架构能实现更好的性能。专门化的 agent（如测试 agent、QA agent、代码清理 agent）可能在软件开发生命周期的子任务上做得更好。
+最值得关注的是：单一的通用 coding agent 在跨 context 场景下是否表现最好，还是通过 multi-agent 架构能获得更好的性能？专门化的 agent——比如测试 agent、QA agent 或代码清理 agent——在软件开发生命周期的子任务上可能做得更好，这似乎是合理的。
 
-- **领域泛化**：这个 demo 针对全栈 web 应用开发优化。未来方向是将这些发现推广到其他领域——科学研究、金融建模等长时间运行的 agentic 任务可能也适用这些经验。
+此外，这个 demo 针对全栈 web 应用开发做了优化。未来的方向是将这些发现推广到其他领域。这些经验中的部分或全部很可能适用于其他类型的长时间运行 agentic 任务，比如科学研究或金融建模。
 
 ---
 
-**关键 takeaway：** 让 agent 快速理解工作状态是核心洞察。通过 `claude-progress.txt` 文件配合 git 历史实现这一点。这些实践的灵感来自于了解高效软件工程师每天在做什么。
+### 致谢
+
+作者：Justin Young。特别感谢 David Hershey、Prithvi Rajasakeran、Jeremy Hadfield、Naia Bouscal、Michael Tingley、Jesse Mu、Jake Eaton、Marius Buleandara、Maggie Vo、Pedram Navid、Nadine Yasser 和 Alex Notov 的贡献。
+
+这项工作反映了 Anthropic 多个团队的集体努力，他们让 Claude 能够安全地进行长周期自主软件工程，特别是 code RL 和 Claude Code 团队。有兴趣贡献的候选人欢迎在 [anthropic.com/careers](http://anthropic.com/careers) 申请。
+
+---
+
+^1 我们在这里称它们为不同的 agent，仅仅是因为它们有不同的初始 user prompt。system prompt、工具集和整体 agent harness 在其他方面完全相同。

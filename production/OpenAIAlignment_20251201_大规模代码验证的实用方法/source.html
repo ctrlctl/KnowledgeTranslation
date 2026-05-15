@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="We train and deploy an AI review agent optimised for precision and real-world use, enabling oversight to scale with autonomous code generation." />
+  <meta name="citation_title" content="A Practical Approach to Verifying Code at Scale" />
+  <meta name="citation_author" content="Maja Trębacz" />
+  <meta name="citation_author" content="Sam Arnesen" />
+  <meta name="citation_author" content="Albin Cassirer" />
+  <meta name="citation_author" content="Max Johnson" />
+  <meta name="citation_author" content="Xin Lin" />
+  <meta name="citation_author" content="Thibault Sottiaux" />
+  <meta name="citation_publication_date" content="2025/12/01" />
+  <meta name="citation_technical_report_institution" content="OpenAI" />
+  <meta name="citation_abstract" content="We train and deploy an AI review agent optimised for precision and real-world use, enabling oversight to scale with autonomous code generation." />
+  
+  <title>A Practical Approach to Verifying Code at Scale</title>
+
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="alternate" type="application/rss+xml" title="OpenAI Alignment Research Blog RSS" href="/rss.xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <script>
+    window.va =
+      window.va ||
+      function () {
+        (window.vaq = window.vaq || []).push(arguments);
+      };
+  </script>
+  <script defer data-domain="alignment.openai.com" src="/_vercel/insights/script.js"></script>
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]] },
+      options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"] },
+    };
+  </script>
+  <script src="../assets/mathjax-config.js"></script>
+  <script defer="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="post-page">
+  <div class="content">
+
+    <a class="back" data-clean-url href="../">← Back to OpenAI Alignment Blog</a>
+
+    <h1>A Practical Approach to Verifying Code at Scale</h1>
+    <div class="meta">Dec 1, 2025 · Maja Trębacz, Sam Arnesen, Albin Cassirer, Max Johnson, Xin Lin, Thibault Sottiaux,<br>in collaboration with the rest of the Codex team</div>
+
+    <p>
+      As autonomous collaborative coding systems proliferate, the volume of produced code quickly exceeds the limits of
+      thorough human oversight. As this gap widens, so does the risk that AI written code introduces severe bugs and
+      vulnerabilities—whether accidentally or intentionally.
+    </p>
+
+    <p>
+      We cannot assume that code-generating systems are trustworthy or correct; we must check their work. Automated code
+      review is a practical output monitor that complements
+      <a href="https://openai.com/index/chain-of-thought-monitoring/" target="_blank" rel="noopener">chain-of-thought monitoring</a>,
+      action monitoring,
+      <a href="https://openai.com/index/emergent-misalignment/" target="_blank" rel="noopener">internal activation monitoring</a>,
+      <a href="https://openai.com/index/detecting-and-reducing-scheming-in-ai-models/" target="_blank" rel="noopener">behavioral testing</a>,
+      <a href="https://openai.com/index/how-confessions-can-keep-language-models-honest/" target="_blank" rel="noopener">honesty training</a> 
+      and other safety work as part of a 
+      <a href="https://openai.com/safety/how-we-think-about-safety-alignment/" target="_blank" rel="noopener">defense-in-depth</a> strategy.
+    </p>
+
+    <p>
+      In this post, we share what we learned from training a dedicated, agentic code reviewer as part of
+      <a href="https://openai.com/index/introducing-upgrades-to-codex/" target="_blank" rel="noopener">gpt-5-codex</a> and
+      <a href="https://openai.com/index/gpt-5-1-codex-max/" target="_blank" rel="noopener">gpt-5.1-codex-max</a><sup id="ref-1"><a href="#fn-1">[1]</a></sup>. We discuss how giving the reviewer repo-wide tools and execution
+      access improves both recall and precision, and how deployment-time considerations guide us toward high-signal
+      settings with minimal alignment tax. These ideas aren't theoretical: within OpenAI every PR is automatically
+      reviewed, many engineers run <a class="inline-command" href="https://developers.openai.com/codex/cli/features/#running-local-code-review" target="_blank" rel="noopener">/review</a> in the Codex CLI before pushing, and the model has protected high-value
+      experiments and caught launch-blocking issues.
+    </p>
+
+    <h2>Precision is more important for usability than recall</h2>
+
+    <p>
+      Defenses often fail not because they are technically wrong, but because they are so impractical that the user
+      chooses not to use them. A system that is slow, noisy, or cumbersome will be bypassed. When deploying the code
+      review agent, we explicitly accepted a measured tradeoff: modestly reduced recall in exchange for high signal
+      quality and developer trust. We optimize for signal-to-noise first, and only then push recall without compromising
+      reliability.
+    </p>
+
+    <p>
+      A code reviewer could aim to flag every possible issue present in the proposed code change. In practice, many
+      "issues" are false alarms or the result of misinterpreting user intentions. We want the expected benefit from
+      seeing a proposed bug finding to outweigh the expected cost to verify it and the damage from a false alarm. That
+      is, we want findings that maximize:
+    </p>
+
+    <p class="math">
+      $$ P(\text{correct}) \times C_{\text{saved}} - C_{\text{human verification}} - P(\text{incorrect}) \times C_{\text{false alarm}} $$
+    </p>
+
+    <p>
+      Comments that are technically correct but more of a stylistic nature may even incur negative utility (e.g., it may
+      not be worth pointing out a comment typo in a personal research notebook).
+    </p>
+
+    <p>
+      While we've made an opinionated guess about the right balance of precision and recall, we believe it's important to
+      allow this tradeoff and other guidelines to be steerable by the custom task instructions or package- or repo-level
+      <a href="http://agents.md" target="_blank" rel="noopener">AGENTS.md</a> specification.
+    </p>
+
+    <figure class="plot-figure">
+      <div class="plot-group">
+        <img
+          src="./figures/pareto_plot.svg"
+          alt="Precision-recall Pareto frontier for Codex reviewers"
+        />
+      </div>
+      <figcaption class="text-caption">
+        Figure 1. There is a tradeoff between spotting real bugs (recall) and avoiding commenting on spurious issues
+        (precision). We can steer the models with different developer guidelines, ranging from "only output the most
+        critical and certain breaking issues" to "share as many findings as possible." GPT-5.1-Codex simultaneously
+        improves both recall and precision over GPT-5 with special scaffolding and repository access.
+      </figcaption>
+    </figure>
+
+
+    <h2>Repo-wide tools and execution are necessary</h2>
+
+    <p>
+      Earlier research (e.g.,
+      <a href="https://openai.com/index/finding-gpt4s-mistakes-with-gpt-4/" target="_blank" rel="noopener">CriticGPT</a>,
+      June 2024) shaped our methods but was designed for simpler tasks and wasn't
+      suitable for deployment in practice. This reviewer adds reasoning, tool use, repo-scale context, and precision /
+      latency targets to clear the adoption bar. Most of the previous attempts at code review relied on providing just a
+      diff of the change to the model and optionally a brief surrounding context. This results in the fastest review
+      time. However, it often misses important context about the whole codebase and the interaction of the change with
+      its dependencies.
+    </p>
+
+    <p>
+      We evaluated providing repository access and code execution abilities to a GPT-5 model and found that it results in
+      a stronger reviewer, catching more critical issues and raising fewer false alarms. Dedicated training for code
+      review further improves the results.
+    </p>
+
+    <figure class="plot-figure">
+      <div class="plot-group bar-plot-row">
+        <div class="bar-plot">
+          <img
+            src="./figures/incorrect_comments_rate.svg"
+            alt="Incorrect comments across models"
+          />
+        </div>
+        <div class="bar-plot">
+          <img
+            src="./figures/high_impact_comments_rate.svg"
+            alt="High-impact comments across models"
+          />
+        </div>
+        <div class="bar-plot">
+          <img
+            src="./figures/total_comments_per_pr.svg"
+            alt="Comments per PR across models"
+          />
+        </div>
+      </div>
+      <figcaption class="text-caption">
+        Figure 2. Human evaluation of the code review performance on recent commits from popular open-source
+        repositories. GPT-5-Codex trained specifically for higher signal-to-noise ratio makes comments that are less
+        likely to be incorrect or unimportant, reserving user attention for critical issues. With a default prompt and
+        access only to the context of the PR diff, GPT-5 is able to identify numerous high impact comments but also
+        produces a high number of false alarms.
+      </figcaption>
+    </figure>
+
+
+    <h2>The reward model you train on is not exactly the reviewer you should ship</h2>
+
+    <p>
+      Verification at training time and human-facing review may appear similar, but they solve fundamentally different
+      problems and therefore require different designs. When training models for code generation, we rely on automated
+      checks to reduce errors at scale and prioritise catching as many potential mistakes as possible rather than
+      avoiding false alarms. It is acceptable for these reward models to be over-sensitive. These training-time checks can also
+      use extra information about the task, allowing them to enforce precise instruction-following without needing to
+      infer the developer's intent. Deployed code review has the inverse priorities. A reviewer must operate on
+      ambiguous, real-world code produced by humans or human-AI workflows, often with incomplete specifications and
+      evolving conventions. It must avoid over-asserting intent, remain robust across languages and domains, and, most
+      importantly, build user trust.
+    </p>
+
+    <p>
+      Using a single verifier for both settings risks failure in both. If a generator over-optimizes to please the reward
+      signal during training, it may learn behaviours that harm downstream review quality, such as overly cautious or
+      stylised outputs that frustrate users. We therefore view training context-aware reviewers as a separate task in
+      Codex training, designed for human workflows, and closely monitor its effectiveness at grading Codex generation
+      itself.
+    </p>
+
+    <h2>Verification can be cheaper than generation</h2>
+
+    <p>
+      We observe the automated code reviewer to be effective at identifying errors in both human and codex-generated PRs.
+      Codex code review makes comments on 36% of the PRs that were entirely generated by Codex cloud. Out of these
+      comments, 46% result in the author making a code change. This is compared to 53% on the comments on top of the
+      human-generated PRs.
+    </p>
+
+    <p>
+      We can exploit an inference-time gap between generation and verification. Generating a correct code change often
+      requires broad search and many tokens, while falsifying a proposed change usually needs only targeted hypothesis
+      generation and checks.
+    </p>
+
+    <p>
+      To further study the verification-generation gap with respect to inference budget, we run a controlled study where
+      we take previously human-verified comments from a previous generation of a strong code review model and sweep the
+      code reviewer inference budget. Even at a small fraction of the generator's token spend, the verifier catches a
+      large share of previously identified high-severity issues confirmed by the PR author, and the additional budget
+      mostly improves calibration and reduces false alarms. However, we also observe that the performance drops more
+      rapidly with thinking budget on reviewing model generated code compared to the human-written. This evaluation has
+      limits because the test set only includes issues humans have already identified. If the reviewer proposes new
+      insights when given more time, this evaluation cannot tell us whether those findings are correct without
+      additional human input.
+    </p>
+
+    <figure class="plot-figure">
+      <div class="plot-group bar-plot-row">
+        <div class="bar-plot">
+          <img
+            src="./figures/recall_on_known_bugs_on_codex_generated_code.svg"
+            alt="Recall on known bugs for Codex-generated code by budget"
+          />
+        </div>
+        <div class="bar-plot">
+          <img
+            src="./figures/recall_on_known_bugs_on_human_written_code.svg"
+            alt="Recall on known bugs for human-written code by budget"
+          />
+        </div>
+      </div>
+      <figcaption class="text-caption">
+        Figure 3. Recall of the automated reviewer (GPT-5.1-Codex) as a function of inference budget on Codex-generated (left)
+        and human-written (right) code, evaluated on a set of previously identified issues from the OpenAI codebase. Even at
+        lower budgets, the verifier recovers a substantial fraction of known issues, with consistently higher recovery on
+        human-written code, suggesting a potential distributional shift in verification difficulty.
+      </figcaption>
+    </figure>
+
+    <p>
+      Since Codex code generator and code reviewer are the same underlying model with different tasks, we expect their
+      raw intelligence to increase in parallel over time. We pay close attention to whether a genuine verification
+      advantage persists at inference time and whether the model learns to subtly game or avoid its own checks. There is
+      no clean direct measurement of this, so we rely on practical proxies and compare how often the reviewer surfaces
+      actionable issues on Codex-generated PRs versus human-written PRs, while acknowledging distribution bias. So far,
+      the reviewer remains similarly effective, suggesting that oversight is not being meaningfully weakened.
+    </p>
+
+    <h2>What we learn from deployment</h2>
+
+    <p>
+      Deploying the reviewer both internally and across external GitHub traffic has been crucial for turning a strong lab
+      prototype into a dependable safety layer under real engineering constraints. The code review model is now a core
+      part of OpenAI's engineering workflow. When the reviewer leaves a comment, authors address it with a code change in
+      52.7% of cases (often assisted by Codex) showing that the system consistently surfaces actionable issues. The
+      reviewer has already helped validate high-stakes experiments, prevented launch-blocking problems, and averted
+      multiple critical failures.
+    </p>
+
+    <p>
+      Over reliance is a serious risk. Teams could start treating a clean review as a guarantee of safety rather than as
+      one layer of defense. We want people to understand that the reviewer is a support tool, not a replacement for
+      careful judgment. Encouragingly, we've seen fewer cases where merged PRs later need bug-fix follow-up work, which
+      aligns with the reviewer helping reduce escaped defects rather than simply shifting effort around.
+    </p>
+
+    <p>
+      As of October 2025, the system handles more than 100k external PRs per day, alongside internal pre-PR checks
+      triggered via the <a class="inline-command" href="https://developers.openai.com/codex/cli/features/#running-local-code-review" target="_blank" rel="noopener">/review</a> CLI that often catch issues before they ever reach GitHub. Early signals of real-world
+      impact are promising, with over 80% of comment reactions being positive.
+    </p>
+
+    <p>
+      External deployment matters not just because it provides a widely accessible safety benefit, but because it tests
+      research assumptions under real-world distribution shift. It gives us outcome signals that offline grading simply
+      cannot, and helps ensure that improvements in the lab transfer to improvements in practice.
+    </p>
+
+    <h2>Conclusion</h2>
+
+    <p>
+      As autonomous code generation becomes part of everyday engineering, oversight has to be shaped around real
+      workflows. Safety requires adoption, so we optimize the reviewer for low safety tax and high precision, earning
+      user trust. Our results show that repo-aware reviewers with tool access can deliver reliable, high-signal feedback
+      without slowing teams down. This work is not about preparing for a distant future. Internal deployment has already
+      uncovered real production defects and exposed evaluation inconsistencies in our previous trusted datasets. We see a
+      rich next frontier in human-factors work on how reviewers and monitors should interact with developers, strengthen
+      workflows, and avoid brittle or adversarial dynamics. Maintaining human control sits at the core of our alignment
+      philosophy, and as models become stronger generators, their ability to verify, critique, and support human judgment
+      must scale with them. Training capable reviewers is one step toward keeping that balance.
+    </p>
+
+    <h3 id="footnotes">Footnotes</h3>
+    <ul class="footnote-list">
+      <li id="fn-1">
+        <span class="footnote-marker">[1]</span>
+        <span class="footnote-content">
+          The Codex "code generator" and "code reviewer" are the same model. But the training methods used to teach these
+          two skills differ.
+          <a href="#ref-1">↩</a>
+        </span>
+      </li>
+    </ul>
+
+    <div class="cta-banner">
+      <div class="cta-text">
+        <h3>Want to try Codex Code Review?</h3>
+        <p>
+          Use <a class="inline-command" href="https://developers.openai.com/codex/cli/features/#running-local-code-review" target="_blank" rel="noopener">/review</a>
+          in <a href="https://developers.openai.com/codex/cli/" target="_blank" rel="noopener">Codex CLI</a> or connect your
+          GitHub repo to Codex Cloud, then turn on
+          <a href="https://developers.openai.com/codex/cloud/code-review/" target="_blank" rel="noopener">Code Review</a>
+          in your Codex repository settings. Once enabled, Codex can auto-review PRs, or you can summon it anytime by
+          commenting "<span class="inline-command">@codex review</span>" on a pull request.
+        </p>
+      </div>
+      <div class="cta-video">
+        <div class="video-container">
+          <iframe src="https://www.youtube-nocookie.com/embed/HwbSWVg5Ln4" title="Codex Code Review overview" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <h2>BibTeX</h2>
+    <pre class="bibtex"><code>@misc{trebacz2025verifyingcodeatscale,
+  title = {A Practical Approach to Verifying Code at Scale},
+  author = {Trębacz, Maja and Arnesen, Sam and Cassirer, Albin and Johnson, Max and Lin, Xin and Sottiaux, Thibault},
+  year = {2025},
+  month = {Dec},
+  howpublished = {OpenAI Alignment Research Blog},
+  url = {https://alignment.openai.com/scaling-code-verification/}
+}</code></pre>
+  </div>
+
+  <script src="../assets/subscribe-embed.js" defer></script>
+</body>
+</html>
+

@@ -4,102 +4,101 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Agent 学习笔记</title>
 <style>
-body { font-family: -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 2em; background: #faf8f5; color: #2c2c2c; }
-h1 { font-size: 1.5em; }
-select { padding: 4px 8px; margin-right: 8px; }
-table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-th, td { text-align: left; padding: 8px; border-bottom: 1px solid #e0ddd8; }
-a { color: #a0220d; }
-.filters { margin: 1em 0; }
-tr.hidden { display: none; }
+body{font-family:"Noto Serif SC",Georgia,serif;max-width:52em;margin:0 auto;padding:2em;background:#faf8f5;color:#2c2c2c;line-height:1.8}
+h1{font-size:1.5em;margin-bottom:.5em}
+.filters{margin-bottom:1.5em;display:flex;flex-wrap:wrap;gap:.5em}
+.filters button{border:1px solid #ddd;background:#fff;padding:.3em .8em;border-radius:1em;cursor:pointer;font-size:.85em}
+.filters button.active{background:#2c2c2c;color:#fff;border-color:#2c2c2c}
+.card{padding:.8em 0;border-bottom:1px solid #eee}
+.card a{color:#a0220d;text-decoration:none;font-weight:500}
+.card a:hover{text-decoration:underline}
+.card .meta{font-size:.8em;color:#888;margin-top:.2em}
+.hidden{display:none}
+.stats{font-size:.85em;color:#666;margin-bottom:1em}
 </style>
 </head>
 <body>
-<h1>AI Agent 学习笔记索引</h1>
-<p>共 68 篇</p>
-<div class="filters">
-<select id="source-filter"><option value="">所有来源</option><option value="AnthropicEngineering">AnthropicEngineering</option><option value="AnthropicResearch">AnthropicResearch</option><option value="Dwarkesh">Dwarkesh</option><option value="LangChainBlog">LangChainBlog</option><option value="LexFridman">LexFridman</option><option value="LilianWengBlog">LilianWengBlog</option><option value="MLST">MLST</option><option value="NoPriors">NoPriors</option><option value="OpenAIAlignment">OpenAIAlignment</option><option value="OpenAIDevelopers">OpenAIDevelopers</option><option value="PracticalAI">PracticalAI</option><option value="SimonWillison">SimonWillison</option><option value="TWIML">TWIML</option></select>
-<select id="topic-filter"><option value="">所有主题</option><option value="Agents">Agents</option><option value="Coding">Coding</option><option value="Evaluation">Evaluation</option><option value="LLM Fundamentals">LLM Fundamentals</option><option value="Training">Training</option></select>
+<h1>AI Agent 学习笔记</h1>
+<p class="stats">68 篇文章</p>
+<div class="filters" id="sf"><strong>来源：</strong><button class="active" onclick="filter()">全部</button><button onclick="filter('AnthropicEngineering')">AnthropicEngineering</button><button onclick="filter('AnthropicResearch')">AnthropicResearch</button><button onclick="filter('Dwarkesh')">Dwarkesh</button><button onclick="filter('LangChainBlog')">LangChainBlog</button><button onclick="filter('LexFridman')">LexFridman</button><button onclick="filter('LilianWengBlog')">LilianWengBlog</button><button onclick="filter('MLST')">MLST</button><button onclick="filter('NoPriors')">NoPriors</button><button onclick="filter('OpenAIAlignment')">OpenAIAlignment</button><button onclick="filter('OpenAIDevelopers')">OpenAIDevelopers</button><button onclick="filter('PracticalAI')">PracticalAI</button><button onclick="filter('SimonWillison')">SimonWillison</button><button onclick="filter('TWIML')">TWIML</button></div>
+<div class="filters" id="tf"><strong>主题：</strong><button class="active" onclick="filterT()">全部</button><button onclick="filterT('Agents')">Agents</button><button onclick="filterT('Alignment & Safety')">Alignment & Safety</button><button onclick="filterT('Coding')">Coding</button><button onclick="filterT('Evaluation')">Evaluation</button><button onclick="filterT('Industry & Trends')">Industry & Trends</button><button onclick="filterT('Inference & Scaling')">Inference & Scaling</button><button onclick="filterT('Training')">Training</button></div>
+<div id="cards"><div class="card" data-source="MLST" data-topic="Inference & Scaling"><a href="MLST_20260528_如何构建AI推理系统.html">如何构建AI推理系统</a><div class="meta">MLST · 2026-05-28 · Inference & Scaling</div></div>
+<div class="card" data-source="Dwarkesh" data-topic="Training"><a href="Dwarkesh_20260510_LLM训练与推理背后的数学.html">LLM训练与推理背后的数学</a><div class="meta">Dwarkesh · 2026-05-10 · Training</div></div>
+<div class="card" data-source="LexFridman" data-topic="Industry & Trends"><a href="LexFridman_20260510_2026年AI现状.html">2026年AI现状</a><div class="meta">LexFridman · 2026-05-10 · Industry & Trends</div></div>
+<div class="card" data-source="LexFridman" data-topic="Agents"><a href="LexFridman_20260510_OpenClaw-病毒式传播的AI-Agent.html">OpenClaw 病毒式传播的AI Agent</a><div class="meta">LexFridman · 2026-05-10 · Agents</div></div>
+<div class="card" data-source="MLST" data-topic="Agents"><a href="MLST_20260510_AI-Trends-2026-OpenClaw-Agents.html">AI Trends 2026 OpenClaw Agents</a><div class="meta">MLST · 2026-05-10 · Agents</div></div>
+<div class="card" data-source="NoPriors" data-topic="Inference & Scaling"><a href="NoPriors_20260510_Baseten-CEO谈AI推理瓶颈.html">Baseten CEO谈AI推理瓶颈</a><div class="meta">NoPriors · 2026-05-10 · Inference & Scaling</div></div>
+<div class="card" data-source="NoPriors" data-topic="Agents"><a href="NoPriors_20260510_从程序员到管理者-Notion的Agentic转型.html">从程序员到管理者 Notion的Agentic转型</a><div class="meta">NoPriors · 2026-05-10 · Agents</div></div>
+<div class="card" data-source="PracticalAI" data-topic="Evaluation"><a href="PracticalAI_20260510_AI事故-审计与Benchmark的局限.html">AI事故 审计与Benchmark的局限</a><div class="meta">PracticalAI · 2026-05-10 · Evaluation</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260509_Agent开发生命周期.html">Agent开发生命周期</a><div class="meta">LangChainBlog · 2026-05-09 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260509_构建LangChain的GTM-Agent.html">构建LangChain的GTM Agent</a><div class="meta">LangChainBlog · 2026-05-09 · Agents</div></div>
+<div class="card" data-source="OpenAIDevelopers" data-topic="Industry & Trends"><a href="OpenAIDevelopers_20260509_从Prompt到产品-Responses-API一周年.html">从Prompt到产品 Responses API一周年</a><div class="meta">OpenAIDevelopers · 2026-05-09 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicResearch" data-topic="Agents"><a href="AnthropicResearch_20260508_教Claude为什么-减少Agentic错位.html">教Claude为什么 减少Agentic错位</a><div class="meta">AnthropicResearch · 2026-05-08 · Agents</div></div>
+<div class="card" data-source="SimonWillison" data-topic="Coding"><a href="SimonWillison_20260508_用Claude-Code-HTML的不合理有效性.html">用Claude Code HTML的不合理有效性</a><div class="meta">SimonWillison · 2026-05-08 · Coding</div></div>
+<div class="card" data-source="AnthropicResearch" data-topic="Alignment & Safety"><a href="AnthropicResearch_20260507_捐赠开源对齐工具Petri.html">捐赠开源对齐工具Petri</a><div class="meta">AnthropicResearch · 2026-05-07 · Alignment & Safety</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Training"><a href="OpenAIAlignment_20260507_调查RL中意外评分CoT的后果.html">调查RL中意外评分CoT的后果</a><div class="meta">OpenAIAlignment · 2026-05-07 · Training</div></div>
+<div class="card" data-source="SimonWillison" data-topic="Agents"><a href="SimonWillison_20260506_Vibe-Coding与Agentic-Engineering正在趋同.html">Vibe Coding与Agentic Engineering正在趋同</a><div class="meta">SimonWillison · 2026-05-06 · Agents</div></div>
+<div class="card" data-source="NoPriors" data-topic="Agents"><a href="NoPriors_20260505_Karpathy谈Code-Agent与AutoResearch.html">Karpathy谈Code Agent与AutoResearch</a><div class="meta">NoPriors · 2026-05-05 · Agents</div></div>
+<div class="card" data-source="TWIML" data-topic="Agents"><a href="TWIML_20260503_如何发现Eval遗漏的Agent失败.html">如何发现Eval遗漏的Agent失败</a><div class="meta">TWIML · 2026-05-03 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260502_用深度Agent构建公司尽调系统.html">用深度Agent构建公司尽调系统</a><div class="meta">LangChainBlog · 2026-05-02 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260430_为不同模型调优深度Agent.html">为不同模型调优深度Agent</a><div class="meta">LangChainBlog · 2026-04-30 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Agents"><a href="OpenAIAlignment_20260430_无需同步人类监督的Agent行为自动审查.html">无需同步人类监督的Agent行为自动审查</a><div class="meta">OpenAIAlignment · 2026-04-30 · Agents</div></div>
+<div class="card" data-source="OpenAIDevelopers" data-topic="Industry & Trends"><a href="OpenAIDevelopers_20260430_用Skills加速开源维护.html">用Skills加速开源维护</a><div class="meta">OpenAIDevelopers · 2026-04-30 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Coding"><a href="AnthropicEngineering_20260423_近期Claude-Code质量问题更新.html">近期Claude Code质量问题更新</a><div class="meta">AnthropicEngineering · 2026-04-23 · Coding</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Evaluation"><a href="OpenAIAlignment_20260423_开源可监控性评估.html">开源可监控性评估</a><div class="meta">OpenAIAlignment · 2026-04-23 · Evaluation</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260420_生产级Deep-Agent背后的运行时.html">生产级Deep Agent背后的运行时</a><div class="meta">LangChainBlog · 2026-04-20 · Agents</div></div>
+<div class="card" data-source="MLST" data-topic="Agents"><a href="MLST_20260417_Capital-One如何交付Multi-Agent系统.html">Capital One如何交付Multi Agent系统</a><div class="meta">MLST · 2026-04-17 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260416_在后台运行Subagent.html">在后台运行Subagent</a><div class="meta">LangChainBlog · 2026-04-16 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Industry & Trends"><a href="LangChainBlog_20260415_让文档自己测试自己.html">让文档自己测试自己</a><div class="meta">LangChainBlog · 2026-04-15 · Industry & Trends</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260411_你的Harness就是你的记忆.html">你的Harness就是你的记忆</a><div class="meta">LangChainBlog · 2026-04-11 · Agents</div></div>
+<div class="card" data-source="AnthropicResearch" data-topic="Agents"><a href="AnthropicResearch_20260409_可信赖Agent的实践.html">可信赖Agent的实践</a><div class="meta">AnthropicResearch · 2026-04-09 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260409_Agent改进循环中的人类判断.html">Agent改进循环中的人类判断</a><div class="meta">LangChainBlog · 2026-04-09 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20260408_解耦大脑与双手-扩展托管Agent.html">解耦大脑与双手 扩展托管Agent</a><div class="meta">AnthropicEngineering · 2026-04-08 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习.html">Agent可观测性需要反馈来驱动学习</a><div class="meta">LangChainBlog · 2026-04-01 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Alignment & Safety"><a href="OpenAIAlignment_20260327_对齐中训练能泛化多远.html">对齐中训练能泛化多远</a><div class="meta">OpenAIAlignment · 2026-03-27 · Alignment & Safety</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Coding"><a href="AnthropicEngineering_20260325_Claude-Code-Auto-Mode更安全地跳过权限.html">Claude Code Auto Mode更安全地跳过权限</a><div class="meta">AnthropicEngineering · 2026-03-25 · Coding</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20260324_长时间运行应用开发的Harness设计.html">长时间运行应用开发的Harness设计</a><div class="meta">AnthropicEngineering · 2026-03-24 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Agents"><a href="OpenAIAlignment_20260321_训练Agent自我报告不当行为.html">训练Agent自我报告不当行为</a><div class="meta">OpenAIAlignment · 2026-03-21 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Evaluation"><a href="OpenAIAlignment_20260316_Metagaming对训练评估和监督的影响.html">Metagaming对训练评估和监督的影响</a><div class="meta">OpenAIAlignment · 2026-03-16 · Evaluation</div></div>
+<div class="card" data-source="MLST" data-topic="Agents"><a href="MLST_20260311_Agent-Swarm与知识图谱驱动自主软件开发.html">Agent Swarm与知识图谱驱动自主软件开发</a><div class="meta">MLST · 2026-03-11 · Agents</div></div>
+<div class="card" data-source="LangChainBlog" data-topic="Agents"><a href="LangChainBlog_20260310_Agent-Harness解剖学.html">Agent Harness解剖学</a><div class="meta">LangChainBlog · 2026-03-10 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Evaluation"><a href="AnthropicEngineering_20260306_Eval意识-Claude-Opus-4.6的BrowseComp表现.html">Eval意识 Claude Opus 4.6的BrowseComp表现</a><div class="meta">AnthropicEngineering · 2026-03-06 · Evaluation</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Agents"><a href="OpenAIAlignment_20260301_如何监控内部编码Agent的错位.html">如何监控内部编码Agent的错位</a><div class="meta">OpenAIAlignment · 2026-03-01 · Agents</div></div>
+<div class="card" data-source="OpenAIDevelopers" data-topic="Agents"><a href="OpenAIDevelopers_20260301_用Eval系统化测试Agent技能.html">用Eval系统化测试Agent技能</a><div class="meta">OpenAIDevelopers · 2026-03-01 · Agents</div></div>
+<div class="card" data-source="OpenAIDevelopers" data-topic="Coding"><a href="OpenAIDevelopers_20260223_用Codex运行长周期任务.html">用Codex运行长周期任务</a><div class="meta">OpenAIDevelopers · 2026-02-23 · Coding</div></div>
+<div class="card" data-source="OpenAIDevelopers" data-topic="Agents"><a href="OpenAIDevelopers_20260211_Shell-Skills-Compaction长时间运行Agent技巧.html">Shell Skills Compaction长时间运行Agent技巧</a><div class="meta">OpenAIDevelopers · 2026-02-11 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Alignment & Safety"><a href="OpenAIAlignment_20260206_发现真实使用中的未知AI错位.html">发现真实使用中的未知AI错位</a><div class="meta">OpenAIAlignment · 2026-02-06 · Alignment & Safety</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Industry & Trends"><a href="AnthropicEngineering_20260205_用并行Claude团队构建C编译器.html">用并行Claude团队构建C编译器</a><div class="meta">AnthropicEngineering · 2026-02-05 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20260205_量化Agentic编码评估中的基础设施噪声.html">量化Agentic编码评估中的基础设施噪声</a><div class="meta">AnthropicEngineering · 2026-02-05 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Evaluation"><a href="AnthropicEngineering_20260121_设计AI无法攻破的技术评估.html">设计AI无法攻破的技术评估</a><div class="meta">AnthropicEngineering · 2026-01-21 · Evaluation</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20260109_揭秘AI-Agent评估.html">揭秘AI Agent评估</a><div class="meta">AnthropicEngineering · 2026-01-09 · Agents</div></div>
+<div class="card" data-source="MLST" data-topic="Agents"><a href="MLST_20251218_重新思考Agentic-AI的预训练.html">重新思考Agentic AI的预训练</a><div class="meta">MLST · 2025-12-18 · Agents</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Evaluation"><a href="OpenAIAlignment_20251218_绕过Eval意识与预测错位.html">绕过Eval意识与预测错位</a><div class="meta">OpenAIAlignment · 2025-12-18 · Evaluation</div></div>
+<div class="card" data-source="OpenAIAlignment" data-topic="Coding"><a href="OpenAIAlignment_20251201_大规模代码验证的实用方法.html">大规模代码验证的实用方法</a><div class="meta">OpenAIAlignment · 2025-12-01 · Coding</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20251126_长时间运行Agent的有效Harness.html">长时间运行Agent的有效Harness</a><div class="meta">AnthropicEngineering · 2025-11-26 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Industry & Trends"><a href="AnthropicEngineering_20251124_Claude开发者平台的高级工具使用.html">Claude开发者平台的高级工具使用</a><div class="meta">AnthropicEngineering · 2025-11-24 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20251104_用MCP实现代码执行-构建更高效的Agent.html">用MCP实现代码执行 构建更高效的Agent</a><div class="meta">AnthropicEngineering · 2025-11-04 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Coding"><a href="AnthropicEngineering_20251020_超越权限弹窗-让Claude-Code更安全更自主.html">超越权限弹窗 让Claude Code更安全更自主</a><div class="meta">AnthropicEngineering · 2025-10-20 · Coding</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20251016_用Agent-Skills装备Agent应对真实世界.html">用Agent Skills装备Agent应对真实世界</a><div class="meta">AnthropicEngineering · 2025-10-16 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20250929_AI-Agent的有效上下文工程.html">AI Agent的有效上下文工程</a><div class="meta">AnthropicEngineering · 2025-09-29 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20250929_Claude-Code-Agentic编码最佳实践.html">Claude Code Agentic编码最佳实践</a><div class="meta">AnthropicEngineering · 2025-09-29 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Industry & Trends"><a href="AnthropicEngineering_20250917_三个近期问题的事后分析.html">三个近期问题的事后分析</a><div class="meta">AnthropicEngineering · 2025-09-17 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20250911_用Agent为Agent编写有效工具.html">用Agent为Agent编写有效工具</a><div class="meta">AnthropicEngineering · 2025-09-11 · Agents</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20250613_构建Multi-Agent研究系统.html">构建Multi Agent研究系统</a><div class="meta">AnthropicEngineering · 2025-06-13 · Agents</div></div>
+<div class="card" data-source="LilianWengBlog" data-topic="Industry & Trends"><a href="LilianWengBlog_20250501_我们为什么思考.html">我们为什么思考</a><div class="meta">LilianWengBlog · 2025-05-01 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Industry & Trends"><a href="AnthropicEngineering_20250320_Think工具-让Claude在复杂工具使用中停下来思考.html">Think工具 让Claude在复杂工具使用中停下来思考</a><div class="meta">AnthropicEngineering · 2025-03-20 · Industry & Trends</div></div>
+<div class="card" data-source="AnthropicEngineering" data-topic="Agents"><a href="AnthropicEngineering_20241219_构建有效的Agent.html">构建有效的Agent</a><div class="meta">AnthropicEngineering · 2024-12-19 · Agents</div></div>
+<div class="card" data-source="LilianWengBlog" data-topic="Industry & Trends"><a href="LilianWengBlog_20240707_LLM的外在幻觉.html">LLM的外在幻觉</a><div class="meta">LilianWengBlog · 2024-07-07 · Industry & Trends</div></div>
+<div class="card" data-source="LilianWengBlog" data-topic="Agents"><a href="LilianWengBlog_20230623_LLM驱动的自主Agent.html">LLM驱动的自主Agent</a><div class="meta">LilianWengBlog · 2023-06-23 · Agents</div></div>
 </div>
-<table><thead><tr><th>标题</th><th>来源</th><th>日期</th><th>主题</th></tr></thead>
-<tbody><tr data-source="MLST" data-topic="Agents"><td><a href="MLST_20260528_如何构建AI推理系统.html">如何构建AI推理系统</a></td><td>MLST</td><td>2026-05-28</td><td>Agents</td></tr>
-<tr data-source="Dwarkesh" data-topic="Agents"><td><a href="Dwarkesh_20260510_LLM训练与推理背后的数学.html">LLM训练与推理背后的数学</a></td><td>Dwarkesh</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="LexFridman" data-topic="Agents"><td><a href="LexFridman_20260510_2026年AI现状.html">2026年AI现状</a></td><td>LexFridman</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="LexFridman" data-topic="Agents"><td><a href="LexFridman_20260510_OpenClaw-病毒式传播的AI-Agent.html">OpenClaw 病毒式传播的AI Agent</a></td><td>LexFridman</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="MLST" data-topic="Agents"><td><a href="MLST_20260510_AI-Trends-2026-OpenClaw-Agents.html">AI Trends 2026 OpenClaw Agents</a></td><td>MLST</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="NoPriors" data-topic="Agents"><td><a href="NoPriors_20260510_Baseten-CEO谈AI推理瓶颈.html">Baseten CEO谈AI推理瓶颈</a></td><td>NoPriors</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="NoPriors" data-topic="Agents"><td><a href="NoPriors_20260510_从程序员到管理者-Notion的Agentic转型.html">从程序员到管理者 Notion的Agentic转型</a></td><td>NoPriors</td><td>2026-05-10</td><td>Agents</td></tr>
-<tr data-source="PracticalAI" data-topic="Evaluation"><td><a href="PracticalAI_20260510_AI事故-审计与Benchmark的局限.html">AI事故 审计与Benchmark的局限</a></td><td>PracticalAI</td><td>2026-05-10</td><td>Evaluation</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260509_Agent开发生命周期.html">Agent开发生命周期</a></td><td>LangChainBlog</td><td>2026-05-09</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260509_构建LangChain的GTM-Agent.html">构建LangChain的GTM Agent</a></td><td>LangChainBlog</td><td>2026-05-09</td><td>Agents</td></tr>
-<tr data-source="OpenAIDevelopers" data-topic="LLM Fundamentals"><td><a href="OpenAIDevelopers_20260509_从Prompt到产品-Responses-API一周年.html">从Prompt到产品 Responses API一周年</a></td><td>OpenAIDevelopers</td><td>2026-05-09</td><td>LLM Fundamentals</td></tr>
-<tr data-source="AnthropicResearch" data-topic="Agents"><td><a href="AnthropicResearch_20260508_教Claude为什么-减少Agentic错位.html">教Claude为什么 减少Agentic错位</a></td><td>AnthropicResearch</td><td>2026-05-08</td><td>Agents</td></tr>
-<tr data-source="SimonWillison" data-topic="Coding"><td><a href="SimonWillison_20260508_用Claude-Code-HTML的不合理有效性.html">用Claude Code HTML的不合理有效性</a></td><td>SimonWillison</td><td>2026-05-08</td><td>Coding</td></tr>
-<tr data-source="AnthropicResearch" data-topic="Agents"><td><a href="AnthropicResearch_20260507_捐赠开源对齐工具Petri.html">捐赠开源对齐工具Petri</a></td><td>AnthropicResearch</td><td>2026-05-07</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Training"><td><a href="OpenAIAlignment_20260507_调查RL中意外评分CoT的后果.html">调查RL中意外评分CoT的后果</a></td><td>OpenAIAlignment</td><td>2026-05-07</td><td>Training</td></tr>
-<tr data-source="SimonWillison" data-topic="Agents"><td><a href="SimonWillison_20260506_Vibe-Coding与Agentic-Engineering正在趋同.html">Vibe Coding与Agentic Engineering正在趋同</a></td><td>SimonWillison</td><td>2026-05-06</td><td>Agents</td></tr>
-<tr data-source="NoPriors" data-topic="Agents"><td><a href="NoPriors_20260505_Karpathy谈Code-Agent与AutoResearch.html">Karpathy谈Code Agent与AutoResearch</a></td><td>NoPriors</td><td>2026-05-05</td><td>Agents</td></tr>
-<tr data-source="TWIML" data-topic="Agents"><td><a href="TWIML_20260503_如何发现Eval遗漏的Agent失败.html">如何发现Eval遗漏的Agent失败</a></td><td>TWIML</td><td>2026-05-03</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260502_用深度Agent构建公司尽调系统.html">用深度Agent构建公司尽调系统</a></td><td>LangChainBlog</td><td>2026-05-02</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260430_为不同模型调优深度Agent.html">为不同模型调优深度Agent</a></td><td>LangChainBlog</td><td>2026-04-30</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260430_无需同步人类监督的Agent行为自动审查.html">无需同步人类监督的Agent行为自动审查</a></td><td>OpenAIAlignment</td><td>2026-04-30</td><td>Agents</td></tr>
-<tr data-source="OpenAIDevelopers" data-topic="Agents"><td><a href="OpenAIDevelopers_20260430_用Skills加速开源维护.html">用Skills加速开源维护</a></td><td>OpenAIDevelopers</td><td>2026-04-30</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Coding"><td><a href="AnthropicEngineering_20260423_近期Claude-Code质量问题更新.html">近期Claude Code质量问题更新</a></td><td>AnthropicEngineering</td><td>2026-04-23</td><td>Coding</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260423_开源可监控性评估.html">开源可监控性评估</a></td><td>OpenAIAlignment</td><td>2026-04-23</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260420_生产级Deep-Agent背后的运行时.html">生产级Deep Agent背后的运行时</a></td><td>LangChainBlog</td><td>2026-04-20</td><td>Agents</td></tr>
-<tr data-source="MLST" data-topic="Agents"><td><a href="MLST_20260417_Capital-One如何交付Multi-Agent系统.html">Capital One如何交付Multi Agent系统</a></td><td>MLST</td><td>2026-04-17</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260416_在后台运行Subagent.html">在后台运行Subagent</a></td><td>LangChainBlog</td><td>2026-04-16</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260415_让文档自己测试自己.html">让文档自己测试自己</a></td><td>LangChainBlog</td><td>2026-04-15</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260411_你的Harness就是你的记忆.html">你的Harness就是你的记忆</a></td><td>LangChainBlog</td><td>2026-04-11</td><td>Agents</td></tr>
-<tr data-source="AnthropicResearch" data-topic="Agents"><td><a href="AnthropicResearch_20260409_可信赖Agent的实践.html">可信赖Agent的实践</a></td><td>AnthropicResearch</td><td>2026-04-09</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260409_Agent改进循环中的人类判断.html">Agent改进循环中的人类判断</a></td><td>LangChainBlog</td><td>2026-04-09</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260408_解耦大脑与双手-扩展托管Agent.html">解耦大脑与双手 扩展托管Agent</a></td><td>AnthropicEngineering</td><td>2026-04-08</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260401_Agent可观测性需要反馈来驱动学习.html">Agent可观测性需要反馈来驱动学习</a></td><td>LangChainBlog</td><td>2026-04-01</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260327_对齐中训练能泛化多远.html">对齐中训练能泛化多远</a></td><td>OpenAIAlignment</td><td>2026-03-27</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Coding"><td><a href="AnthropicEngineering_20260325_Claude-Code-Auto-Mode更安全地跳过权限.html">Claude Code Auto Mode更安全地跳过权限</a></td><td>AnthropicEngineering</td><td>2026-03-25</td><td>Coding</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260324_长时间运行应用开发的Harness设计.html">长时间运行应用开发的Harness设计</a></td><td>AnthropicEngineering</td><td>2026-03-24</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260321_训练Agent自我报告不当行为.html">训练Agent自我报告不当行为</a></td><td>OpenAIAlignment</td><td>2026-03-21</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260316_Metagaming对训练评估和监督的影响.html">Metagaming对训练评估和监督的影响</a></td><td>OpenAIAlignment</td><td>2026-03-16</td><td>Agents</td></tr>
-<tr data-source="MLST" data-topic="Agents"><td><a href="MLST_20260311_Agent-Swarm与知识图谱驱动自主软件开发.html">Agent Swarm与知识图谱驱动自主软件开发</a></td><td>MLST</td><td>2026-03-11</td><td>Agents</td></tr>
-<tr data-source="LangChainBlog" data-topic="Agents"><td><a href="LangChainBlog_20260310_Agent-Harness解剖学.html">Agent Harness解剖学</a></td><td>LangChainBlog</td><td>2026-03-10</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Evaluation"><td><a href="AnthropicEngineering_20260306_Eval意识-Claude-Opus-4.6的BrowseComp表现.html">Eval意识 Claude Opus 4.6的BrowseComp表现</a></td><td>AnthropicEngineering</td><td>2026-03-06</td><td>Evaluation</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260301_如何监控内部编码Agent的错位.html">如何监控内部编码Agent的错位</a></td><td>OpenAIAlignment</td><td>2026-03-01</td><td>Agents</td></tr>
-<tr data-source="OpenAIDevelopers" data-topic="Agents"><td><a href="OpenAIDevelopers_20260301_用Eval系统化测试Agent技能.html">用Eval系统化测试Agent技能</a></td><td>OpenAIDevelopers</td><td>2026-03-01</td><td>Agents</td></tr>
-<tr data-source="OpenAIDevelopers" data-topic="Coding"><td><a href="OpenAIDevelopers_20260223_用Codex运行长周期任务.html">用Codex运行长周期任务</a></td><td>OpenAIDevelopers</td><td>2026-02-23</td><td>Coding</td></tr>
-<tr data-source="OpenAIDevelopers" data-topic="Agents"><td><a href="OpenAIDevelopers_20260211_Shell-Skills-Compaction长时间运行Agent技巧.html">Shell Skills Compaction长时间运行Agent技巧</a></td><td>OpenAIDevelopers</td><td>2026-02-11</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20260206_发现真实使用中的未知AI错位.html">发现真实使用中的未知AI错位</a></td><td>OpenAIAlignment</td><td>2026-02-06</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260205_用并行Claude团队构建C编译器.html">用并行Claude团队构建C编译器</a></td><td>AnthropicEngineering</td><td>2026-02-05</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260205_量化Agentic编码评估中的基础设施噪声.html">量化Agentic编码评估中的基础设施噪声</a></td><td>AnthropicEngineering</td><td>2026-02-05</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260121_设计AI无法攻破的技术评估.html">设计AI无法攻破的技术评估</a></td><td>AnthropicEngineering</td><td>2026-01-21</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20260109_揭秘AI-Agent评估.html">揭秘AI Agent评估</a></td><td>AnthropicEngineering</td><td>2026-01-09</td><td>Agents</td></tr>
-<tr data-source="MLST" data-topic="Agents"><td><a href="MLST_20251218_重新思考Agentic-AI的预训练.html">重新思考Agentic AI的预训练</a></td><td>MLST</td><td>2025-12-18</td><td>Agents</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Evaluation"><td><a href="OpenAIAlignment_20251218_绕过Eval意识与预测错位.html">绕过Eval意识与预测错位</a></td><td>OpenAIAlignment</td><td>2025-12-18</td><td>Evaluation</td></tr>
-<tr data-source="OpenAIAlignment" data-topic="Agents"><td><a href="OpenAIAlignment_20251201_大规模代码验证的实用方法.html">大规模代码验证的实用方法</a></td><td>OpenAIAlignment</td><td>2025-12-01</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20251126_长时间运行Agent的有效Harness.html">长时间运行Agent的有效Harness</a></td><td>AnthropicEngineering</td><td>2025-11-26</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20251124_Claude开发者平台的高级工具使用.html">Claude开发者平台的高级工具使用</a></td><td>AnthropicEngineering</td><td>2025-11-24</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20251104_用MCP实现代码执行-构建更高效的Agent.html">用MCP实现代码执行 构建更高效的Agent</a></td><td>AnthropicEngineering</td><td>2025-11-04</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Coding"><td><a href="AnthropicEngineering_20251020_超越权限弹窗-让Claude-Code更安全更自主.html">超越权限弹窗 让Claude Code更安全更自主</a></td><td>AnthropicEngineering</td><td>2025-10-20</td><td>Coding</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20251016_用Agent-Skills装备Agent应对真实世界.html">用Agent Skills装备Agent应对真实世界</a></td><td>AnthropicEngineering</td><td>2025-10-16</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20250929_AI-Agent的有效上下文工程.html">AI Agent的有效上下文工程</a></td><td>AnthropicEngineering</td><td>2025-09-29</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20250929_Claude-Code-Agentic编码最佳实践.html">Claude Code Agentic编码最佳实践</a></td><td>AnthropicEngineering</td><td>2025-09-29</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20250917_三个近期问题的事后分析.html">三个近期问题的事后分析</a></td><td>AnthropicEngineering</td><td>2025-09-17</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20250911_用Agent为Agent编写有效工具.html">用Agent为Agent编写有效工具</a></td><td>AnthropicEngineering</td><td>2025-09-11</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20250613_构建Multi-Agent研究系统.html">构建Multi Agent研究系统</a></td><td>AnthropicEngineering</td><td>2025-06-13</td><td>Agents</td></tr>
-<tr data-source="LilianWengBlog" data-topic="Agents"><td><a href="LilianWengBlog_20250501_我们为什么思考.html">我们为什么思考</a></td><td>LilianWengBlog</td><td>2025-05-01</td><td>Agents</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="LLM Fundamentals"><td><a href="AnthropicEngineering_20250320_Think工具-让Claude在复杂工具使用中停下来思考.html">Think工具 让Claude在复杂工具使用中停下来思考</a></td><td>AnthropicEngineering</td><td>2025-03-20</td><td>LLM Fundamentals</td></tr>
-<tr data-source="AnthropicEngineering" data-topic="Agents"><td><a href="AnthropicEngineering_20241219_构建有效的Agent.html">构建有效的Agent</a></td><td>AnthropicEngineering</td><td>2024-12-19</td><td>Agents</td></tr>
-<tr data-source="LilianWengBlog" data-topic="Agents"><td><a href="LilianWengBlog_20240707_LLM的外在幻觉.html">LLM的外在幻觉</a></td><td>LilianWengBlog</td><td>2024-07-07</td><td>Agents</td></tr>
-<tr data-source="LilianWengBlog" data-topic="Agents"><td><a href="LilianWengBlog_20230623_LLM驱动的自主Agent.html">LLM驱动的自主Agent</a></td><td>LilianWengBlog</td><td>2023-06-23</td><td>Agents</td></tr>
-</tbody></table>
 <script>
-document.querySelectorAll("select").forEach(s => s.onchange = filter);
-function filter() {
-  const src = document.getElementById("source-filter").value;
-  const top = document.getElementById("topic-filter").value;
-  document.querySelectorAll("tbody tr").forEach(r => {
-    const show = (!src || r.dataset.source === src) && (!top || r.dataset.topic === top);
-    r.classList.toggle("hidden", !show);
-  });
-}
+let cs=null,ct=null;
+function filter(s){cs=s||null;upd();updBtn('sf',s)}
+function filterT(t){ct=t||null;upd();updBtn('tf',t)}
+function upd(){document.querySelectorAll('.card').forEach(c=>{
+  let show=(!cs||c.dataset.source===cs)&&(!ct||c.dataset.topic===ct);
+  c.classList.toggle('hidden',!show)})}
+function updBtn(id,v){document.querySelectorAll('#'+id+' button').forEach((b,i)=>{
+  b.classList.toggle('active',i===0?!v:b.textContent===v)})}
 </script>
 </body></html>

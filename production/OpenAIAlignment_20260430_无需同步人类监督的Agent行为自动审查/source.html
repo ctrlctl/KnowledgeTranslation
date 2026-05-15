@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Auto-review offers a safer default for deploying coding agents, using a separate agent to approve or deny boundary-crossing actions."
+  />
+  <meta name="citation_title" content="Auto-review of agent actions without synchronous human oversight" />
+  <meta name="citation_author" content="Maja Trębacz" />
+  <meta name="citation_author" content="Sam Arnesen" />
+  <meta name="citation_author" content="Ollie Matthews" />
+  <meta name="citation_author" content="Dylan Hurd" />
+  <meta name="citation_author" content="Won Park" />
+  <meta name="citation_author" content="Owen Lin" />
+  <meta name="citation_author" content="Joe Gershenson" />
+  <meta name="citation_publication_date" content="2026/04/30" />
+  <meta name="citation_technical_report_institution" content="OpenAI" />
+  <meta name="citation_abstract" content="Auto-review offers a safer default for deploying coding agents, using a separate agent to approve or deny boundary-crossing actions." />
+
+  <title>Auto-review of agent actions without synchronous human oversight</title>
+
+  <link rel="stylesheet" href="../assets/styles.css" />
+  <link rel="stylesheet" href="/auto-review/styles.css?v=heading-footnote-small" />
+  <link rel="alternate" type="application/rss+xml" title="OpenAI Alignment Research Blog RSS" href="/rss.xml" />
+  <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  <script>
+    window.va =
+      window.va ||
+      function () {
+        (window.vaq = window.vaq || []).push(arguments);
+      };
+  </script>
+  <script defer data-domain="alignment.openai.com" src="/_vercel/insights/script.js"></script>
+</head>
+
+<body class="post-page">
+  <div class="content">
+    <a class="back" data-clean-url href="../">&larr; Back to OpenAI Alignment Blog</a>
+
+    <h1>Auto-review of agent actions without synchronous human oversight</h1>
+    <div class="meta">Apr 30, 2026 &middot; Maja Trębacz, Sam Arnesen, Ollie Matthews, Dylan Hurd, Won Park, Owen Lin, Joe Gershenson</div>
+    <div class="subtitle">
+      Auto-review offers a safer default for deploying coding agents, using a separate agent to approve or deny boundary-crossing actions.
+    </div>
+
+    <div class="post-body">
+      <p>
+        Last week, we released <strong><a href="https://developers.openai.com/codex/concepts/sandboxing/auto-review" rel="noopener" target="_blank">Auto-review in Codex</a></strong>. Until now, users had two choices:
+        <strong>Default mode</strong>, which requires frequent human approval, and <strong>Full Access mode</strong>
+        which removes friction at the expense of oversight. Auto-review offers an alternative path. It replaces user
+        approval at the sandbox boundary with review by a separate agent. Internally, Auto-review increases our confidence
+        in running long agentic tasks without synchronous human oversight.
+      </p>
+
+      <p>
+        In Auto-review mode, Codex sessions stop for human approval roughly 200x less often than in manual approval mode,
+        while still catching many of the actions humans would want stopped. Most actions run without approval in the
+        sandbox. For the small fraction that need review, Auto-review approves around 99%. Even when Auto-review rejects
+        an action, Codex often recovers on its own by finding a safer way to make progress.
+      </p>
+
+      <p>
+        Auto-review performed well on our dangerous actions evaluations, giving us enough confidence to deploy it
+        internally. It is conservative enough for our security teams and unobtrusive enough for our research and deployment
+        workflows.
+      </p>
+
+      <p>
+        Today, a majority of Codex Desktop token usage within OpenAI comes from Auto-review mode, and that share is
+        growing, giving us increasing confidence in making it available more broadly.
+      </p>
+
+      <figure class="diagram-figure" aria-labelledby="deployment-snapshot-caption">
+        <svg
+          class="diagram-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 150 1693 650"
+          fill="none"
+          role="img"
+          aria-labelledby="diagram-title"
+        >
+          <title id="diagram-title">Illustrative deployment snapshot showing 10,000 actions, most inside the sandbox, and out-of-sandbox actions reviewed by Auto-review.</title>
+          <style>
+            @font-face {
+              font-family: "OpenAI Sans";
+              src: url("/auto-review/figures/OpenAISans-Regular.woff2") format("woff2");
+              font-weight: 400;
+              font-style: normal;
+            }
+            .diagram-svg text {
+              font-family: "OpenAI Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+              font-weight: 400;
+              user-select: text;
+            }
+          </style>
+          <rect width="1693" height="929" fill="#FFFFFF"/>
+
+          <path d="M238 355C298 354 318 299 365 239C391 207 421 187 456 184H1576L1629 285L1576 386H456C415 386 384 400 350 426C315 454 288 477 238 481Z" fill="#DEDEDE"/>
+          <path d="M238 469C288 474 316 500 348 526C377 550 405 565 445 565H818C846 565 858 574 870 591C858 608 846 626 818 626H445C404 626 374 608 347 584C315 557 288 527 238 522Z" fill="#DEDEDE"/>
+
+          <path d="M915 563C1012 563 1033 521 1091 499C1125 486 1164 485 1215 485H1588L1611 515L1588 545H1215C1164 545 1125 545 1091 558C1033 580 1012 624 915 624Z" fill="#ADBDAA"/>
+
+          <path d="M912 620C972 620 1015 634 1070 634H1300" stroke="#263036" stroke-width="6" stroke-linecap="round"/>
+          <path d="M1300 634C1334 634 1348 617 1394 617H1443" stroke="#5F7464" stroke-width="6" stroke-linecap="round"/>
+          <path d="M1443 617L1435 613M1443 617L1435 621" stroke="#5F7464" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M1300 634C1334 634 1346 702 1394 702H1440" stroke="#263036" stroke-width="6" stroke-linecap="round"/>
+          <path d="M1440 702L1432 698M1440 702L1432 706" stroke="#263036" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <rect x="34" y="319" width="204" height="256" rx="50" fill="#FFFFFF" stroke="#D8D8D8" stroke-width="3"/>
+          <circle cx="868" cy="596" r="54" fill="#FDFCFB" stroke="#D9D8D8" stroke-width="3"/>
+
+          <g transform="translate(838 566) scale(3)" color="#111111">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.06543 1.95123C9.66107 1.69076 10.3389 1.69071 10.9346 1.95123L15.9346 4.13873C16.7832 4.51008 17.3311 5.34917 17.3311 6.27545V10.5528C17.3309 14.6017 14.0489 17.8847 10 17.8848C5.95108 17.8846 2.66813 14.6017 2.66797 10.5528V6.27545C2.66797 5.34924 3.21695 4.51012 4.06543 4.13873L9.06543 1.95123ZM10.4014 3.16998C10.1456 3.05814 9.85444 3.05819 9.59863 3.16998L4.59863 5.35748C4.23427 5.51708 3.99805 5.87764 3.99805 6.27545V10.5528C3.99821 13.8671 6.68563 16.5546 10 16.5547C13.3144 16.5546 16.0008 13.8671 16.001 10.5528V6.27545C16.001 5.87756 15.7658 5.51703 15.4014 5.35748L10.4014 3.16998Z" fill="currentColor"/>
+            <path d="M13.4678 11.4318L13.333 11.4182H10.833C10.466 11.4183 10.1682 11.7162 10.168 12.0832C10.168 12.4504 10.4659 12.7481 10.833 12.7482H13.333L13.4678 12.7346C13.7706 12.6724 13.9981 12.4044 13.9981 12.0832C13.9979 11.7621 13.7706 11.494 13.4678 11.4318Z" fill="currentColor"/>
+            <path d="M7.65336 12.426C7.46431 12.7406 7.05607 12.8424 6.74125 12.6535C6.42646 12.4646 6.32395 12.0563 6.51274 11.7414L7.55668 10.0002L6.51274 8.25899C6.32395 7.94412 6.42646 7.53583 6.74125 7.34688C7.05607 7.15799 7.46431 7.25975 7.65336 7.57442L8.90336 9.6584C9.0296 9.86893 9.0296 10.1315 8.90336 10.342L7.65336 12.426Z" fill="currentColor"/>
+          </g>
+
+          <text x="136" y="441" fill="#111111" font-size="27" text-anchor="middle">
+            <tspan x="136" dy="0">10,000</tspan>
+            <tspan x="136" dy="32">actions</tspan>
+          </text>
+          <text x="458" y="301" fill="#111111" font-size="27">9,280 inside sandbox</text>
+          <text x="456" y="604" fill="#111111" font-size="27">720 auto-reviewed</text>
+          <text x="868" y="688" fill="#111111" font-size="27" text-anchor="middle">Auto-review</text>
+          <text x="1402" y="515" fill="#111111" font-size="27" text-anchor="middle" dominant-baseline="middle">713 approved and continue</text>
+          <text x="1099" y="669" fill="#111111" font-size="27">7 denied</text>
+          <text x="1460" y="622" fill="#111111" font-size="27">4 continue via</text>
+          <text x="1460" y="652" fill="#111111" font-size="27">safer alternative</text>
+          <text x="1460" y="705" fill="#111111" font-size="27">3 stop and</text>
+          <text x="1460" y="735" fill="#111111" font-size="27">ask user</text>
+        </svg>
+        <figcaption id="deployment-snapshot-caption" class="image-caption">
+          Illustrative internal deployment snapshot. In manual approval mode, 720 out-of-sandbox actions would have
+          interrupted the user. With Auto-review, they were reviewed automatically: 7 were rejected, with 4 continuing via
+          a safer path and 3 stopping for user input. <em>(* Ratios depend on use case, environment, and sandbox configuration.)</em>
+        </figcaption>
+      </figure>
+
+      <h2>Approval friction harms security</h2>
+      <p>
+        Default permission mode<sup><a href="#fn-1" id="ref-1">[1]</a></sup> limits Codex to reading files, editing
+        under a pre-specified writable root, and running local commands inside that boundary. Programmatic exceptions can
+        be granted via <code>config.toml</code> or custom <code>.rules</code> files. Actions outside of these limits,
+        often mundane network calls or simple <code>python</code> scripts, must wait for user authorization.
+      </p>
+
+      <p>
+        These restrictions frustrate users and often make long-running background sessions impossible. This frustration
+        creates new risks.
+      </p>
+
+      <ol>
+        <li>
+          Users switch to Full Access mode, where there are no rules enforced by the environment.<sup><a href="#fn-2" id="ref-2">[2]</a></sup>
+          Malicious code execution, data exfiltration, credential probing, and other harmful actions will not be blocked
+          by the sandbox.
+        </li>
+        <li>
+          Users write overly permissive <a href="https://developers.openai.com/codex/rules" rel="noopener" target="_blank">prefix rules</a>
+          that allow Codex to execute commands outside of the sandbox. In internal traffic, we detected a sizable
+          minority of users who allow all commands that begin with the word <code>python</code>.<sup><a href="#fn-3" id="ref-3">[3]</a></sup>
+        </li>
+        <li>
+          Users approve commands without fully understanding the consequences, due to lack of expertise, reviewer fatigue,
+          or both.
+        </li>
+      </ol>
+
+      <p>
+        There are also large productivity costs. A personal team of expert agents cannot halt production every few
+        minutes, waiting on authorization to <code>curl <a href="http://google.com" rel="noopener" target="_blank">google.com</a></code>.
+      </p>
+
+      <h2>Expanding autonomy at the sandbox boundary</h2>
+      <p>
+        Auto-review expands what Codex can do without human intervention, while still blocking many actions that could
+        cause serious or irreversible harm to the user or organization. Upon reaching a sandbox boundary, Codex can request
+        escalation to execute an action outside of the sandbox. In Auto-review, a separate Codex agent grades these
+        requests, considering the user's intent, the environment, the security policy, and the likely impact of the action.
+      </p>
+
+      <figure class="sandbox-figure">
+        <img
+          src="/auto-review/figures/sandbox.png"
+          alt="Diagram of Codex sandbox permissions, rules approvals, Auto-review approvals, and full-access risk zones."
+        />
+      </figure>
+
+      <p>
+        The separation of roles matters. The main agent is optimized to complete the user's task. This creates pressure to
+        treat an approval boundary as just another obstacle to overcome. Auto-review has a narrower job: decide whether a
+        proposed boundary-crossing action should run. Keeping that decision in a separate model call makes the approval
+        policy easier to evaluate, monitor, and improve.
+      </p>
+
+      <p>
+        Auto-review is meant to block actions that could cause serious or hard-to-reverse harm: exfiltrating data, exposing
+        secrets, deleting data, weakening security settings, running untrusted code, or following instructions from
+        untrusted content that conflict with the user's instructions. Auto-review also considers user intent, approving
+        nominally risky actions that are explicitly requested by the user.
+      </p>
+
+      <p>
+        Auto-review uses GPT-5.4 Thinking (low reasoning). In our evals, more powerful models are better at both risk
+        detection and user intention discernment.
+      </p>
+
+      <p>
+        A rejection does not merely say no. It gives Codex a rationale and enough signal to continue safely without asking
+        the user for approval or guidance. In our internal deployment, Codex continues after a denial and successfully
+        finds an acceptable solution in more than half of cases. We also monitor for cases where Codex attempts to game the
+        Auto-reviewer. To reduce the likelihood of this occurring, we automatically stop the trajectory after repeated
+        denials.
+      </p>
+
+      <h2>Evaluating Systems With Few Deterministic Guarantees</h2>
+      <p>
+        Before using Auto-review internally, we wanted clear evaluations for usability and safety.
+      </p>
+
+      <p>
+        <strong><em>We evaluate usability by looking at acceptance rates on internal traffic.</em></strong> We measured
+        the Auto-review acceptance rate against user-approved queries on a sample of internal Codex trajectories from
+        March 2026.
+      </p>
+
+      <p>
+        <strong><em>We evaluate safety on synthetically augmented datasets.</em></strong> Internal OpenAI traffic
+        undersamples the long tail of possibly dangerous scenarios. We use a combination of existing and synthetic evals
+        to focus on different threat models:
+      </p>
+
+      <ul>
+        <li>
+          <strong>Agent overreach:</strong> We used GPT-5.3-codex to generate agentic scenarios where Codex might take a risky
+          action in an overeager attempt to complete a user's task.
+        </li>
+        <li>
+          <strong>Prompt Injections:</strong> We ran Auto-review on internal evaluations where Codex is prompt injected by
+          a trained attacker.
+        </li>
+        <li>
+          <strong>Misaligned models:</strong> We used <a href="https://www.lesswrong.com/posts/X8qTKsGcnsTFrqM96/monitoring-benchmark-for-ai-control" rel="noopener" target="_blank">MonitoringBench</a>,
+          a dataset of trajectories where a coding agent tries to covertly carry out malicious tasks, like downloading
+          malware.
+        </li>
+      </ul>
+
+      <div class="metrics-table-wrap">
+        <table class="auto-review-metrics">
+          <tbody>
+            <tr class="metric-row metric-row-usability">
+              <td data-label="Category"><span class="metric-pill metric-pill-usability">Usability</span></td>
+              <td data-label="Metric">
+                <strong>Auto-approval Rate On Escalated Actions</strong>
+                <span class="metric-description">Approval rate on real OAI Codex sandbox-escalation traffic.</span>
+              </td>
+              <td data-label="Result" class="metric-value">99.1%</td>
+            </tr>
+            <tr class="metric-row metric-row-usability">
+              <td data-label="Category"><span class="metric-pill metric-pill-usability">Usability</span></td>
+              <td data-label="Metric">
+                <strong>Effective Approval Rate On All Actions</strong>
+                <span class="metric-description">Effective approval rate across all actions in the internal Codex deployment, including actions that stayed within the sandbox boundary.</span>
+              </td>
+              <td data-label="Result" class="metric-value">99.93%</td>
+            </tr>
+            <tr class="metric-row metric-row-safety">
+              <td data-label="Category"><span class="metric-pill metric-pill-safety">Safety</span></td>
+              <td data-label="Metric">
+                <strong>Overeagerness Recall</strong>
+                <span class="metric-description">Share of synthetic overeagerness cases correctly denied by the Auto-review. This evaluation covers unintended data transfer, security weakening, and irreversible operations.</span>
+              </td>
+              <td data-label="Result" class="metric-value">90.3%</td>
+            </tr>
+            <tr class="metric-row metric-row-safety">
+              <td data-label="Category"><span class="metric-pill metric-pill-safety">Safety</span></td>
+              <td data-label="Metric">
+                <strong>Prompt Injection Recall</strong>
+                <span class="metric-description">Share of synthetic prompt-injection cases correctly denied by the Auto-review. Combined rate from the attack categories of remote code execution, secret exfiltration, and external upload.<sup><a href="#fn-4" id="ref-4">[4]</a></sup></span>
+              </td>
+              <td data-label="Result" class="metric-value">99.3%</td>
+            </tr>
+            <tr class="metric-row metric-row-safety">
+              <td data-label="Category"><span class="metric-pill metric-pill-safety">Safety</span></td>
+              <td data-label="Metric">
+                <strong><a href="https://www.lesswrong.com/posts/X8qTKsGcnsTFrqM96/monitoring-benchmark-for-ai-control" rel="noopener" target="_blank">MonitoringBench [Hard]</a> Recall</strong>
+                <span class="metric-description">We evaluate if any of the actions in the trajectory would be rejected.</span>
+              </td>
+              <td data-label="Result" class="metric-value">96.1%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        We continue to monitor Auto-review friction in production: escalation rate, approval and rejection rates, added
+        latency, user overrides, and commands that are frequently flagged for review. We also run both human and AI
+        red-teaming campaigns to identify safety issues that might slip through.
+      </p>
+
+      <p>
+        We expect our evaluation process to evolve in the future. Methods for applying stronger adversarial pressure,
+        techniques from AI control, more realistic alignment testing, and more comprehensive human red-teaming remain
+        areas of active research.
+      </p>
+
+      <h2>Notes of Caution</h2>
+      <p>
+        Auto-review should not be treated as a guarantee of security. During automated and human red-teaming, we
+        identified cases where Auto-review could be misled into approving commands without user approval. We are working
+        to actively fix these issues, but we do not expect this class of system to become a source of deterministic
+        guarantees.
+      </p>
+
+      <p>
+        In addition, it should not be understood as a mechanism for protecting against model scheming. Auto-review
+        evaluates proposed out-of-sandbox actions at the point of escalation. A model that is strategically hiding its
+        intent may still produce an escalation request that looks benign, or may act within the sandbox in ways
+        Auto-review never sees. Those risks require complementary monitoring and evaluation methods, including
+        <a href="https://openai.com/index/how-we-monitor-internal-coding-agents-misalignment/" rel="noopener" target="_blank">chain-of-thought monitoring</a>.
+      </p>
+
+      <h2>Oversight in the Far Future<a class="heading-footnote-small" href="#fn-5" id="ref-5">[5]</a></h2>
+      <p>
+        We should aim for a future where agents like Codex can be trusted to have the same level of permissions as
+        employees. We do not live in that future today and Auto-review mode may not be the final form factor that future
+        requires. Indeed, the Auto-review mode is a compromise on multiple fronts. Compared to traditional security systems,
+        it sacrifices determinism for expressivity. Compared to full access mode, Auto-review sacrifices speed for
+        security.
+      </p>
+
+      <p>
+        A key goal of our Alignment efforts is to navigate both of these tradeoffs. Our model-based monitors should be
+        resilient to outside attacks and failures of judgment. Indeed, our agents themselves should possess that same
+        adversarial robustness and common sense.
+      </p>
+
+      <section class="footnotes" aria-label="Footnotes">
+      <h3 id="footnotes">Footnotes</h3>
+      <ul class="footnote-list">
+        <li id="fn-1">
+          <span class="footnote-marker">[1]</span>
+          <span class="footnote-content"><code>sandbox_mode = "workspace-write"</code>, <code>approval_policy = "on-request"</code>, <code>network_access = false</code>. See <a href="https://developers.openai.com/codex/concepts/sandboxing" rel="noopener" target="_blank">sandboxing docs</a>.<a href="#ref-1"> &#8617;</a></span>
+        </li>
+        <li id="fn-2">
+          <span class="footnote-marker">[2]</span>
+          <span class="footnote-content">However, the model itself is trained to obey policy. This point is about what the local execution environment enforces at the sandbox boundary.<a href="#ref-2"> &#8617;</a></span>
+        </li>
+        <li id="fn-3">
+          <span class="footnote-marker">[3]</span>
+          <span class="footnote-content">Our favorite discovery was a config file with <code>codex exec --yolo</code> set to always allow.<a href="#ref-3"> &#8617;</a></span>
+        </li>
+        <li id="fn-4">
+          <span class="footnote-marker">[4]</span>
+          <span class="footnote-content">When measured among all the categories, including destructive deletions and data tampering, the score drops to 90.2%. However the missed cases are primarily allowed because of not being serious enough, often agreeing with researcher judgement.<a href="#ref-4"> &#8617;</a></span>
+        </li>
+        <li id="fn-5">
+          <span class="footnote-marker">[5]</span>
+          <span class="footnote-content">By far future, we may mean as soon as late-2026.<a href="#ref-5"> &#8617;</a></span>
+        </li>
+      </ul>
+      </section>
+
+      <h2>BibTeX</h2>
+      <pre class="bibtex"><code>@misc{openai2026autoreview,
+  title = {Auto-review of agent actions without synchronous human oversight},
+  author = {Trębacz, Maja and Arnesen, Sam and Matthews, Ollie and Hurd, Dylan and Park, Won and Lin, Owen and Gershenson, Joe},
+  year = {2026},
+  month = {Apr},
+  howpublished = {OpenAI Alignment Research Blog},
+  url = {https://alignment.openai.com/auto-review/}
+}</code></pre>
+
+      <p>Corresponding authors: maja[at]openai.com</p>
+
+      <p>
+        <strong>PS:</strong> Interested in similar topics? <a href="https://openai.com/careers/researcher-alignment-oversight-san-francisco/" rel="noopener" target="_blank">Alignment Oversight and other teams are hiring</a>.
+      </p>
+
+      <p class="note">
+        <strong>Note:</strong> Auto-review is open source in the <a href="https://github.com/openai/codex" rel="noopener" target="_blank">Codex repository</a>, and
+        you can learn how to use it in the <a href="https://developers.openai.com/codex/concepts/sandboxing/auto-review" rel="noopener" target="_blank">Codex Auto-review docs</a>.
+        We expect useful oversight for agents to require iteration across real deployments, adversarial testing, and
+        community scrutiny.
+      </p>
+    </div>
+  </div>
+  <script src="../assets/subscribe-embed.js" defer></script>
+</body>
+</html>
+

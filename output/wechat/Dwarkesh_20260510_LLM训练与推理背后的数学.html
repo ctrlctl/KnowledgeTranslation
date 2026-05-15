@@ -1,111 +1,449 @@
 <section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:0 10px;max-width:578px;margin:0 auto;box-sizing:border-box;word-wrap:break-word;">
-<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">LLM 训练与推理背后的数学</h1>
-<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">Reiner Pope – The math behind how LLMs are trained and served</span> 来源：Dwarkesh Podcast | 2026-05-10 嘉宾：Reiner Pope（Maddox CEO，前 Google TPU 架构师）</p></blockquote>
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">LLM训练与推理背后的数学</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<span style="color:#1e88e5;font-weight:bold;">The Math Behind LLM Training and Inference</span> 来源：Dwarkesh Podcast | 2026-05-10 嘉宾：Rainer Pope（Maddox CEO，前Google TPU架构师）</p></blockquote>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">目录</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">[开场与问题引入 [00:00]](#-[00:00)</li><li style="margin-bottom:0.5em;line-height:2;">[快速模式与慢速模式：Batch Size 的经济学 [01:07]](#batch-size--[01:07)</li><li style="margin-bottom:0.5em;line-height:2;">[Roofline 分析框架 [02:09]](#roofline--[02:09)</li><li style="margin-bottom:0.5em;line-height:2;">[推理时间的下界估算 [02:45]](#-[02:45)</li><li style="margin-bottom:0.5em;line-height:2;">[内存时间：权重读取与 KV Cache [05:08]](#-kv-cache-[05:08)</li><li style="margin-bottom:0.5em;line-height:2;">[画出 Batch Size 与时间的关系 [07:48]](#-batch-size--[07:48)</li><li style="margin-bottom:0.5em;line-height:2;">[延迟下界的含义 [09:53]](#-[09:53)</li><li style="margin-bottom:0.5em;line-height:2;">[Compute Bound vs Memory Bound 的转换 [10:39]](#compute-bound-vs-memory-bound--[10:39)</li><li style="margin-bottom:0.5em;line-height:2;">[从延迟到成本：Cost per Token [12:54]](#cost-per-token-[12:54)</li><li style="margin-bottom:0.5em;line-height:2;">[成本的极限行为 [15:01]](#-[15:01)</li><li style="margin-bottom:0.5em;line-height:2;">[求解平衡点：最优 Batch Size [16:11]](#-batch-size-[16:11)</li><li style="margin-bottom:0.5em;line-height:2;">[插播：Jane Street 的 FPGA 与低延迟交易 [20:53]](#jane-street--fpga--[20:53)</li><li style="margin-bottom:0.5em;line-height:2;">[火车时刻表模型：Batch 调度与排队延迟 [21:47]](#batch--[21:47)</li><li style="margin-bottom:0.5em;line-height:2;">[20 毫秒从何而来：HBM 容量与带宽 [23:40]](#20-hbm--[23:40)</li><li style="margin-bottom:0.5em;line-height:2;">[最优 Batch Size 只取决于稀疏度 [25:49]](#-batch-size--[25:49)</li><li style="margin-bottom:0.5em;line-height:2;">[稀疏度的权衡：质量 vs 效率 [28:07]](#-vs--[28:07)</li><li style="margin-bottom:0.5em;line-height:2;">[Mixture of Experts 在 GPU 上的布局 [32:03]](#mixture-of-experts--gpu--[32:03)</li><li style="margin-bottom:0.5em;line-height:2;">[MoE 层的 GPU 布局与通信 [32:57]](#moe--gpu--[32:57)</li><li style="margin-bottom:0.5em;line-height:2;">[机架内 vs 机架间：Scale Up vs Scale Out [36:03]](#-vs-scale-up-vs-scale-out-[36:03)</li><li style="margin-bottom:0.5em;line-height:2;">[跨机架 MoE 的瓶颈 [39:50]](#-moe--[39:50)</li><li style="margin-bottom:0.5em;line-height:2;">[线缆密度的物理限制 [42:03]](#-[42:03)</li><li style="margin-bottom:0.5em;line-height:2;">[机架设计的物理极限 [43:40]](#-[43:40)</li><li style="margin-bottom:0.5em;line-height:2;">[为什么模型参数量三年没涨？ [44:55]](#-[44:55)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline Parallelism 与跨机架通信 [47:11]](#pipeline-parallelism--[47:11)</li><li style="margin-bottom:0.5em;line-height:2;">[Scale Up vs Scale Out 的时间比 [50:26]](#scale-up-vs-scale-out--[50:26)</li><li style="margin-bottom:0.5em;line-height:2;">[并行策略为何与模型架构匹配 [53:20]](#-[53:20)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline Parallelism 的真正好处 [55:09]](#pipeline-parallelism--[55:09)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline Bubble：为什么需要 Micro Batch [56:52]](#pipeline-bubble-micro-batch-[56:52)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline Bubble 与推理中的自然解法 [57:40]](#pipeline-bubble--[57:40)</li><li style="margin-bottom:0.5em;line-height:2;">[训练中的 Pipeline：前向与反向 [58:54]](#-pipeline-[58:54)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline 对推理的影响：中性 [01:01:00]](#pipeline--[01:01:00)</li><li style="margin-bottom:0.5em;line-height:2;">[内存墙：当前的宏观问题 [01:03:37]](#-[01:03:37)</li><li style="margin-bottom:0.5em;line-height:2;">[内存墙的经济学 [01:03:48]](#-[01:03:48)</li><li style="margin-bottom:0.5em;line-height:2;">[内存容量分析 [01:04:23]](#-[01:04:23)</li><li style="margin-bottom:0.5em;line-height:2;">[Micro Batch 与 Global Batch 的关系 [01:07:33]](#micro-batch--global-batch--[01:07:33)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline 对 KV Cache 的影响 [01:10:40]](#pipeline--kv-cache--[01:10:40)</li><li style="margin-bottom:0.5em;line-height:2;">[Pipeline 对 KV Cache 无效的原因 [01:11:25]](#pipeline--kv-cache--[01:11:25)</li><li style="margin-bottom:0.5em;line-height:2;">[推理时实际怎么做 [01:13:02]](#-[01:13:02)</li><li style="margin-bottom:0.5em;line-height:2;">[Scale-Up 域大小与 AI 进展 [01:14:07]](#scale-up--ai--[01:14:07)</li><li style="margin-bottom:0.5em;line-height:2;">[跨机架延迟成本 [01:15:15]](#-[01:15:15)</li><li style="margin-bottom:0.5em;line-height:2;">[更大 Scale-Up 域的真正好处：带宽而非容量 [01:16:53]](#-scale-up--[01:16:53)</li><li style="margin-bottom:0.5em;line-height:2;">[Chinchilla Scaling 与过度训练 [01:19:00]](#chinchilla-scaling--[01:19:00)</li><li style="margin-bottom:0.5em;line-height:2;">[训练 + RL + 推理的成本等式 [01:21:51]](#--rl---[01:21:51)</li><li style="margin-bottom:0.5em;line-height:2;">[训练/RL/推理的成本均衡 [01:24:12]](#rl-[01:24:12)</li><li style="margin-bottom:0.5em;line-height:2;">[推理 Token 数 ≈ 预训练 Token 数 [01:28:44]](#-token----token--[01:28:44)</li><li style="margin-bottom:0.5em;line-height:2;">[实际数字估算 [01:29:49]](#-[01:29:49)</li><li style="margin-bottom:0.5em;line-height:2;">[从 API 定价反推模型参数 [01:31:12]](#-api--[01:31:12)</li><li style="margin-bottom:0.5em;line-height:2;">[从 Gemini 定价推断上下文长度成本 [01:33:04]](#-gemini--[01:33:04)</li><li style="margin-bottom:0.5em;line-height:2;">[求解每 Token 字节数 [01:36:03]](#-token--[01:36:03)</li><li style="margin-bottom:0.5em;line-height:2;">[Input vs Output 价格差异：Decode vs Prefill [01:41:37]](#input-vs-output-decode-vs-prefill-[01:41:37)</li><li style="margin-bottom:0.5em;line-height:2;">[Prefill vs Decode 的成本分析 [01:42:47]](#prefill-vs-decode--[01:42:47)</li><li style="margin-bottom:0.5em;line-height:2;">[Cache Hit 为什么便宜那么多 [01:49:00]](#cache-hit--[01:49:00)</li><li style="margin-bottom:0.5em;line-height:2;">[重新物化 KV Cache 的成本 [01:50:37]](#-kv-cache--[01:50:37)</li><li style="margin-bottom:0.5em;line-height:2;">[为什么没有公司提供超百万 Token 上下文 [01:52:30]](#-token--[01:52:30)</li><li style="margin-bottom:0.5em;line-height:2;">[KV Cache 存储的内存层级经济学 [01:55:01]](#kv-cache--[01:55:01)</li><li style="margin-bottom:0.5em;line-height:2;">[选择正确的内存层级 [01:59:01]](#-[01:59:01)</li><li style="margin-bottom:0.5em;line-height:2;">[密码学协议与神经网络的架构相似性 [02:04:03]](#-[02:04:03)</li><li style="margin-bottom:0.5em;line-height:2;">[后门、对抗攻击与密码学的交汇 [02:07:27]](#-[02:07:27)</li><li style="margin-bottom:0.5em;line-height:2;">[Feistel 网络：从密码学到可逆神经网络 [02:08:51]](#feistel--[02:08:51)</li><li style="margin-bottom:0.5em;line-height:2;">[可逆网络的训练优势 [02:12:09]](#-[02:12:09)</li></ul>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">Roofline 分析：推理时间的两个下界</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">延迟与 batch size 的关系</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">成本与 batch size 的关系</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">最优 batch size 的推导</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">稀疏性与 MoE 的收益</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">MoE 层在 GPU 集群上的布局</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">Scale-up 与 Scale-out 网络</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">Pipeline 并行与 micro-batch</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">KV cache 无法被 pipeline 分摊</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">Scale-up 域大小为何重要</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">训练与推理的成本均衡</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">从 API 定价反推模型架构</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">KV cache 的存储层级经济学</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">上下文长度的天花板</span></li><li style="margin-bottom:0.5em;line-height:2;"><span style="color:#1e88e5;font-weight:bold;">神经网络与密码学的结构相似性</span></li></ul>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">开场与问题引入 [00:00]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">今天我采访的是 Rainer Pope，他是 Maddox 的 CEO，这是一家新的芯片创业公司。此前他在 Google 做 TPU 架构设计和很多其他工作。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这次的形式跟我平时的采访很不一样。这是一场黑板讲座。我们马上就要站起来了。事实上，我们专门为这种形式搭建了这个全新的演播室。所以很高兴能跟你一起来给它开个张。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们要聊的是模型架构、机器学习网络等很多东西。我觉得这个话题重要的原因是：一旦你真正理解了训练和推理在集群上是怎么运行的，很多关于 AI 的事情就开始说得通了——为什么 AI 架构是这样的，为什么 API 定价是这样的，从根本上说，为什么 AI 的进展是这样的。你需要理解细节才能到达那里，而理解细节你需要一块黑板。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以 Rainer，非常感谢你来做这个。——很高兴来到这里。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">提醒一下，这是一场有图表和公式的讲座。如果可以的话，我真的建议在 YouTube 这样的视频平台上观看。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，先声明一下，我是 Maddox 的天使投资人，但这跟这期播客无关。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Roofline 分析：推理时间的两个下界 [02:09]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Reiner 的分析方法很简单：对于一次推理 forward pass，时间的下界由两个因素决定——<strong style="color:#1e88e5;font-weight:bold;">内存带宽</strong>和<strong style="color:#1e88e5;font-weight:bold;">计算吞吐</strong>，取两者中较大的那个。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">计算时间：</p>
-<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">T_compute = batch_size × active_params / FLOPS</p></blockquote>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">内存时间由两部分组成：</p>
-<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">T_mem = (total_params / mem_bandwidth) + (batch_size × context_len × bytes_per_token / mem_bandwidth)</p></blockquote>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">第一项是<strong style="color:#1e88e5;font-weight:bold;">权重加载时间</strong>——把所有模型参数从 HBM 读入芯片。第二项是 <strong style="color:#1e88e5;font-weight:bold;">KV cache 加载时间</strong>——对 batch 中每个序列，读取其完整上下文的 KV 表示。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">注意力计算本身的 FLOPS 相对于权重矩阵乘法很小，可以忽略。这个简单模型已经有很强的预测力。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">快速模式与慢速模式：Batch Size 的经济学 [01:07]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Rainer，也许我们先从这个问题开始。现在有几家公司，比如 Claude、Codex 和 Cursor，提供了类似"快速模式"的东西——花 6 倍的价格，你能以 2.5 倍的速度获得流式 token。我很好奇这背后的机制是什么。为什么花更多钱就能获得更低的延迟？第二，能不能继续往上走？花 100 倍的钱能不能获得更快的速度？第三，能不能反过来？有没有类似"Claude Code 慢速模式"的东西——如果你愿意等上几分钟，就能获得更便宜的价格？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也许这能帮助引出你在讲座中要做的分析。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好的。先剧透一下结论：<strong style="color:#1e88e5;font-weight:bold;">最大的影响因素是 batch size</strong>。但我们现在要做的是精确量化它的样子，以及它对延迟和成本的影响。还有另一个效应，可以叫它 speculative decoding（投机解码）或 multi-token prediction（多 token 预测）。我们可以稍后再回来讨论。但我觉得我们首先要讲的是 batch size。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">延迟与 batch size 的关系 [08:00]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">把上面的公式画成 batch size vs. time 的图：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">T_compute</strong> 是一条从原点出发的直线（线性于 batch size）</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">权重加载</strong> 是一个常数（不依赖 batch size）</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">KV cache 加载</strong> 也是线性于 batch size 的</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">总时间取 max(T_compute, T_mem_weights + T_mem_kv)。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键洞察：存在一个<strong style="color:#1e88e5;font-weight:bold;">延迟下界</strong>，就是把所有模型参数从 HBM 读一遍的时间。无论 batch size 多小，你都不可能比这更快。在典型硬件上，这个下界大约是 <strong style="color:#1e88e5;font-weight:bold;">15-20 毫秒</strong>（HBM 容量 / HBM 带宽）。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Dwarkesh 问：为什么是 20 毫秒？</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Reiner 解释：以 Rubin 为例，288 GB / 20 TB/s ≈ 15ms。这个数字在多代 HBM 上都相当稳定。你不会想让一次 forward pass 超过这个时间太多——因为那意味着你在重复读 HBM 里的东西，没有意义。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Roofline 分析框架 [02:09]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我想先介绍分析的两个基本原则。首先，我们要对在芯片集群上运行 transformer 模型做一个 <strong style="color:#1e88e5;font-weight:bold;">roofline 分析</strong>。我们取一个，比如说，Blackwell NVL72 集群——也就是一个包含 72 块 GPU 的机架。Roofline 分析的意思是我们看内存带宽和计算性能。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后另一方面，我们只看模型的两个简单因素：处理权重的时间，和处理上下文（KV cache）的时间。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">成本与 batch size 的关系 [12:54]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">延迟图告诉你"一次 forward pass 要多久"，但我们更关心<strong style="color:#1e88e5;font-weight:bold;">每个 token 的成本</strong>（= 时间 / batch size）。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">把三条曲线都除以 batch size：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">T_compute / B → 常数（不随 batch 变化）</li><li style="margin-bottom:0.5em;line-height:2;">KV fetch / B → 常数</li><li style="margin-bottom:0.5em;line-height:2;">权重加载 / B → <strong style="color:#1e88e5;font-weight:bold;">双曲线</strong>（batch 越大越便宜）</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">结论：</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#1e88e5;font-weight:bold;">Batch size = 1 时成本趋近无穷</strong>——权重加载没有被分摊 2. <strong style="color:#1e88e5;font-weight:bold;">Batch size 足够大时，成本趋近一个下界</strong>——由计算时间决定 3. "Claude Code 慢速模式"不会便宜太多，因为 KV cache 和计算都是 per-sequence 的，无法跨 batch 分摊</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理时间的下界估算 [02:45]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们要尝试估算运行某种形状的推理所需的时间。我们不能精确预测时间，所以我们要做近似。我们会说时间必须大于等于某个量。我们考虑两个方面：做内存读取所需的时间，和做计算所需的时间。事实证明，即使用这么简单的模型，也能给我们非常强的预测能力。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">计算时间</strong>方面，我需要做两件事：乘以所有活跃参数，然后做一些 attention 的工作。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">乘以所有活跃参数：我有一个 batch size，然后有模型中的活跃参数数量，再除以计算吞吐量（芯片的 FLOPS）。这实际上涵盖了所有权重矩阵乘法的计算时间。有个小注意点：我们忽略了 attention 计算的时间，但一般来说它相比之下会很小。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">插一句给观众解释一下——你不是一次只服务一个用户。Batch 指的是你同时服务很多不同的用户，那就是一整个 batch。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对。我可以稍微解释一下为什么 batch 是这么有利的优化。结论是：如果你不把很多用户 batch 在一起，你得到的成本和经济性可能比 batch 在一起差一千倍。我们会很明确地看到这一点。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后是活跃参数数量。比如看 DeepSeek 模型，DeepSeek v3 有大约 370 亿活跃参数和 7000 亿总参数。我们关注的只是对单个 token 活跃的那些参数。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">最优 batch size 的推导 [16:11]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">令 T_compute = T_mem（忽略 KV 项简化分析），解出：</p>
-<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">batch_size ≈ 300 × sparsity_ratio</p></blockquote>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">其中 300 ≈ FLOPS / mem_bandwidth（在 FP4 下，这个比值在多代 GPU 上都约为 300）。sparsity_ratio = total_params / active_params。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对 DeepSeek（激活 32/256 个 expert）：sparsity ≈ 8，所以最优 batch ≈ 2400。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这意味着你需要约 <strong style="color:#1e88e5;font-weight:bold;">2000-3000 个并发序列</strong>才能让 GPU 满载。换算成吞吐：2400 × (1/20ms) ≈ <strong style="color:#1e88e5;font-weight:bold;">128k tokens/s</strong> per rack。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Dwarkesh 问：这看起来不多？</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Reiner：Gemini 去年公布的全球流量是几亿 tokens/s。所以一个 rack 大约是 Gemini 的千分之一——这其实已经不少了。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">内存时间：权重读取与 KV Cache [05:08]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在内存方面，我们需要做什么？我们需要读取所有权重。所以有一个读取所有总参数（不只是活跃参数）的时间——这是<strong style="color:#1e88e5;font-weight:bold;">权重读取时间</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后还有 <strong style="color:#1e88e5;font-weight:bold;">KV cache 读取时间</strong>。这实际上取决于 batch size。对于 batch 中的每个元素，我们必须读取整个上下文长度的 token，每个 token 有一定的字节大小。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我快速解释一下 KV cache 是什么。当我做一次前向传播时——让我画一下自回归推理是怎么工作的。在 decode 阶段，我有一堆文本 token，我在增长一个张量，因为最终 token 被表示为某个 embedding 维度的张量。在另一个方向上，我有序列长度。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">运行一次 decode 的工作是：我必须把每个 token 通过一大堆矩阵乘法，跨越很多不同的层。一般来说，我需要对所有这些 token 做这些工作。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但一步 decode 实际上只是在这里产生一个额外的 token。所以我要做的是：对整个模型中所有的权重矩阵运行一次完整的前向传播。但然后我有这个 attention 机制，这个 token 在"看"所有过去的 token。它具体在看什么？它在看模型对这些 token 产生的某种内部表示。我们把它叫做 <strong style="color:#1e88e5;font-weight:bold;">KV cache</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以这个过程——单个 token attend 到所有历史 token——就是 attention。它主要由内存读取主导，而不是矩阵乘法。我们把要读取的内存量写在这里，然后除以内存带宽（每秒字节数）。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">稀疏性与 MoE 的收益 [28:07]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">稀疏性越高，active_params 越少，计算成本越低。但代价是什么？</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">引用 "Unified Laws for Routed Language Models" 论文的结果：保持 active params 不变，增加 expert 数量，模型质量持续提升——但收益递减严重。例如，64 个 expert、370M active params 的模型才等价于 1.3B dense 模型。也就是说 <strong style="color:#1e88e5;font-weight:bold;">total params 增加 64 倍才换来 4 倍的 active params 等效质量</strong>。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但从推理经济学看，这仍然是划算的：total params 增加只影响权重加载时间，而权重加载可以被 batch 分摊。只要你有足够多的用户，<strong style="color:#1e88e5;font-weight:bold;">稀疏性是纯赢</strong>——一直加到用户不够为止。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">唯一的硬约束是<strong style="color:#1e88e5;font-weight:bold;">内存容量</strong>：更多 expert 意味着更多参数要存储。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">画出 Batch Size 与时间的关系 [07:48]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">实际上，这些方程已经足够让我们画出一些拟合线了。我们想看的是对 batch 的敏感度，以及（我们会单独画的）对上下文长度的敏感度。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们说过最大的效应是 batch size 中延迟与成本的权衡。让我们画出来。我觉得我们真正需要画两张图。先画 batch size 对时间的关系。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看这个形状：我们有一个求和的最大值，再加上另一项。让我们逐项看它们如何影响计算和内存的时间。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">计算时间</strong>：纯粹是 batch size 的线性函数，没有偏移。所以它是这样的一条线。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">内存方面</strong>：有一部分是常数——权重读取，这是一个基础偏移。然后还有 KV cache 读取，它是 batch size 的线性函数。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">两个内存时间加在一起，看起来是这样一条曲线。然后整体的最大值——我画粗一点——是这两条曲线的最大值。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">MoE 层在 GPU 集群上的布局 [32:09]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">标准做法是 <strong style="color:#1e88e5;font-weight:bold;">expert parallelism</strong>：不同 expert 放在不同 GPU 上。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">DeepSeek 有 256 个 expert，放在 64 个 GPU 上（一个 Blackwell rack），每个 GPU 存 4 个 expert。Router 决定每个 token 去哪几个 expert，产生 <strong style="color:#1e88e5;font-weight:bold;">all-to-all</strong> 通信模式——任意 GPU 可能需要和任意其他 GPU 通信。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Blackwell rack 内部的 NVLink（scale-up 网络）恰好提供了完全连接拓扑：所有 GPU 通过中间的 NV switch 两跳互联。这与 MoE 的 all-to-all 模式完美匹配。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">问题出在<strong style="color:#1e88e5;font-weight:bold;">跨 rack</strong>：scale-out 网络带宽只有 scale-up 的 <strong style="color:#1e88e5;font-weight:bold;">1/8</strong>。如果 MoE 层跨两个 rack，一半 token 需要走慢速网络，成为瓶颈。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">延迟下界的含义 [09:53]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是什么意思？这是一个延迟图。如果我增大 batch size，一开始对 batch size 的依赖不是很强。所以这里有一个<strong style="color:#1e88e5;font-weight:bold;">延迟下界</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这已经部分回答了问题。对于给定的硬件配置（我们可以讨论改变硬件配置），存在一个延迟下界，它就是：我需要把所有总参数从内存读入芯片，这需要一定的时间。如果我用尽了所有内存带宽，我没法做得更快。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Compute Bound vs Memory Bound 的转换 [10:39]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看起来按你画的方式，你没法做得比那更好了。看起来按你画的计算时间斜率和 KV 增长的方式，以及 KV 对内存时间的影响——随着 batch size 增长……如果这条线在上面或下面呢？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，或者说这是不是必然的？因为如果这总是成立的，那随着 batch size 增长，计算总是主导 KV，这意味着如果你有足够大的 batch size，内存可能永远不是问题。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，这对上下文长度非常敏感。我觉得我们应该回来探讨这个。当你增大上下文长度时，KV 读取时间会越来越大，这会导致从 compute limited 到 memory limited 的转变。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">斜率恰好等于计算时间的斜率，这有什么特别的意义吗？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，每当我们有平衡点时，它意味着你恰好做对了。对于斜率匹配的那个特定上下文长度，它说明我同时受内存和计算约束——这是一个非常理想的位置。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是一个很简单的代数问题，但假设最优是 100K 上下文长度，你用了 200K 上下文长度，你的 MFU 会降到 50% 吗？稍微偏离最优上下文长度范围（Goldilocks zone）对 MFU 的影响是不是巨大的？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">没错。按这里的模型确实如此。但有一个关键点：我把内存读取建模为上下文长度的线性函数。这实际上取决于模型架构。对于所有使用 dense attention 的模型架构确实如此。但 <strong style="color:#1e88e5;font-weight:bold;">sparse attention</strong> 的扩展性比这好得多。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">sparse attention 是不是大家实际都在用的？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我对 sparse attention 很兴奋。很难知道各实验室在用什么。DeepSeek 发表了一种 sparse attention 机制。我插一句，DeepSeek 发表的一些 sparse attention 论文最终在这一项里放了一个平方根。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Scale-up 与 Scale-out 网络 [36:57]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">一个 rack 的物理约束：几米高、一两米宽，受限于供电、重量和散热。内部 GPU 通过 NVLink 连接到中间的 NV switch，形成全连接。离开 rack 则走 scale-out 网络（约 8 倍慢）。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为什么不把 scale-up 域做得更大？</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Hopper → Blackwell（8 → 72 GPU）：主要是产品决策，从 tray 改为 rack 形态</li><li style="margin-bottom:0.5em;line-height:2;">Blackwell → Rubin（72 → ~500 GPU）：需要更复杂的物理设计来跑更多线缆</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">限制因素是<strong style="color:#1e88e5;font-weight:bold;">线缆密度</strong>——连接器密度、弯曲半径、背板空间。现代 rack 在空间、重量、供电、散热上都推到了物理极限。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从延迟到成本：Cost per Token [12:54]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">到目前为止我们看的是延迟。从这里读出成本有点难。那成本是什么意思？运行这次推理，我要用 GPU 一定的秒数——比如 1 毫秒或 20 毫秒。我得为那段时间付租金。比如每 GPU 每小时 2 美元之类的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以那就是这次推理的成本，但在这次推理中我处理了多少价值、多少 token？那就是 batch size。我们实际想画的是 <strong style="color:#1e88e5;font-weight:bold;">cost per token</strong>（每 token 成本）对 batch size 的关系，也就是 T/B 对 batch size。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们要想象把这三条曲线都除以 B。所以最终：计算曲线原来是线性的，除以 B 变成常数。KV 读取原来是线性的，现在也变成常数。权重读取原来是常数，除以 B 变成双曲线。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后我们计算最大值。KV 读取和权重读取的和给我们一条更高的双曲线。然后我们取它和计算的最大值。最终得到的就是我们关心的整体形状。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline 并行与 micro-batch [56:56]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Pipeline 并行把不同层放在不同 rack 上。在推理中，它<strong style="color:#1e88e5;font-weight:bold;">不改善延迟也不恶化延迟</strong>——只是把工作从一个 rack 移到另一个 rack。好处是减少每个 rack 的内存容量需求。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理中的 pipeline 很自然：一个 batch 完成第一阶段后立即进入第二阶段，下一个 batch 紧跟着进入第一阶段，没有 bubble。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">训练中则有 bubble 问题：forward 和 backward 之间需要同步，产生空闲时间。文献中有 zero-bubble、1F1B 等复杂调度方案。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">成本的极限行为 [15:01]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们看到一些极限行为。成本在 batch size 为 1 时开始非常高，几乎趋向无穷——因为我们有那么多权重读取，没有被大 batch size 摊销。但随着 batch size 增大，权重读取被摊销到很多不同的 batch 元素上，它们的成本变得很小。最终计算时间驱动了成本。所以存在一个<strong style="color:#1e88e5;font-weight:bold;">成本下界</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以 Claude Code 慢速模式或 Codex 慢速模式就会在这条线上。而且帮助不大，因为你没法把 KV 值摊销到更大的 batch 上。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，它们是每个 batch 独有的。计算也是每个 batch 独有的。所以在摊销掉其他一切之后，每个 batch 你能做的最小工作量是多少。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">KV cache 无法被 pipeline 分摊 [01:10:43]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键推导：pipeline 并行时，全局 batch = micro_batch_count × local_batch_size。micro_batch_count = pipeline_stages。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代入内存公式后发现：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">权重的 per-GPU 内存</strong> 随 pipeline stages 增加而下降 ✓</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#1e88e5;font-weight:bold;">KV cache 的 per-GPU 内存</strong> 保持不变 ✗</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">原因：虽然每个 rack 只存部分层的 KV，但为了保持所有 rack 忙碌，同时在飞的序列数也等比增加了。两者精确抵消。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">结论：KV cache 既不能跨 batch 分摊（每个序列独有），也不能通过 pipeline 分摊。这是推理中最顽固的内存瓶颈。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">求解平衡点：最优 Batch Size [16:11]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">那么你不再受内存带宽约束的那个点，需要多大的 batch？实际上前沿模型的 batch 有多大？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你实际上可以直接求解。而且它对模型架构甚至不是特别敏感。让我们来做。我们要说的是：当内存时间等于计算时间。现在我先忽略 KV cache，因为我们关注的是 batch size 是多少。真正的问题是权重何时被摊销到乘法上。我把权重读取时间和权重乘法时间做比较。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">写出来就是：总参数数 / 内存带宽 = batch size × 活跃参数数 / 计算性能。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看这里，上面的都是模型参数，下面的都是硬件参数。把硬件参数放到一边比较好。这等价于：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">计算性能 / 内存带宽 = batch size × 活跃参数数 / 总参数数</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">左边是硬件参数。右边实际上是一个无量纲常数。看维度：FLOPS 是每秒乘法次数，内存带宽是每秒字节数。不完全是无量纲的。但如果你说——比如我用 FP4——每秒多少次 FP4 乘法，乘以每个 FP4 是半个字节。这样就能变成无量纲的。在大多数 GPU 上，这个值大约是 <strong style="color:#1e88e5;font-weight:bold;">300</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这个比率随着 GPU 代际变化了吗？从 A100 到 B100，FLOPS 大幅增加了，内存带宽也大幅增加了。它保持得相当稳定。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们也可以表达另一边。这是一个稀疏度参数。让我们求解总的 batch size。最终得到：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">batch size 需要大于约 300 × 稀疏度</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">比如 DeepSeek，它从 256 个 expert 中激活 32 个，所以稀疏度大约是 8。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好的。这实际上给你一个大致估计，跟实践惊人地准确。一般来说人们会比这稍大一点。他们不想恰好在平衡点上，因为现实世界的效率不如 roofline 分析说的那么好。但取这个值然后翻倍或三倍。所以基本上是每 batch 两到三千个 token。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但如果你加入 KV cache，含义是最优 batch size 应该更大。这很好。我们求解了计算时间等于内存时间的等价点。如果我加入更多消耗内存带宽的东西，那可用于权重加载的就更少了，所以我需要增大 batch size。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这看起来小得不可思议。一个 batch——这不到一个序列吧？对。记住我说的是我要为之多生成一个 token 的 token 数量。所以实际上是两千个独立序列。我们只是在说对这些序列的一次前向传播。你把 batch 想成序列数量而不是……？没错。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Scale-up 域大小为何重要 [01:17:02]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Pipeline 解决了容量问题，但<strong style="color:#1e88e5;font-weight:bold;">带宽问题</strong>只能靠更大的 scale-up 域解决。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">权重加载时间 = total_params / (scale_up_size × per_GPU_bandwidth)</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">scale_up 从 8 GPU（Hopper）到 72 GPU（Blackwell）是 <strong style="color:#1e88e5;font-weight:bold;">9 倍</strong>的带宽提升，远超单 GPU 带宽的代际增长（~1.5-2x）。这直接降低了推理延迟的下界。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这也解释了为什么模型参数量在 GPT-4 之后停滞了两三年——不是训练做不到更大，而是<strong style="color:#1e88e5;font-weight:bold;">推理部署</strong>需要足够大的 scale-up 域才能在合理延迟内服务更大的模型。Blackwell rack 的 10-20 TB 内存终于让 5T 参数模型 + KV cache 成为可能。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">插播：Jane Street 的 FPGA 与低延迟交易 [20:53]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我准备采访时经常跟领域专家聊。对于 Rainer 这期，我跟 Jane Street 的两位工程师 Clark 和 Axel 聊了。Clark 做低延迟交易系统，他给我讲了为什么 Jane Street 用 FPGA 来确保可预测的纳秒级延迟。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你可以很容易地构建这些巨大的计算网格，精确地做你需要的事——访问一百兆字节的 SRAM，然后在几十纳秒内得到响应。这在 CPU 上基本不可能。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他接着解释了为什么 CPU 不适合这种事情。如果你的时钟每三纳秒跳一次，你实际上每次有几个字节的信息来做决策。相比之下，CPU 会收集整个数据包——比如一个 1500 字节的包——然后说"好了，这个包准备好了，给你 CPU，你现在可以开始想了。"FPGA 允许你在数据包最早的部分到达时就做出反应，而不用等整个包。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们还聊了液冷、网络设计和很多其他东西。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">火车时刻表模型：Batch 调度与排队延迟 [21:47]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你对这些感兴趣，Jane Street 在招人。你可以在 janestreet.com/dworkash 查看他们的开放职位。如果你想看完整的准备对话，我们也发布在那里了。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你有一个前沿模型并且在做推理，他们肯定有超过 2000 个并发用户吧。是的。那需要等整个 batch 填满会有额外延迟吗？还是说如果你有合理数量的用户，不太可能需要 100 毫秒来填满下一个 2000 个槽位？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">思考这个问题的方式是——我把它想成"火车什么时候发车"的模型。假设我选了一个要运行的 batch size。这个交叉点跟那边是同一个交叉点。我选了这个 batch size。我知道它大概需要——比如 20 毫秒是一个常见的落点。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我要画的是 GPU 上运行的时间线。它每 20 毫秒启动一个新 batch，无论如何。所以这是 20，这是 40。你可以把它想成火车时刻表——<strong style="color:#1e88e5;font-weight:bold;">每 20 毫秒发一班新火车</strong>。准备好的乘客上车。如果火车满了，他们等下一班。如果火车没满，火车照样发车。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这对排队延迟意味着什么？最坏情况是一个请求刚好在火车开走后到达。它必须等下一班火车。所以最多等 20 毫秒。然后还要等那班火车完成。所以最坏情况延迟是 40 毫秒。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">训练与推理的成本均衡 [01:19:00]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">启发式原则：当总成本 = 成本A + 成本B 时，最优点往往在两者相等处。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">将训练成本分为三部分：</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">预训练：6 × active_params × data_pretrain</li><li style="margin-bottom:0.5em;line-height:2;">RL：α × active_params × data_RL（α ≈ 2-6，因为 RL 包含低效的 decode）</li><li style="margin-bottom:0.5em;line-height:2;">推理：2 × active_params × data_inference</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">令三者大致相等，可以推出：</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#1e88e5;font-weight:bold;">推理 token 数 ≈ 预训练 token 数 ≈ RL token 数</strong>（量级相同） 2. 假设 active params ≈ 100B，Chinchilla 最优训练量 ≈ 2T tokens 3. 实际推理量估算：50M tokens/s × 2 个月 ≈ 200T tokens 4. 所以模型被<strong style="color:#1e88e5;font-weight:bold;">过训练约 100 倍</strong>（相对 Chinchilla 最优）</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这意味着：GPT-5 的预训练 token 数应该和它在生命周期内服务的总 token 数在同一量级。换句话说，<strong style="color:#1e88e5;font-weight:bold;">每个前沿模型在其生命周期内应该生成相当于全部人类知识的输出量</strong>。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">20 毫秒从何而来：HBM 容量与带宽 [23:40]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">20 毫秒是怎么来的？经验法则。但它的来源还没完全解释——到目前为止我们关注的是内存带宽和计算时间。看内存时，另一个考虑是我们想用完所有的内存容量。一般来说我们会用所有内存容量来存储权重或 KV cache。所以我们只想在一次前向传播的时间内读完所有内存容量。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以就是<strong style="color:#1e88e5;font-weight:bold;">容量除以带宽</strong>。在很多代 HBM 上这往往是 20 毫秒。单位说得通：字节除以每秒字节数。比如在 Rubin 这一代，大约是 288 GB 除以 20 TB/s，算出来大约 15 毫秒。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我确认我理解了这在说什么。我理解单位分析。但它说的是——我们可以在这段时间内清空并替换 HBM。我们不想处于 HBM 不够大、没法把所有想要的东西写入或取出的情况。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有两种场景。为什么我们不选一个大于 15 毫秒的延迟？如果我想想那意味着什么——意味着我实际上有时间读 HBM 两次。顺便说一下，大部分 HBM 访问是读而不是写。几乎全是读，因为权重矩阵是只读的。然后几乎所有 KV cache 访问也是读。所以在大约 30 毫秒内，我可以读完所有 HBM 两次。但那有什么意义？我不想读权重矩阵两次。我不想读 KV 两次。对，说得通。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从 API 定价反推模型架构 [01:33:04]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">上下文长度定价</strong>：Gemini 3.1 超过 200K context 后贵 50%。这暗示 200K 大约是 KV cache 内存时间追上计算时间的拐点。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">由此可以反推 bytes_per_token：</p>
-<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">bytes_per_token = active_params / (300 × context_length) ≈ 100B / (300 × 200K) ≈ 1.7 KB</p></blockquote>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这与 8 个 KV head × 128 维 × 2 bytes 的配置吻合。API 定价泄露了大量架构信息。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">输入 vs 输出定价</strong>：输出（decode）比输入（prefill）贵约 5 倍。这说明 decode 严重受限于内存带宽——prefill 可以把多个 token 的计算打包在一起，有效分摊了权重加载成本。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">最优 Batch Size 只取决于稀疏度 [25:49]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">几个快速问题。如果最优 batch size 大约是 2000，而且确实如此——它完全取决于稀疏度。不取决于模型大小或其他任何东西。稀疏度出现在模型大小中，但除此之外，它只取决于稀疏度，不取决于规模。这是一个非常有趣的结果。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这似乎暗示……一个问题是：推理的规模经济在多大程度上是一种中心化的力量？但看起来不是什么大事。2000 个同时在线用户算多吗？看起来不算多。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们可以做一点分析。你可以用用户数来想，但更有效的方式是用每秒 token 数来想。这个 batch size 意味着系统每秒多少 token？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">每秒 token 数 = batch size / T</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">T 就是那个 15-20 毫秒的数字。所以最终是 batch size × 大约 64。也就是大约 2000 × 64 = <strong style="color:#1e88e5;font-weight:bold;">128K tokens/秒</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是更容易理解的单位。很难推理并发用户数，但系统的全球流量是多少？看一些公告，有时 API 提供商会炫耀他们有多少流量。我记得去年 Gemini 的一些公告是全球每秒数亿 token。所以这大约是 Gemini 的千分之一。但 Gemini 很大。所以千分之一的 Gemini 实际上很多。要在规模上有竞争力，你至少需要能服务 Gemini 的千分之一。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">KV cache 的存储层级经济学 [01:49:05]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">KV cache 有三种"生产"方式，成本递增：</p>
-<table style="width:100%;border-collapse:collapse;margin:1.5em 0;font-size:14px;"><tr><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">方式</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">检索成本</th><th style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;background:#f5f5f5;font-weight:bold;">持有成本</th></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">重新计算（rematerialization）</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">GPU 计算时间</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">0（已删除）</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">存在 HBM</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">0（已就位）</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">占用 GPU 内存</td></tr><tr><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">存在 DDR/Flash</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">DDR→HBM 拷贝时间</td><td style="border:1px solid #e0e0e0;padding:8px 10px;line-height:1.8;">占用 DDR 容量</td></tr></table>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">选择哪个层级取决于<strong style="color:#1e88e5;font-weight:bold;">持有时间</strong>。启发式规则：选择"drain time"（容量/带宽）与持有时间匹配的层级。</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">HBM drain time ≈ 20ms → 太短，不适合长期存储</li><li style="margin-bottom:0.5em;line-height:2;">DDR drain time ≈ 1-10 秒</li><li style="margin-bottom:0.5em;line-height:2;">Flash drain time ≈ 1 分钟</li><li style="margin-bottom:0.5em;line-height:2;">机械硬盘 drain time ≈ 1 小时</li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Gemini 的 cache 定价有两档：5 分钟和 1 小时。这暗示对应的存储层级可能是 <strong style="color:#1e88e5;font-weight:bold;">Flash</strong> 和<strong style="color:#1e88e5;font-weight:bold;">机械硬盘</strong>——令人惊讶，但从经济学上说得通。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">稀疏度的权衡：质量 vs 效率 [28:07]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">稀疏度越高，需要的计算越少。而且看起来随着 batch size 变大，计算最终成为瓶颈。那问题是：稀疏度能走多远？也就是说，随着稀疏度比率增加、活跃参数相对于总参数越来越少，模型性能下降了多少？下降速度是否快于你通过增加稀疏度节省的计算？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，性能指的是模型质量，而不是模型速度。不幸的是，我们没法用分析方法回答这个问题。这是一个关于模型质量的经验问题。我能做的最好的事是拉出一篇论文来经验性地回答。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这篇论文是 <strong style="color:#1e88e5;font-weight:bold;">Unified Laws for Routed Language Models</strong>。到现在算是比较老的论文了，但他们做的一件事是看：如果我持续增加稀疏度，模型质量的影响是什么？这个答案对 MoE 的具体选择非常敏感。MoE 已经存在很长时间了，可能早在 2017 年。但技术变化很大。DeepSeek 的 MoE 是工作方式的一个大变化。还有更早的论文如 G-Shard、Switch Transformer。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但在这里展示的一种较老技术上，你可以看到：如果我保持活跃参数数量不变，然后增加稀疏度（他们这里叫 expert count），质量持续提升。如果你想象从 1.3B dense 画一条水平线，你会看到比如 64 expert、370M 活跃参数的模型跟 dense 1.3B 模型一样好。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以某种意义上，回报其实不算惊人——你需要把总参数增加百倍才能获得相当于 10 倍活跃参数的效果。实际上更甚。这是一个巨大的参数量增加换来适度的提升。在这个案例中，是 64 倍换 4 倍。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以虽然确实你能通过增加稀疏度来节省计算时间，天真地看似乎这是值得做的权衡。但如果你每次把稀疏度翻倍，这边减少 2 倍，那边增加 8 倍……</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从内存角度看，记住你在把内存读取的这部分翻倍——但它被 batch 摊销了。所以只要跑更大的 batch size。从我们这里做的分析来看，<strong style="color:#1e88e5;font-weight:bold;">这是纯赢</strong>。继续做。继续做直到你用完可用用户。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以实际上有这样一个等价关系：如果我想走稀疏路线，或者如果我有很多用户，我可以用一个更稀疏的模型。从这个角度看，这是合理的权衡。另一个出现的权衡是它也消耗内存容量——而我们只推理了内存带宽。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我确认理解。你是说我们想花更少时间计算，所以做更多稀疏。要让这工作，我们需要更大的 batch size，意味着我们需要更多内存容量。对。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">上下文长度的天花板 [01:52:30]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为什么所有模型都停在 100K-200K context？</p>
-<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">计算成本随 context 增长很慢（attention 的二次项斜率极低，要到百万 token 才明显）</li><li style="margin-bottom:0.5em;line-height:2;">真正的瓶颈是 <strong style="color:#1e88e5;font-weight:bold;">KV cache 的内存带宽和容量</strong></li></ul>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Sparse attention 能帮忙（DeepSeek 的方案把线性项变成平方根），但不是无限改善——太稀疏会丢质量。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Reiner 的判断：<strong style="color:#1e88e5;font-weight:bold;">看不到突破内存墙的好路径</strong>。HBM 带宽就在那里，不会大幅改善。这意味着 Dario 说的"不需要持续学习，in-context learning 就够"如果成立，需要某种根本性的架构变革才能实现百万级 context。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Mixture of Experts 在 GPU 上的布局 [32:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也许这是一个好时机来聊聊 MoE 层通常是怎么在一个 GPU 机架上布局的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们先放大 MoE 层，画出它的样子。我们通常有某种 <strong style="color:#1e88e5;font-weight:bold;">router 层</strong>，它决定把 token 路由到哪里。Token 进来，经过 router 层，然后我们有一堆不同的 expert。Router 会做决定：我要路由到哪些 expert？是其中一小部分，也许三十二分之一。所以也许它会决定路由到这个、</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">MoE 层的 GPU 布局与通信 [32:57]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每个 expert 本身是一个普通的 MLP——有一个上投影，然后一个下投影，中间有非线性。然后我们做反向操作：之前是广播出去，现在把它们收回来求和。最后还有残差连接——token 也直接通过这里，跟 MoE 层的结果相加。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是一个普通的 MoE 层。我想讲的是它如何映射到 GPU 机架上，以及这对通信意味着什么。因为我觉得这会开始展示我们能跑多快的一些限制。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">标准做法是使用 <strong style="color:#1e88e5;font-weight:bold;">expert parallelism</strong>（专家并行）——不同的 expert 放在不同的 GPU 上。比如 DeepSeek 模型有 256 个 expert。假设我们想在一个 Blackwell 机架上运行。有 72 块 GPU。有个整除问题——这不是 2 的幂。所以我们简化一下，只用 64 块。忽略另外 8 块，不是大问题。所以每块 GPU 上有 4 个 expert。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为了画图方便，我就说每块 GPU 上 2 个 expert。所以我们把 GPU 边界画在这里。每对 expert 在自己的 GPU 上。然后我们看通信成本。有些 expert 存储在那里，有些 token 集中存储在这里。它们被路由到所有这些 expert。所以这里有通信成本。输出端也有同样的通信成本。然后希望这不会变成通信受限的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">流量模式是什么？任何 GPU 实际上都会跟任何其他 GPU 通信，取决于模型做的决定。所以这是一个 <strong style="color:#1e88e5;font-weight:bold;">all-to-all 流量模式</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你说任何 GPU——router 是在多个 GPU 上吗？对。我画的是一个 router。实际上你会有很多 router 的副本。事实上跟 GPU 数量一样多。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以这是 64 块 GPU，那也是 64 块 GPU。实际上是同一批 GPU，我们只是因为它们服务不同目的而画成分开的。所以在这个点上，任何 GPU 都可能在向任何 GPU 发送数据。</p>
 <p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
-<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">神经网络与密码学的结构相似性 [02:04:03]</h2>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Reiner 有一篇博文讨论了这个有趣的类比：</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">相似点</strong>：两者都需要在所有输入之间"搅拌"信息。密码学是为了让输出看起来像随机噪声；神经网络是为了从看似随机的数据中提取结构。机制相似，目标相反。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">差分密码分析 vs 梯度下降</strong>：密码学中最强的攻击之一是对密码做"微分"——看输入的微小变化如何影响输出。好的密码要让这个影响尽可能大（雪崩效应）。神经网络则相反——residual connection 和 layer norm 都是为了让梯度保持可控。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">Feistel 网络 → RevNets</strong>：密码学中的 Feistel 构造（用不可逆函数构建可逆函数）被直接移植到了神经网络。RevNets（2017-18）用这个构造让整个 transformer 可逆——forward pass 之后可以从输出完美重建所有中间激活，省去了训练时存储激活的内存开销。代价是多花一倍计算。</p>
-<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是"花计算换内存"的又一个例子——与 KV cache（花内存换计算）恰好相反。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">机架内 vs 机架间：Scale Up vs Scale Out [36:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这种 all-to-all 通信模式跟 Blackwell 机架的配置方式是完美匹配的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但如果你觉得一个机架太慢，想用两个机架，那就有挑战了——也许我在外面画了某种机架边界。我不再拥有两个机架中所有 GPU 之间的 all-to-all 通信。<strong style="color:#1e88e5;font-weight:bold;">机架间通信最终成为一个重大瓶颈。</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以根本问题是：一个机架实际上限定了你能做的 expert 层的大小。这也是推动越来越大互连域的部分原因。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也许值得解释一下机架到底是什么，机架内和机架间的带宽差异，以及通信的 all-to-all 与非 all-to-all 性质。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这个地方在 Nvidia、Google 和其他公司（包括我们）之间确实非常不同。一般来说，机架是一个物理结构。几米高，一两米宽，取决于配置。它存储大约 64 块 GPU 或 XPU。限制它大小的是供电、重量和散热能力。由于这些物理约束，它在很多情况下就是这个大小。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">部署数据中心时，一个数据中心可能有数千个这样的机架。一个高高的机架，里面一堆 GPU，然后再放一个机架。你说得好像很容易似的。对，直接放进去。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在 Nvidia 的情况下，通信拓扑是——他们把 GPU 放在机架外侧，然后把交换机放在机架内侧。里面有一组交换机，就是 <strong style="color:#1e88e5;font-weight:bold;">NV Switch</strong>。然后他们跑一堆线缆。每块 GPU 都有线缆连到中间的交换机。所以所有 GPU 连接到所有其他 GPU 只需两跳——到交换机，再到另一块 GPU。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当我想离开机架时，走的是另一条路径。GPU 还有一个慢得多的连接，通常慢大约 <strong style="color:#1e88e5;font-weight:bold;">8 倍</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我画的绿色在 GPU 情况下是 NVLink。更一般地叫 <strong style="color:#1e88e5;font-weight:bold;">scale up 网络</strong>。你通常还有一个 <strong style="color:#1e88e5;font-weight:bold;">scale out 网络</strong>，允许你连接到某个数据中心交换机。所有 GPU 都有某种连接到某个数据中心交换机。但 scale out 的带宽通常慢大约 8 倍。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">跨机架 MoE 的瓶颈 [39:50]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">挑战在于：如果你想把 MoE 层布局在两个机架上，这边一半的 GPU 会想跟那边的 GPU 通信。平均来看，当我看这些 GPU 上的 token 想去哪里——一半 token 想留在机架内，很好，它们可以用快速的 scale up 网络。但另一半 token 想离开机架去另一个机架。那就不太好了。它们需要用慢得多的网络。这就成了 all-to-all 模式的瓶颈。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">另一个选择是：为什么不搞一个大交换机，把两个机架连在一起？这个方向有很多想法，但一般来说，你有这种交换机层级而不是一个大交换机的原因是为了管理布线拥塞。你就是需要跑大量的线缆。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这基本上就是在问：为什么不搞更大的 scale up？为什么不直接一百万块芯片全 scale up？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从 Hopper 到 Blackwell 再到 Rubin，是什么让规模从 8 到 72 再到 500 多成为可能？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从 Hopper 到 Blackwell 主要是决定从 tray 作为形态因子切换到 rack 作为形态因子。这是一个产品决策。没有实质性的技术障碍。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从 64 到 500 左右，有一些数学上的巧合，但至少有真正的 4 倍增长，来自更复杂、更困难的机架设计——实际上是新的物理设计来跑更多线缆。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">线缆的复杂性就是搞清楚哪根线跳到哪里的成本。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">线缆密度的物理限制 [42:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我放大看看线缆密度。我再画一次这个图，画个更干净、更大的版本。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">假设我中间有一些交换机。一开始我每边只放两块 GPU（或两个 GPU tray），每个 tray 想要两根线缆出来。所以我物理上跑垂直线缆到交换机上。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果我想把机架中的 GPU 数量翻倍，我需要跑字面上两倍密度的线缆。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但如果你看物理数据中心，机架内似乎有很多空间。线缆看起来真的很大。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，机架外面有空间。机架里面——这些机架越来越优化后非常紧凑。有从 tray 到机架的连接器密度，机架的背板，然后背板本身密度非常高。还有其他物理约束，包括线缆的弯曲半径——你不想把它们折断。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以字面上就是放线缆的物理空间在约束它。对。我完全没想到。有趣。看起来很意外——机架那么大，我们不能往里面塞更多线缆吗？</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">机架设计的物理极限 [43:40]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">机架设计不是我的专长，但跟人聊的时候，他们面对的约束是——你在优化的大物理因素是什么？空间、机架重量（它真的很重，你需要足够的金属顶部不下垂不倒塌，但加更多金属又更重了）、供电和散热。所有这些都在竞争。现代机架把所有这些都推到了非常极端的物理极限。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">（广告插播：Google Gemma 4 是第一个允许完全断网使用的开源模型，小到能在笔记本上跑，但好到真正有用。）</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么模型参数量三年没涨？ [44:55]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">GPT-4 是什么时候发布的？2023 年。据传超过一万亿参数。而似乎直到现在、最近六个月内，才有模型发布的参数量显著超过三年前发布的模型。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在这期间本应有 scaling 的，原因是不是我们只是在等有足够内存的机架来容纳一个五万亿参数的模型，加上足够用户、足够序列的 KV cache？或者如果你在做 RL，类似的考虑——实际上要容纳你试图解决的所有问题 batch 的 KV cache。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看 Hopper——你有 8 块 Hopper，大约 640 GB（2022 年）。到 Blackwell 终于部署（去年？），你终于有了 10-20 TB 量级的 scale-up，足够放一个 5T 模型加 KV cache。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">部署更大的 scale-up 域是一个巨大的解锁。</strong> 我这里画的是 NVIDIA Blackwell 的部署。Google 的部署实际上一直有非常大的 scale-up 域。这也解释了为什么 Gemini 似乎领先——Gemini 2.5 成功预训练的时间似乎比其他一些实验室更长。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">不确定多少来自成功部署更高稀疏度比率，也可能是实际的建模创新——比如 DeepSeek 的 MoE 说"实际上激活更多 expert，但更细粒度的 expert"是一个大创新。我确信还有很多其他模型架构和训练数据的创新。很难把它们全部分开。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但从你能做什么的限制来看：<strong style="color:#1e88e5;font-weight:bold;">活跃参数受计算成本限制，总参数受 scale-up 大小限制。</strong></p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline Parallelism 与跨机架通信 [47:11]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当你在单个 scale-up 域内操作时，这是前向还是后向的考虑？还是 prefill vs decode 的考虑？还是无论什么工作负载都最好在一个 scale-up 内？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">无论你是在做预训练、RL 生成还是用户推理——都是如此。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，要回答这个问题，我们需要谈谈通信模式。我们已经谈了 MoE 的通信模式——all-to-all。All-to-all 非常强烈地偏好全连接，也就是我们刚展示的，偏好在一个机架内。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">除了 expert parallelism，还有其他种类的并行。文献中有 <strong style="color:#1e88e5;font-weight:bold;">tensor parallelism</strong>——随着 expert 变小的趋势，这变得不太相关了，可以忽略。但我们还有 <strong style="color:#1e88e5;font-weight:bold;">data parallelism</strong> 和 <strong style="color:#1e88e5;font-weight:bold;">pipeline parallelism</strong>。它们实际上可以更好地适配使用多个机架。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们专注于 pipeline parallelism。这是一层 MoE。我上面还有大约 100 层。我可以在这个点决定切换到另一个机架。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这会成为通信瓶颈吗？我们可以直接求解什么时候这会成为通信瓶颈。但在代数求解之前，先可视化一下路径。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们有一堆 MoE 层。假设我在这里换机架，然后若干层后在这里也换机架。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们的方法是：比较 scale out 带宽需求和 scale up 带宽需求。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">提示是：这里发送的东西多得多——我们在这里发送很多东西，而在那里只发送一个东西。而且我们可能做很多次。这就是造成差异的原因。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我猜一下。看起来你发送 batch size 进入机架。但机架内的通信是 batch size 乘以 GPU 数量。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Scale Up vs Scale Out 的时间比 [50:26]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对，是激活的 GPU 数量。我根本不需要发送到那个 GPU，所以这是一个很大的节省。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，我们来讲一下 scale up 相对于 scale out 的减速有多少。我们直接跳到 scale up 花费时间与 scale out 花费时间的比值。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">第一个考虑是 scale up 通常比 scale out 快 8 倍。所以作为基线，如果带宽相同，我们会有 1/8，这来自带宽差异。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但然后我们有数据发送量的扩展。如果一个 token 进来，在 DeepSeek 的情况下，它会被路由到大约 32 或 16 个 expert。所以这是激活的 expert 数量。然后同样的事情在多个不同层上适用——也许我要跑两层。所以还有"每阶段层数"的倍数。还有一个因子 2，用于上行和下行。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以我们希望 scale up 时间大于 scale out 时间，因为 scale up 时间是更重要、更宝贵的资源。我们希望这个数字大于等于 1。这看起来真的不难。只有一个 8 倍的因子需要克服。我们需要这三个东西的乘积大于 8。通常激活的 expert 数量相当大——可能本身就是 8。然后我们可以增加每阶段的层数直到满足这个条件。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以最终看起来是：我实际上可以有一整条机架的 pipeline——一个机架做一层，然后移到下一个机架做另一层，再移到下一个机架做另一层。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">并行策略为何与模型架构匹配 [53:20]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有趣的是，实践中最好的并行策略最终在物理上跟实际架构相似。不是什么高深的东西。就是：我们有 expert，我们把它们放在不同 GPU 上。我们有不同的层，我们把它们放在不同机架上。物理布局跟模型架构匹配。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我觉得思考方式是：模型在哪些维度上被放大了？按层放大，按 d_model 维度放大，按 DFF 维度放大，按 expert 数量放大。每一个数字你都可以选择沿着它切割。如果那些数字足够大，沿着那里切割最终就变得有利可图。我们选了其中两个。另外两个，按模型通常的大小来看，不划算。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有一个 Ilya 的演讲说"今天我们知道不要做 pipeline parallelism"。Horace 给我们讲了这些不同种类的并行，他说 pipeline parallelism 的问题是——除了 bubble 之外——它创造了架构约束。比如 Kimi 有这些残差连接，attention 会 attend 到几层之前的东西，这在 pipeline 方式下很难实现。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline Parallelism 的真正好处 [55:09]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们还没完全说清 pipeline 的好处是什么。这些复杂性是真实的。Pipeline 是一个巨大的麻烦，但它确实给你一些好处。然后你可以决定这些好处是否值得付出代价。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最大的好处——在推理中有一些好处，在训练中可能好处更大。在推理中，我们在节省什么？内存时间还是计算时间？都不是——我们只是把内存时间从一块芯片移到另一块芯片，或从一个机架移到另一个机架。运行时间没有实际好处。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但我们节省的是<strong style="color:#1e88e5;font-weight:bold;">每个机架使用的内存容量</strong>。如果我们认为机架中的内存是瓶颈，那就有一个速度上限。Pipeline 允许我们大幅减少这个瓶颈。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">反面的含义是——在这次采访前我跟 Jane Street 的 GPU 性能工程师 Axel 聊过——他解释说，做 pipeline 你必须用 micro batch 而不是完整 batch。如果你用 micro batch，那你定义上就没法把加载权重的成本摊销到所有用户或所有序列上。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">正面含义是你不需要用那么多内存。负面含义是我们没法把加载权重摊销到所有那些用户上。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline Bubble：为什么需要 Micro Batch [56:52]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也许值得解释为什么你必须用 micro batch。让我们画 pipeline bubble。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">什么是 pipeline parallelism 中出现的 micro batching？我先聚焦推理，这是一个稍微简单的问题。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是时间轴，这是我们在哪个机架上。假设我有 4 个机架。一次推理会像这样步进通过这 4 个机架。这是推理 #0。它以某个 batch size 运行，像这样步进通过所有 pipeline 阶段。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果我们说"好，我们在这里运行推理 #1"——</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline Bubble 与推理中的自然解法 [57:40]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这显然是巨大的浪费——四分之三的时间每个机架什么都没做。所以我们实际上不在那里运行推理 #1。我们尽快运行它——在推理 #0 完成后立即开始。然后继续。如果我们没填满这些空隙，我们就把它叫做 <strong style="color:#1e88e5;font-weight:bold;">pipeline bubble</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在推理的上下文中——我们只做前向传播——这很明显，为什么要做那个蠢事？但在训练的上下文中，可能没那么明显。在推理中，做这个改变是非常自然的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有趣的是，micro-batch 和 batch 的区别在推理中根本不重要，因为你可以随便叫它什么。它只在训练中重要，因为训练有一个最优 batch size。在做反向传播之前，你想要积累那个 batch 中的所有序列。如果你想在训练中做 pipeline，为了避免那个 bubble，你需要——</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">训练中的 Pipeline：前向与反向 [58:54]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们画训练的图。这是推理图，我标记为 4。现在对训练做同样的事。我们有前向传播，但在某个阶段，我们要转换到反向传播。所以我们在前向传播中做若干个 batch，然后一次性把所有人转换到反向传播。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理部分是一样的，但然后我们在这个点硬停，然后把所有人转换到反向传播。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">值得澄清的是，硬停的原因是你想一次做一整个 batch 的反向步骤。然后有一个最优大小决定那个 batch 应该多大。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从 ML 收敛速率的角度看，<strong style="color:#1e88e5;font-weight:bold;">越小越好</strong>——因为你从梯度下降中获得最新鲜的信息。但从总训练时间的角度看，越小越差（从系统角度）。所以最优是这两者的权衡。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你选一个 batch size，然后对那个 batch size，做一些前向然后一些反向。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Pipeline parallelism 因为有这个空闲时间（bubble），文献中有很多技术来不同地布局以避免它。有更复杂的方案叫 zero bubble 或 one forward one backward，以复杂的方式交错前向和反向。你可以在那里挖比特币。对，更有用的是你可以做权重梯度步骤。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline 对推理的影响：中性 [01:01:00]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在推理中，pipeline 对你关心的任何东西——batch size 或延迟——实际上是中性的。不改善也不恶化。如果你看这个推理的延迟，pipeline 运行 vs 全在一个机架上——如果全在一个机架上，我们只是把所有盒子滑下来排成一行，延迟是一样的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以 <strong style="color:#1e88e5;font-weight:bold;">pipeline 对延迟既不好也不坏，但它意味着每个机架用更少的内存容量</strong>。因为现在你不需要整个模型，只需要四分之一的模型。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以基本上推理时用 pipeline 是无脑的？实际上即使在推理中，它也没被大量使用。它减少你的内存容量需求。但实际上有巨大的盈余。一个 Blackwell 机架有很多 TB，也许几十 TB。如果那比一万亿参数模型大得多——一万亿参数模型只需要 1 TB。所以它已经能放下了。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以 pipeline 的好处不大，因为你在减少一个已经很小的数字。但它确实说明理论上你那里有太多内存了，也许你可以构建一个内存更少的不同硬件。如果你在设计硬件，你说"我实际上不需要那么多内存，因为我不需要权重放在一个机架里。我可以把权重放在八个机架里。"那我可能构建一个每 GPU 没那么多 HBM 的硬件。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">（广告插播：Cursor 的 Composer2Fast 模型足够快，可以几乎即时迭代。20 分钟内做了 10 个不同版本。）</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">内存墙：当前的宏观问题 [01:03:37]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">宏观问题。现在所有人都在谈内存墙。内存变得超级贵。没有足够的内存。智能手机产量会下降 30% 因为没有足够的内存。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">内存墙的经济学 [01:03:48]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">超大规模公司在花……这很震惊。Dylan 说他们今年 50% 的资本支出花在内存上。这可信。超大规模公司的资本支出是多少？高达数千亿，也许一万亿。他们把一半花在内存上。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，这是一个巨大的约束。这就是为什么我们今年不会有新笔记本和手机。但同时，我们有太多内存？人们愿意往这些系统里塞太多内存？对。为什么 Jensen 要往这些机架里塞这么多内存，如果你不需要的话？</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">内存容量分析 [01:04:23]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">在我们之前的方程中，我们看的是内存时间——内存带宽和计算带宽。现在让我们开始看<strong style="color:#1e88e5;font-weight:bold;">内存容量</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">不考虑并行方案，内存的容量需求是：<strong style="color:#1e88e5;font-weight:bold;">总参数数</strong>（这是我们需要在某个系统中放下权重的量）加上 <strong style="color:#1e88e5;font-weight:bold;">KV cache</strong>（batch size × 上下文长度 × 每 token 字节数）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我之前为 pipeline 辩护的论点是，有一些技术允许我们解决权重部分。那 KV 部分呢？有技术能解决吗？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">假设我们在若干 GPU 上运行。E 是 expert parallelism 的程度——当我们把 expert 层分布在多个 GPU 上时，用了多少 GPU。比如 64。然后 P 是 pipeline 的程度——机架数量，也许我们选 4。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">总内存需求除以 E×P 就是<strong style="color:#1e88e5;font-weight:bold;">每 GPU 内存需求</strong>：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">c_mem = (N_total + batch × context_length × bytes_per_token) / (E × P)</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为什么这样除是对的？因为参数在一个机架内的所有 GPU 之间完美分割。层在不同机架之间完美分割。然后我们以某种方式安排上下文也同样完美分割。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Micro Batch 与 Global Batch 的关系 [01:07:33]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这里我们需要回去分析 batch size B。你提到了 micro batching vs global batching。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">回到 pipeline 图。一个 batch 在前向传播。但它不是做完就消失了。想想 decode 是怎么工作的：我有一堆已经生成的 token，做一次前向传播生成一个新 token，写入 KV cache，然后再做一次前向传播生成下一个 token。所以我实际上是在循环中运行这个 batch #0。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">前向完成后，我可以在上面开始循环的下一次迭代。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们拆分这个 batch。B 是 global batch size：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">B = micro batch 数量 × 每个 micro batch 的 batch size</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">需要多少个 micro batch？在这个图中是 4（0、1、2、3）。micro batch size 仍然是那个约 2000 的数字——300 × 稀疏度。这是每 20 毫秒发车的那班火车的大小。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以 global batch size = micro batch 数量 × local batch size。Local batch size 由硬件参数决定。Micro batch 数量尽可能小，使得我们绕回来时不留空闲时间。你可以直观地看到它等于 pipeline 阶段数。这里是 4，那边也是 4。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是实际在做的吗？前沿模型在推理时真的有 pipeline？在大规模训练中肯定在做。推理中可以做。但我要论证为什么它不那么有吸引力——对权重有用，但对 KV 不太有用。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline 对 KV Cache 的影响 [01:10:40]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">大挑战是……让我们填进去。micro batch 数量等于 pipeline 阶段数。当我们把所有这些代回去，得到 pipeline 阶段数 × 小 b 出现在这里。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后当我们分解时，我把它拆成两项。第一项（权重）得到完整的 E×P 除法。第二项（KV cache）也有 E×P 除法，但 <strong style="color:#1e88e5;font-weight:bold;">P 被抵消了</strong>。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Pipeline 对 KV Cache 无效的原因 [01:11:25]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">P 和 P 抵消了。所以我们发现：如果你增加 pipeline 阶段数，权重的内存占用持续下降。但 <strong style="color:#1e88e5;font-weight:bold;">activations 的内存占用保持不变</strong>。所以它实际上不起作用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">一旦你做了足够的 pipeline（甚至两个就够了），权重项变得很小，KV cache 成为主导项。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">等等，我知道这是错的。让我想想为什么我的训练逻辑在这里是错的。如果你在很多不同阶段做 pipeline……KV 值在层之间不共享。为什么跨多层 pipeline 不会有帮助？因为那样你不需要存储……对，你只需要存储一层而不是两层的 KV。从那个角度确实有帮助。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但与之竞争的是：你需要让所有机架同时有用地忙碌。所以同时在飞行中的序列数量增加了。说得通。所以这些恰好抵消，你最终每 GPU 没有节省。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这从根本上回到了一个点：<strong style="color:#1e88e5;font-weight:bold;">你没法跨 KV cache 摊销</strong>。首先我们说了你没法跨 batch size 摊销 KV cache。现在我们说你也没法跨 pipeline 阶段分片它。从两个角度看都很糟糕。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理时实际怎么做 [01:13:02]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">那推理时实际怎么做？DeepSeek 论文报告了他们的做法——他们就是做大量 expert parallelism。实际上你应该把 expert parallelism 增加到你的 scale-up 域大小，然后做很少的 pipeline。也许根本不做，也许两个，刚好让权重存储不成为太大问题。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这是唯一两种真正有意义的并行。过去有 tensor parallelism——在 expert 内部切割。但现在 expert 太小了，这不是一个有利可图的优化。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以这回到了问题：这是否意味着前沿实验室做推理时基本上就在单个 scale-up 内？<strong style="color:#1e88e5;font-weight:bold;">是的。</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你可以看它如何取决于模型大小。你可能有一个非常大的模型——超过一个机架内存的。那里你应该做一点 pipeline。也许它极度稀疏，那就是做 pipeline 的理由。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Scale-Up 域大小与 AI 进展 [01:14:07]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这回到了讲座开头的承诺——这也会告诉你关于 AI 进展的事情。如果模型大小 scaling 直到最近一直很慢……让我确认我理解了这个论断。论断不是"你本可以跨更多机架训练"。而是在那之前做推理没有意义——我们没有能力轻松地为更大模型做推理。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">实际上我提出的论断是：pipeline 对上下文长度没帮助。它完全帮助模型大小。因为有 pipeline 的能力，至少一个机架不应该成为你放下模型参数的约束。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">另一个考虑是：为什么没有更多 scale up？为什么更大的 scale-up 域有帮助？我们讨论了一个方面——不是因为内存容量。我们有内存容量的解决方案，至少对模型大小而言（对 KV cache 大小不行）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">另一个出现的问题是<strong style="color:#1e88e5;font-weight:bold;">延迟</strong>。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">跨机架延迟成本 [01:15:15]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">从机架到机架的延迟成本是多少？这非常取决于硬件。我觉得大概在几毫秒的量级，但可能差一个数量级。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">4 是一个现实的 pipeline 阶段数吗？是的。那不算多。在少量 pipeline 阶段上，这不是巨大的延迟影响。等等，我算一下——那是每 token 10 毫秒。没错。2 × 4 左右……每 token 10 毫秒实际上很多。对，如果从 20 变成 30。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">画一下它经过的路径：从你的 GPU/TPU 到网卡，然后到机架顶部交换机，然后跳到另一个机架，反向做同样的事。你需要把这些不同东西的延迟加起来。它可能实际上要上到数据中心交换机再回来，取决于部署配置。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">而且因为 decode 是顺序的，它们在各阶段之间是叠加的。你不能同时做。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，这把我们带回了问题：scale-up 的大小跟 AI 模型大小为什么一直没涨有关系吗？</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">更大 Scale-Up 域的真正好处：带宽而非容量 [01:16:53]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们谈了跳转的延迟。还有同样的 T_mem 延迟——内存时间延迟——实际上被更大的 scale-up 域大幅改善。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">回忆一下 T_mem（权重）= 总参数数 / 内存带宽。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这里的内存带宽是什么？不只是一块 GPU——实际上是我能并行用来加载权重的 GPU 数量。我不能并行使用不同 pipeline 阶段（因为它们不同时运行），但我可以并行使用 scale-up 域中的所有 GPU 来加载权重。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这非常有效。内存带宽项本身等于 <strong style="color:#1e88e5;font-weight:bold;">scale-up 大小 × 每 GPU 内存带宽</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每 GPU 带宽每代可能增加 1.5-2 倍，但 scale-up 大小增加了 8 倍。所以更大 scale-up 重要的原因不是整个 scale-up 的内存容量，而是<strong style="color:#1e88e5;font-weight:bold;">内存带宽</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Pipeline 完全解决了容量问题，但 scale-up 大小帮助解决带宽问题。带宽问题帮助你做更长的上下文长度——随着模型变得更 agentic，这越来越相关。它让你以更低延迟运行模型。如果我用一个很稀疏的模型放在一个小 H100 盒子上，延迟会非常高。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Chinchilla Scaling 与过度训练 [01:19:00]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">一个超级离题的问题。有 Chinchilla scaling，告诉你模型应该相对于训练数据量有多大。但现在显然你不只是在优化用训练计算能得到的最高质量模型。你想要用户能得到的最好结果——作为训练和推理计算的混合。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">那问题是：你应该过度训练模型多少，使得训练和推理摊销的计算最小化以达到某个性能？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">现在有了 RL 推理，还有另一个考虑：你要做一些预训练。那个预训练既用于 RL 生成，也用于最终用户的推理。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"过度训练"的意思是：从纯训练计算效率角度看，用更大模型训练更短时间会更高效（因为它学得更快）。但也许你用更小模型，花更多时间训练，但现在给用户用更便宜。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">具体问题：模型比 Chinchilla 最优过度训练了多少？RL 生成改变了这个吗？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这里我们得做一些猜测，因为更新的 scaling law 和模型流量没有被报告。但一种看法是——让我先做一个一般性的启发式声明。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果我有总成本 = 成本 A + 成本 B（比如训练成本 + 推理成本），我想最小化这个和。对于很多曲线，<strong style="color:#1e88e5;font-weight:bold;">最小值往往在成本相等的地方</strong>。这是一个启发式声明，但有很多例子是对的——比如一个是 1/x 另一个是 x。它们往往在相等点最小化。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">启发式地，我猜测这对你描述的设置也成立。真正证明需要看 scaling law 和拟合那些奇怪的指数，但遵循幂律的东西往往有这个性质。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">训练 + RL + 推理的成本等式 [01:21:51]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们要说训练成本 + 推理成本，我们想让它们相等。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">预训练成本</strong> = 6 × 活跃参数数 × 预训练数据量（著名的 6ND 公式）</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">RL 成本</strong>：大致相同——同样的活跃参数数，但数据量是 RL 数据。有一个额外的效率乘数（或者说低效率）。一方面你不是在所有 rollout 上训练。另一方面，也许更大的低效率是：这涉及大量 decode，而 decode 通常比训练的 MFU 低。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你对 RL 中每一次生成都做反向传播，就是 6ND。所以这个数字可能更小——至少是 2，在 2 到 6 之间。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">给观众澄清一下：前向 + 反向每参数是 6。只有前向是 2。这就是为什么 RL（你肯定要生成所有轨迹，但可能不在所有轨迹上训练）是 2 到 6。推理就是 2。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">推理成本</strong> = 2 × 活跃参数数 × 推理数据量</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以我们要求解这三项大致相等。这是对实验室会在哪里的大致估计。实验室有更多信息来判断做更多 RL 是否有效，</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">训练/RL/推理的成本均衡 [01:24:12]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我没有那个信息，但我觉得一个好的大致估计是三者各占 33%。另一个朴素模型可能是 RL + 预训练占 50%，推理占 50%。这也是一个有效答案。因为这是启发式的，我没法真正论证哪个更好。它们差别不大——33% vs 25% 在同一个量级。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们选一个。全部相等看起来够简单。我们直接求解等式。很直接——活跃参数数完全消失了。提取出来后：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">预训练数据 + α × RL 数据 = β × 推理数据</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">大致估算 α：这是 2-6 除以 6（从这项跟那项比较），然后有一个低效率项，大约 30%。所以 α 大约是 1/10。β 也是类似的——1/3 × 30%，也大约等于 1/10。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果两个都是 1/10，那暗示 RL 从来没有反向传播。好吧，我们让它大一点，比如 2/10。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">写出来：这是 2/10，这是 1/10。所以推理 token 数量——这是每秒数亿 token 乘以模型部署大约两个月——应该决定 RL 和预训练的 token 数量。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后预训练和 RL 之间的等价：预训练数据应该等于大约 2/10 × RL 数据（我们想让它们成本等价）。等等，我搞反了。低效率时我们付出更多成本，所以需要取倒数。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">追溯回去……最终这些都很接近。大约 1.5 这里，1 那里。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你几乎可以直接读出来：<strong style="color:#1e88e5;font-weight:bold;">推理 token 数应该大约等于预训练 token 数，应该大约等于 RL token 数</strong>——在我们没法推理的因子范围内。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但看起来 RL token 应该比预训练 token 少。对，一般是这样。因为 RL 在机器时间上效率更低。如果你试图均衡 RL 和预训练时间，那你应该有更少的 token 来获得相同的墙钟时间。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理 Token 数 ≈ 预训练 Token 数 [01:28:44]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这很有趣，我从没从数据均衡的角度想过。我觉得从成本均衡开始是对的，但取决于你怎么建模成本，这接近于数据均衡。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">基本上，如果 GPT 要被最优训练，所有使用 GPT-5 的用户流式传输的总 token 数应该等于预训练投入的总量。而预训练投入的总量是所有人类知识的总和。所以每个模型应该在输出端生成相当于人类知识总和的量。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">人们会往哪个方向偏？如果你觉得人们的预测能力不完美，而且你冒着做出一个不是前沿模型然后直接扔掉的风险，那就改变了权衡——因为有某个概率适用于推理，你应该把推理 token 打个折扣。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">实际数字估算 [01:29:49]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们能不能反推出对给定大小模型应该多出多少计算？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们得做一些现实世界假设。推理 token 我们应该能数出来。假设大约 5 亿 token/秒，模型部署两个月后过时。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">5 亿 × 2 个月 = 2.6 × 10^15。这个数字可能太大了，因为这会是一个家族中的多个模型。让它小 5-10 倍。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以我们估计每个具体模型大约 5000 万 token/秒。模型存活两个月。算出来大约 <strong style="color:#1e88e5;font-weight:bold;">200 万亿 token</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后我们想跟前沿模型的活跃参数比较。我不知道最新传闻，但有人告诉我 150 万亿。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从 API 定价反推模型参数 [01:31:12]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">活跃参数？抱歉，我是说 token。训练了 150 万亿 token。有趣。跟我们估算的差不多。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我觉得活跃参数大约在 1000 亿左右。所以乘以 20 得到 token 数。Chinchilla 最优大约是 2 万亿。我们看到实际是那个的 100 倍。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">D_chinchilla 是什么意思？就是 Chinchilla scaling 模型推荐的预训练 token 数。所以过度训练了多少？200 万亿或 100 万亿 token 除以 Chinchilla 最优的 2 万亿。过度训练因子大约是 <strong style="color:#1e88e5;font-weight:bold;">100 倍</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你认为这大致正确——只要想想"你希望一切在计算上相等"，再加上 OpenAI 也意识到这一点并且在服务一定量的 token/秒——那就告诉你 GPT-5 预训练投入了多少数据。即使差 50%，能从第一性原理推出这些数字也挺疯狂的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这就是为什么你应该到处做近似——因为误差范围很大。但设 A = B 然后算出来确实很有力量。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从 Gemini 定价推断上下文长度成本 [01:33:04]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们可以公开查到这些模型的 API 价格。也许能从中学到什么。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">首先，Gemini 3.1 超过 200K token 时比 200K 以内贵 50%。高层面我理解为什么——但为什么具体是 50%？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">高层面是：成本随上下文长度增加。回到之前的方程——内存时间 vs 计算时间。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这次我画成本曲线作为上下文长度的函数（而不是 batch size 的函数）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">计算成本</strong>作为上下文长度的函数实际上是常数。没有对上下文长度的依赖（实际上有很轻微的依赖，我们忽略）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">内存读取</strong>从一个大数字（权重）开始，然后随上下文长度逐渐增长。取最大值后你看到一个拐点。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这就是 Gemini 可能在付出的成本。然后你想：怎么在上面放一个定价结构？你想确保无论上下文长度是多少，你仍然有利可图。所以有一个两级定价结构。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">鉴于涨价点在 200K，这可能意味着它跟这个交叉点大致对齐。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">求解每 Token 字节数 [01:36:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们可以完成这个计算。假设内存时间和计算时间相等的点在 200K token。假设 batch size 足够大使得权重的内存时间可忽略。那么：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">batch × context_length × bytes_per_token / 内存带宽 = 活跃参数数 / FLOPS</strong></p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">求解 bytes_per_token。Batch size 出现在两边然后抵消。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">代入数字：FLOPS/带宽比大约是 300（取倒数 1/300）。活跃参数猜测 1000 亿。上下文长度 200K。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">算出来大约 <strong style="color:#1e88e5;font-weight:bold;">1667 字节，接近 2 KB</strong>。这实际上是合理的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">做个合理性检查。有两种机制让每 token 字节数较小：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#1e88e5;font-weight:bold;">Dense attention + 跨层大量复用</strong>：Character AI 有博客讨论这个——交替长短上下文。全局上下文跨所有层共享。要得到 2KB，比如 d_head = 128（典型值），bytes = attention 层数 × 2 × d_head × KV heads 数。在 Character AI 类模型中，层数因子是 1。d_head 是 128。KV heads 通常 1-8 个。所以完全可以通过 8 个 KV heads × d_head 128 得到这个数字。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2. <strong style="color:#1e88e5;font-weight:bold;">Sparse attention</strong>：增加所有这些数字，但有很大的稀疏度项。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这个数字合理，也许稍小。有趣的是他们会通过 API 定价泄露这么多信息。你有动机定价接近成本，否则别人可以套利。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Input vs Output 价格差异：Decode vs Prefill [01:41:37]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">也许我们能从 input vs output 价格差异中学到什么——这告诉我们关于 decode vs prefill 的信息。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">上次我查大约是贵 5 倍。Decode 处理下一个 token 的计算——如果你做 prefill，你不只是处理最近的 token，你在并行处理所有 token。所以 prefill 的计算是 decode 的计算 × prefill 长度。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果我们把 decode 想成"过去长度为 1"，prefill 是"过去长度为多"。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">内存方面——你不为 prefill token 存储 KV cache。让我画一下 prefill 是怎么出现的。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Prefill vs Decode 的成本分析 [01:42:47]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你想这是一个聊天会话——用户说了什么，AI 生成回复，然后用户又说了什么。我们 prefill 这个。这是更常见的情况。读文件或者 AI 响应用户输入或 tool call——任何不是生成的东西。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">假设我们在这里。你需要加载基本上之前所有东西的 KV。但这个的内存带宽成本是什么？如果你用 flash attention——它基本上是临时的，甚至不去主内存。忽略它。所以就是之前所有东西。实际上对内存时间完全没有调整。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好，那这一项让它贵 5 倍。为什么？这告诉我们什么？唯一可能改变的是计算贵了 5 倍。但实际上被处理的 token 量大了那么多。所以我们想要的是每 token 成本。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">让我们用 len_past 作为 X 轴画图。Y 轴是 T / len_past（每 token 成本）。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">T_compute / len_past</strong>：这除以 len_past 后就是一个常数。不随 len_past 变化。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">T_mem / len_past</strong>：不管上面是什么，除以 len_past 后它看起来像一个递减曲线。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以随着 prefix 长度增加，你的内存带宽时间下降。这意味着如果你之前受内存带宽瓶颈，你可以避免这个瓶颈。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他们对 prefill 收费比 decode 便宜 5 倍，这确实暗示他们在相当大程度上受内存带宽瓶颈。因为 T 等价于成本。这实际上是——decode 在 5，prefill 在 1。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以确实是<strong style="color:#1e88e5;font-weight:bold;">极度内存带宽瓶颈</strong>的。真实图形大概是这样——仍然交叉，但 decode 时内存和计算时间之间有很大差距。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Cache Hit 为什么便宜那么多 [01:49:00]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">另一个有趣的是为什么 cache hit 便宜那么多。如果我没记错，cache hit 便宜 10 倍。写入 cache 更贵。但如果你命中 cache，便宜 10 倍。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这大概是把东西保留在 HBM 中而不是清除的成本。但如果你确实保留了，再次加载就更便宜。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有两种方式产生 token 的 KV cache：从头计算（从底层 token ID 计算，那些很小）；或者之前已经产生并存储在某个内存中。成本比率就是这两种机制的比率。Cache miss 意味着你从所有内存中删除了它，必须从 token 直接重新计算。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你甚至可以更进一步想：存储在哪个内存层级。可以存在 HBM，也有比 HBM 更慢更便宜的内存——比如主机上的 DDR 或 Flash。你可以计算在每个内存层级中什么时候有意义。这跟你要存储多长时间有关。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">重新物化 KV Cache 的成本 [01:50:37]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们想看几个不同内存层级的存储成本，以及重新物化（rematerialization）的成本。Remat 意味着删除 KV cache 后从头重建的成本。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">重新物化一个 token 的 KV cache：我只需要对整个模型运行一次前向传播。所以这是计算时间——以 GPU 的速度重新运行计算，然后乘以 GPU 的美元/秒。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">非常天真的问题：为什么没有二次项？有的，它出现在计算中。作为近似我选择去掉它。快速展示一下：如果你看每 token 的 FLOPS——来自权重矩阵乘法的 FLOPS 作为上下文长度的函数是常数，来自 KV cache 的乘法随 attend 的内容量线性增长。但这个斜率非常低，画出来时很好地被一条平线近似。你要到百万 token 量级才开始注意到二次/线性项的效果。所以不太相关。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么没有公司提供超百万 Token 上下文 [01:52:30]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">那为什么没有公司有超过百万 token 的上下文长度？如果这是对的？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">长上下文有两个成本：内存带宽成本（我们花了很多时间分析的）和计算成本。计算成本几乎总是——而且从基本原理上被迫——比内存带宽成本的斜率小得多。所以限制你拥有真正大上下文的主要是<strong style="color:#1e88e5;font-weight:bold;">内存带宽和内存容量</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Dario 在播客上说过的一个想法是：我们不需要持续学习来实现 AGI，in-context learning 就够了。如果你相信这个，那你得想我们需要到 1 亿 token 上下文长度才能有一个相当于跟你工作一个月的员工。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你这么想，那某些 ML 基础设施的东西必须改变才能允许 1 亿上下文长度——内存带宽必须允许。Sparse attention 确实给你一个出路——因为你得到平方根，是一个大改进。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但如果你看模型上下文长度的历史——从 GPT-3 到 GPT-4，它们从大约 8K 跳到 100K-200K。然后过去一两年，它们都在那附近徘徊。我觉得这实际上表明那是合理平衡的成本点，大幅超越会成本过高。不是因为计算成本，而是因为内存带宽成本。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我实际上看不到一条很好的解决路径。HBM 就在那里。它没有变得大幅更好。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Sparse attention 为什么不能解决？Sparse attention 是一个大改进。也许已经被定价进去了。它不是无限改进——如果你太稀疏，你会损失太多质量。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">KV Cache 存储的内存层级经济学 [01:55:01]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">经验结果是上下文长度没有增加太多。我觉得是因为这里的内存墙没有解决方案。太稀疏意味着你只 attend 到 token 的很小子集，质量会变差。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">那重新合成 KV cache 的不同方式的成本是什么？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">从头计算（Rematerialization）</strong>：基于 GPU 时间。我需要做一定量的乘法来产生它。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">存储在 HBM</strong>：我需要每 token 一定字节数。存在 HBM 中会占用 HBM 容量。思考方式是：如果我用不用的 KV cache 填满了 HBM，我就没法用那块 GPU。怎么定价？也许说成本正比于我使用的 HBM 比例。所以也是 × GPU 美元。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#1e88e5;font-weight:bold;">存储在 DDR</strong>：类似的事情适用于 Flash 和 DDR。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我想做的区分是：有<strong style="color:#1e88e5;font-weight:bold;">检索成本</strong>（瞬时成本）和<strong style="color:#1e88e5;font-weight:bold;">持有成本</strong>（每秒成本）。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Rematerialization：有检索成本，持有成本为零（因为我们删除了它）</li><li style="margin-bottom:0.5em;line-height:2;">HBM 存储：bytes_per_token / HBM_capacity × GPU_cost_per_second</li><li style="margin-bottom:0.5em;line-height:2;">DDR 存储：持有成本是 bytes_per_token / DDR_capacity × DDR_cost_per_second；检索成本更高因为需要复制到 HBM：bytes_per_token / DDR_bandwidth</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">每个 scale-up 都有 DDR 和 Flash 吗？这是部署问题。你可以选择。Nvidia 确实以这种形式部署，两者都有。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为什么 HBM 的检索成本不是字节/内存带宽？取决于你怎么定义"检索"。我定义为"移入 HBM 使你可以开始做推理"。如果已经在 HBM 中，你可以在从 HBM 获取的同时做计算。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">选择正确的内存层级 [01:59:01]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">一般来说，如果你在平衡两个成本并且有不同的内存层级，随着持有成本上升，检索成本应该下降。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">如果你要持有很短时间，那持有成本低。如果持有很长时间，检索成本的一次性支出就不重要了。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">有趣的是，API 有不同的写入价格——5 分钟 vs 1 小时。这暗示 5 分钟是 HBM，1 小时是 DDR。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看具体数字：基础 input token 是每百万 token 5 美元（这是"检索"价格）。写入 5 分钟是 6.25 美元。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">我们也许能通过持续时间确定是哪个内存层级。持续时间可能直接告诉你。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关键洞察：给定我知道要持有某东西 5 分钟，我想选一个能在 5 分钟内读完整个内存的层级。所以 <strong style="color:#1e88e5;font-weight:bold;">存储容量 / 存储带宽 ≈ 持有时间</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对 HBM 我们知道这个数字是 20 毫秒——远太短了。DDR 可能差一两个数量级——大约 1-10 秒。Flash 大概在 1 分钟量级。旋转磁盘大概在 1 小时量级。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所以这可能表明两个层级是 <strong style="color:#1e88e5;font-weight:bold;">Flash 和旋转磁盘</strong>。我很震惊旋转磁盘还在被使用——这么老的技术。而且它慢到需要一小时才能加载满容量。真的是很不吸引人的技术，但在某些地方有用。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">密码学协议与神经网络的架构相似性 [02:04:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">（坐下来聊不需要黑板的问题。）</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">你有一篇非常有趣的博客文章，讲的是不同密码学协议的架构在高层面上看起来很像神经网络。有一种趋同演化——它们都需要在所有输入之间混合信息。对密码学协议来说，是为了确保哈希函数的每个新输入都会完全打乱输出。对神经网络来说，是需要考虑这条信息如何改变你对另一条信息的理解。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">高层面的区别是：某种意义上它们在做相反的事。密码学协议试图把有结构的信息变得跟随机不可区分。神经网络试图从看起来随机的东西（蛋白质序列、DNA、乱码文本）中提取更高层结构。所以它们有相似的高层机制，但实际上在做相反的事。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">混合/搅拌在其他地方也出现——甚至有物理例子，比如搅拌蛋糕面糊。先这样搅再那样搅实际上不是一个坏方法。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">回到数字世界。如果你随机初始化一个神经网络，它实际上可能也是一个合理的密码——因为随机初始化会以复杂方式打乱东西。让神经网络可解释的是<strong style="color:#1e88e5;font-weight:bold;">梯度下降</strong>——你可以微分神经网络并得到有意义的导数。我们做了很多工作来不过度复杂化导数——残差连接让它保持简单，layer norm 也是。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">对密码学密码最大的攻击之一也是微分密码。密码在不同的数域中运行——二元域（二进制），而神经网络理论上在实数域。但你绝对可以微分密码。这叫<strong style="color:#1e88e5;font-weight:bold;">差分密码分析</strong>。基本上说的是：如果你取输入的小差异，很难让输出的差异也小。设计良好的密码的全部工作就是让输出差异很大。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">区别在于优化目标是关于复杂化。它们没有相同的残差连接或 layer norm。</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">后门、对抗攻击与密码学的交汇 [02:07:27]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">两者交汇的一个地方是后门。在神经网络中有后门时，你试图隐藏一个输入——不是前向传播的输入，而是反向传播的输入。这是对抗性的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这实际上是你得到密码中那种雪崩性质的地方。对图像分类模型的对抗攻击——能否找到图像的一个非常小的扰动，完全改变分类、完全改变输出？这在密码中是常见情况，而在神经网络中是不期望的情况。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">神经网络实际上被用于密码学了吗？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">用神经网络做密码学——一般来说，创建新密码是非常危险的事。几乎所有的都被破解了，99% 都被破解了。所以可能不是一个好的起点。但反方向——至少在一个非常明确的案例中——相当有成效。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Feistel 网络：从密码学到可逆神经网络 [02:08:51]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">密码中有一个构造，然后被引入到神经网络中，叫 <strong style="color:#1e88e5;font-weight:bold;">Feistel cipher / Feistel network</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">想法是：你可能有某个函数 f，它不可逆，但你喜欢它因为它做有趣的事——比如做 MLP 或以有趣的方式混合。你想用它构建一个可逆的东西。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">构造是：做一个双输入函数而不是单输入。应用 f(x)，但记住 x 是什么（把 x 放到旁边以便反向工作）。也不能丢掉 y——记住 y 并把它们加在一起。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">怎么反转？如果我有输出想恢复 x 和 y：x 直接读出来。然后恢复 y：z - f(x)（因为我已经恢复了 x）。所以这个构造是可逆的。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这在密码中被大量使用。仍在使用。是构造密码的主要机制之一。你通常希望密码可逆，特别是密码的层要可逆，因为那有好的密码学性质。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这被移植到了神经网络中。有一篇 2017-18 年的论文叫 <strong style="color:#1e88e5;font-weight:bold;">RevNets（Reversible Networks）</strong>。它让整个网络可逆——你做前向传播，但也可以反向运行整个传播。整个神经网络用这个构造变得可逆。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">应用到 transformer 层：我们有函数 f（transformer 层）。正常情况下有一个输入和一个残差连接。但变体是：有两个输入 x 和 y。x 通过函数，加到 y 上。这变成新的输出 x。然后原来的 x 变成输出 y。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这实际上在做什么？如果你想两层前——它实际上在做从两层前的残差连接。这个 y 来自上一层，是那里的残差连接。因为这个构造，整个东西可逆。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">可逆网络的训练优势 [02:12:09]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">为什么我关心可逆？对训练有意义。前向传播训练时，假设有 4 层，按 0、1、2、3 顺序运行。我必须把所有 activations 写入 HBM。所以 HBM 占用跟层数线性相关。这实际上可能是训练中最大的内存占用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后反向传播以相反顺序读回来。RevNets 的想法是：因为它可逆，我根本不需要存储这些。我可以在运行反向传播时完全重新物化。前向传播运行完后，反向传播时我同步地撤销所有前向传播步骤，以获得我需要的 activations。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这最终是一个<strong style="color:#1e88e5;font-weight:bold;">内存节省</strong>。有趣的是，你在花更多计算来节省内存。这跟 KV cache 正好相反——KV cache 是花更多内存来节省计算。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">花更多内存来节省计算在当前硬件状态下通常是有利可图的。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">好的，太有趣了。非常感谢你做这个。我觉得它真的验证了演播室和黑板背后的愿景。谢谢。</p>
 </section>

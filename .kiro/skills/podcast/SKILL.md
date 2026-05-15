@@ -198,7 +198,22 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 ```bash
 .venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py transcribe "<url>" -t "标题" -m base > /tmp/transcript.txt
 ```
-转录完成后，将转录文件保存到 `production/<slug>/transcript.txt`（不要删除，方便后续回溯）。然后分段读取（每次约200行），逐段翻译整理为中文Markdown，最终合并保存。同样需要 review 后再生成其他版本。
+转录完成后，将转录文件保存到 `production/<slug>/transcript.txt`（不要删除，方便后续回溯）。
+
+**音频翻译流程（严格按步骤执行）：**
+
+1. 用 `wc -l` 查看 transcript.txt 总行数
+2. 按每块 100-120 行切分（在段落/话题边界切割，不要在句子中间断开）
+3. 逐块翻译：
+   - 每次只读取一个 chunk（100-120行）
+   - 逐句翻译该块内容，保存到 `/tmp/<slug>_translated_01.md`、`/tmp/<slug>_translated_02.md`...
+   - ⚠️ **译文写入文件后，不要将其保留在对话上下文中。下一块翻译时只需读取新的原文chunk，不需要回顾已翻译内容。**
+   - 禁止总结/省略/合并段落
+4. 所有块翻译完成后，读取所有 translated 文件，合并为完整 Markdown，保存到 production 目录
+
+**关键原则：上下文中只传递文件路径，不要将大段原文或译文直接放入对话上下文。每块翻译是独立操作：读chunk → 翻译 → 写文件 → 进入下一块。**
+
+同样需要 review 后再生成其他版本。
 
 #### 多版本输出
 
