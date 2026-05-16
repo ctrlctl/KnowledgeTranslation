@@ -1,0 +1,2150 @@
+Detected language: English
+[00:00] The following is a conversation with Peter Steinberger, creator of OpenClaw,
+[00:05] formerly known as Moldbot, Clawbot, Clawdis, Clawd,
+[00:09] spelled with a W, as in lobster claw.
+[00:12] Not to be confused with Clawd, the AI model from Anthropic, spelled with a U.
+[00:17] In fact, this confusion is the reason Anthropic kindly asked Peter
+[00:22] to change the name to OpenClaw.
+[00:25] So what is OpenClaw?
+[00:27] It's an open source AI agent that has taken over the tech world in a matter of
+[00:31] days, exploding in popularity, reaching over 180,000 stars on GitHub.
+[00:38] And spawning the social network mold book,
+[00:40] where AI agents post manifestos and debate consciousness.
+[00:45] Creating a mix of excitement and fear in the general public,
+[00:49] in a kind of AI psychosis.
+[00:51] A mix of click bait fear mongering and genuine, fully justifiable concern about
+[00:56] the role of AI in our digital interconnected human world.
+[01:00] OpenClaw, as this tagline states, is the AI that actually does things.
+[01:05] It's an autonomous AI assistant that lives in your computer,
+[01:09] has access to all of your stuff if you let it.
+[01:11] Talks to you through telegram, WhatsApp, signal, iMessage, and
+[01:15] whatever else messaging client.
+[01:17] Uses whatever AI model you like, including Clawd Opus 4.6 and
+[01:22] the chat GPT 5.3 codecs, all to do stuff for you.
+[01:28] Many people are calling this one of the biggest moments in the recent history of
+[01:33] AI since the launch of chat GPT in November 2022.
+[01:36] The ingredients for this kind of AI agent were all there.
+[01:40] But putting it all together in a system that definitively takes a step forward
+[01:45] over the line from language to agency, from ideas to actions, in a way that
+[01:49] created a useful assistant that feels like one who gets you and learns from you.
+[01:54] In an open source community driven way is the reason OpenClaw took the Internet by
+[02:00] storm.
+[02:01] Its power in large part comes from the fact that you can give it access to all of
+[02:05] your stuff and give it permission to do anything with that stuff in order to be
+[02:10] useful to you.
+[02:11] This is very powerful, but it is also dangerous.
+[02:16] OpenClaw represents freedom, but with freedom comes responsibility.
+[02:21] With it, you can own and have control over your data, but precisely because you
+[02:25] have this control, you also have the responsibility to protect it from cyber
+[02:30] security threats of various kinds.
+[02:33] There are great ways to protect yourself, but the threats and vulnerabilities are
+[02:37] out there.
+[02:38] Again, a powerful AI agent with system level access is a security minefield, but
+[02:44] it also represents the future because when done well and securely, it can be
+[02:48] extremely useful to each of us humans as a personal assistant.
+[02:54] We discuss all of this with Peter and also discuss his big picture programming
+[02:59] and entrepreneurship life story, which I think is truly inspiring.
+[03:03] He spent 13 years building PSPDFKit, which is a software used on a billion devices.
+[03:10] He sold it and for a brief time fell out of love with programming, vanished for
+[03:15] three years, and then came back, rediscovered his love for programming, and
+[03:20] built in a very short time an open source AI agent that took the internet by storm.
+[03:27] He is in many ways a symbol of the AI revolution happening in the programming
+[03:31] world.
+[03:32] There was the Chad GPT moment in 2022, the DeepSeek moment in 2025, and
+[03:38] now in 26, we're living through the open claw moment, the age of the lobster,
+[03:45] the start of the agentic AI revolution.
+[03:48] What a time to be alive.
+[03:51] And now a quick few second mention of a sponsor, check them out in the description
+[03:56] or at lexfreedman.com slash sponsors.
+[03:59] It is in fact the best way to support this podcast.
+[04:02] We got a quote for a phone system, calls, text, contacts for your business,
+[04:07] code rabbit for AI powered code review, fin for customer service AI agents,
+[04:12] blitzy for AI powered software development, Shopify for selling stuff online,
+[04:17] element for electrolytes, and of course, our old friend perplexity for
+[04:23] curiosity driven knowledge exploration.
+[04:26] Choose wisely, my friends.
+[04:28] And now onto the full ad reads.
+[04:30] I try to make them interesting, but if you skip, please still check out our sponsors.
+[04:35] I enjoy their stuff, maybe you will too.
+[04:38] And really, they are the incredible folks that make this whole thing possible.
+[04:43] And I really do hope to do more episodes in 2026, have more fun,
+[04:50] take more risks, and explore deeply the full range of human possibility,
+[04:57] of human condition, of human nature, of human civilization.
+[05:01] Anyway, so you can touch with me for
+[05:03] whatever reason, go to lexfreedman.com slash contact.
+[05:06] All right, let's go.
+[05:08] This episode is brought to you by Qo, spelled Q-U-O.
+[05:14] It's a business phone platform for calling and messaging.
+[05:19] So it's basically a really nice interface, a really nice system for
+[05:25] organizing all the incoming calls, texts, voice mails, recordings.
+[05:29] When you have a team and you have a large number of customers that want different
+[05:34] things, it's a nice way to organize everything together.
+[05:37] I just love watching the beauty, the elegance of the interface.
+[05:41] I'm such a sucker for beautiful interfaces, not just beautiful, but functional.
+[05:46] So the perfect mix of beauty and function in evolutionary biology and
+[05:52] in software design, software engineering is just wonderful to watch.
+[05:57] And that, of course, relates to the very topic of this podcast,
+[05:59] is how to create software systems like that, with the utilization of the agentic loop.
+[06:06] And as Peter talks about, still keeping the human apart, a fundamental part of
+[06:12] that process of adding what he says, I think, correctly,
+[06:17] sort of a bit of love into the thing, a bit of that human touch.
+[06:21] I don't know what exactly that is, but we know it when we see it,
+[06:24] when we feel it, when we interact with it.
+[06:26] And that is the magic that makes great software.
+[06:29] So anyway, Quo has that, love the interface.
+[06:32] Try Quo for free, plus get 20% off your first six months when you go to
+[06:37] quo.com slash Lex, that's Q-U-O dot com slash Lex.
+[06:44] This episode is also brought to you by CodeRabbit,
+[06:47] a platform that provides AI powered code reviews directly within your terminal.
+[06:52] Now there's a lot of ways to use CodeRabbit.
+[06:55] But the one I'd like to recommend and talk to you about, outside of the ID,
+[06:59] outside of the magic of the interface, to go back on what I just said,
+[07:03] is the magic, the power of the CLI, of the terminal.
+[07:07] And CodeRabbit CLI is amazing.
+[07:09] And of course, as we talk about with Peter, his whole workflow,
+[07:13] his whole approach to programming has evolved more and more towards the command
+[07:19] line, towards the terminal, towards the CLI.
+[07:22] Because that is the language of agents.
+[07:25] And so if you're doing coding agent stuff, integrating the review of the code
+[07:29] into the whole process, that's where CodeRabbit CLI comes in.
+[07:34] It ensures that AI generated code is production ready by catching errors
+[07:39] at that particular stage of the process.
+[07:40] It integrates into existing CLI coding agent workflows.
+[07:45] And even though the coding models are getting smarter and smarter and smarter,
+[07:52] they still do hallucinate, they still do make errors.
+[07:56] And CodeRabbit CLI is a backstop for hallucinations and logical errors
+[08:01] from AI coding agent generated code.
+[08:04] So install CodeRabbit CLI today at coderabbit.ai slash lex.
+[08:11] That's coderabbit.ai slash lex.
+[08:15] This episode is brought to you by Finn, the number one AI agent for customer service.
+[08:21] So again, these are niche but extremely important,
+[08:26] extremely impactful applications.
+[08:29] Finn takes customer service and says, we're gonna do a damn good job at it.
+[08:35] A lot of companies, including AI companies,
+[08:38] 6,000 customer service leaders and top companies are using it.
+[08:43] So you know they're legit when an AI company is using you for
+[08:47] the AI for customer service.
+[08:50] I'm somebody having witnessed on the interwebs, poor customer service,
+[08:57] poor love for the customer, a lack of attention and care to the customer,
+[09:01] to the pain, to the nuanced pain of each individual customer.
+[09:06] Because of that, I get to deeply appreciate the value of great customer service.
+[09:11] And I do think for scale, for efficiency, for quality,
+[09:17] it's important to integrate AI into that process.
+[09:20] And then Finn does a really good job with that.
+[09:23] Go to finn.ai slash lex to learn more about transforming your customer service and
+[09:28] scaling your support team.
+[09:30] That's finn.ai slash lex.
+[09:33] This episode is brought to you by Blitzy,
+[09:36] an AI powered autonomous software development platform.
+[09:40] They are focusing on enterprise.
+[09:43] Their whole system is designed and built for large complex databases.
+[09:48] The way they do the context management, the way they, through the interface,
+[09:52] show how everything is managed, organized,
+[09:56] processed, considered in the different tasks that it has to do,
+[10:00] like refactoring gigantic code bases.
+[10:03] This is what they focus on.
+[10:05] This is what they do well.
+[10:06] Also, multi-agent.
+[10:08] For example, they have a layer of 3,600 cooperative agents.
+[10:14] A lot of the excitement that we're talking about in this very podcast and
+[10:19] in general in the industry and on X and
+[10:22] on podcasts is the scale of just a handful of developers.
+[10:29] When you're talking about a gigantic code base,
+[10:33] that requires a set of tooling that can handle the gigantic context.
+[10:39] That can handle individual people going in and being able to orchestrate
+[10:45] the large scale refactoring, code generation, managing dependencies,
+[10:50] runtime validate, all the testing they have to do.
+[10:53] To be able to go in there and to be able to handle that,
+[10:55] there's just a whole set of tooling that requires a lot of care.
+[11:00] And Blitzy does a good job of that.
+[11:03] If you want to learn more or speak to a member of the team, go to blitzy.com slash lex.
+[11:08] That's blitzy.com slash lex.
+[11:12] The future of autonomous software development is here.
+[11:18] This episode is brought to you by Shopify.
+[11:21] I don't know why every time it brings a smile to my face.
+[11:25] Yes, it is a platform designed for anyone to sell anywhere with a great looking
+[11:28] online store, but of course, every time I end up talking about Shopify engineering,
+[11:33] which is the tech behind the magic.
+[11:36] And the humans behind the tech, behind the magic, and I got to meet some of those
+[11:40] humans and I get to talk to some of those humans and they're incredible human beings.
+[11:45] And speaking of incredible human beings, of course, I always end up talking about
+[11:49] Toby, who is a great engineer, who's doing a lot of agentic AI engineer.
+[11:53] He still codes, still legit programmer in the details.
+[11:58] That is what great CEOs are made of.
+[12:00] Also mentioned in this conversation with a bit of love from Peter, everybody loves DHH.
+[12:06] Well, some of them, some people online are maybe don't show their love in the obvious ways.
+[12:14] But underneath it, there's deep love and there's always respect and appreciation for
+[12:19] how legit of a programmer he is, how sharp and witty and insightful he is.
+[12:28] Sharp and witty and insightful his opinions analysis is and how great of a builder he
+[12:35] is and explorer and constantly evolving and trying new things.
+[12:41] And I think that spirit represents Shopify engineering.
+[12:45] I just love using software that you know is built by great engineers.
+[12:52] So that is just such an important foundation of a great business.
+[13:00] It's probably two things is making sure you're keeping every individual customer happy,
+[13:07] customer focus.
+[13:10] And then on the back end, making sure there's the tooling, the infrastructure that makes
+[13:17] that possible, that's where the engineer comes in.
+[13:20] Anyway, sign up for a $1 per month trial period at Shopify.com slash Lex.
+[13:26] That's all lowercase.
+[13:27] Go to Shopify.com slash Lex and take your business to the next level today.
+[13:32] This episode is brought to you by the thing I'm currently sipping on, element LMNT, my
+[13:39] daily zero sugar and delicious electrolyte mix.
+[13:43] I don't think I can live without element.
+[13:49] I can't quit you.
+[13:52] Yeah, it's just delicious and incredibly important to my health, my well-being, my energy levels,
+[14:00] just how I feel when I'm fasting, when I'm doing the crazy things emotionally, physically,
+[14:07] mentally, all the programming stuff.
+[14:10] This, you know, I didn't almost sleep at all last night and just fasting, just feeling
+[14:17] good.
+[14:18] Electrolytes are such an important part of that.
+[14:20] Making sure you get the sodium, potassium, magnesium correct.
+[14:23] It's what do you need for life?
+[14:25] You need water, you need electrolytes, and then you need food occasionally.
+[14:29] But I'm very good at being able to go without food for several days potentially.
+[14:35] I most of the time these days fast, do one meal a day and fast basically 24 hours.
+[14:42] And for that, element is extremely important.
+[14:46] My favorite flavor, the flavor of champions, watermelon salt.
+[14:50] Get a free 8-count sample pack with any purchase.
+[14:53] Try it at drinkelement.com slash Lex.
+[14:58] This is the Lex Friedman podcast.
+[15:00] To support it, please check out our sponsors in the description where you can also find
+[15:03] links to contact me, ask questions, give feedback and so on.
+[15:09] And now, dear friends, here's Peter Steinberger.
+[15:16] The one and only, the Claude father.
+[15:32] Actually Benjamin predicted in this tweet, the following is a conversation with Claude,
+[15:37] a respected crustacean.
+[15:39] It's a hilarious looking picture of a lobster in a suit.
+[15:43] I think the prophecy has been fulfilled.
+[15:47] Let's go to this moment when you built a prototype in one hour that was the early version of
+[15:53] OpenClaw.
+[15:54] I think this story is really inspiring to a lot of people because this prototype led
+[15:59] to something that just took the internet by storm and became the fastest growing repository
+[16:05] in GitHub history with now over 175,000 stars.
+[16:10] What was the story of the one hour prototype?
+[16:13] I wanted that since April.
+[16:15] A personal assistant, AI personal assistant.
+[16:18] Yeah.
+[16:19] And I played around with some other things, like even stuff that gets all my WhatsApp.
+[16:27] And I could just run queries on it.
+[16:28] That was back when we had GPT 4.1, the 1 million context window.
+[16:36] And I pulled in all the data and asked him questions like, what makes this friendship
+[16:41] meaningful?
+[16:42] And I got some really profound results.
+[16:49] Like I sent it to my friends and they got teary eyes.
+[16:52] So there's something there.
+[16:53] Yeah.
+[16:54] But then I thought all the labs will work on that.
+[17:00] So I moved on to other things and that was still very much in my early days of experimenting
+[17:06] and playing.
+[17:07] You know, you have to, that's how you learn.
+[17:10] You just like, you do stuff and you play.
+[17:13] And time flew by and it was November.
+[17:17] I wanted to make sure that the thing I started is actually happening.
+[17:21] I was annoyed that it didn't exist.
+[17:22] So it just prompted it into existence.
+[17:28] I mean, that's the beginning of the hero's journey of the entrepreneur, right?
+[17:32] I mean, you've even with your original story with PSP, the F kit, it's like, why does this
+[17:38] not exist?
+[17:39] Let me build it.
+[17:41] And again, here's the whole different realm, but similar, maybe spirit.
+[17:44] Yes.
+[17:45] I had this problem.
+[17:46] I tried to show PEF on an iPad, which should not be hard.
+[17:49] This is like 15 years ago, something like that.
+[17:52] Yeah.
+[17:53] Like the most, the most random thing ever.
+[17:55] And suddenly I had this problem and I wanted to help a friend.
+[17:59] And there was, there was, it was not like nothing existed, but it was just not good.
+[18:03] I'm like, like I tried it and it was like very meh.
+[18:07] Like I can do this better.
+[18:10] By the way, for people who don't know this led to the development of PSP, the F kit that's
+[18:14] used on a building devices.
+[18:16] So it turns out that it's pretty useful to be able to open a PDF.
+[18:21] You could also make the joke that I'm really bad at naming named on the five on the current
+[18:26] project and even PSP, the F doesn't really roll from the tongue.
+[18:31] Anyway, so you said, screw it.
+[18:35] Why don't I do it?
+[18:37] So what was the, what was the prototype?
+[18:39] What was the thing that you, what was the magical thing that you built in a short amount
+[18:42] of time that you're like, this might actually work as an agent or I talked to it and it
+[18:47] does things.
+[18:48] There was like one of my projects before I already did something where I could bring
+[18:53] my terminals onto the web and then I could like interact with them.
+[18:57] But there also would be terminals on my Mac vibe tunnel, which was like a weekend hack
+[19:04] project that was still very early and it was cloud code times.
+[19:09] You know, you got a dopamine hit when he got something right.
+[19:12] And now I get like mad when he gets something wrong.
+[19:15] And you had a really great, not to take a tangent, but a great blog post describing
+[19:19] that you converted a vibe tunnel.
+[19:22] You vibe coded vibe tunnel from TypeScript into Zig of all programming languages with
+[19:27] a single prompt, one prompt, one shot convert the entire code base into Zig.
+[19:33] Yeah, there was this one thing where part of the architecture was took too much memory.
+[19:41] Every terminal used like a node and I wanted to change it to Rust.
+[19:47] And I mean, I can do it.
+[19:51] I can, I can manually figure it all out, but all my automated attempts failed miserably.
+[20:01] And then I revisited about four or five months later and I'm like, okay, now let's use something
+[20:06] even more experimental.
+[20:08] And I just typed convert this and this part to Zig and then let codecs run off.
+[20:16] And it basically got it right.
+[20:18] There was one little detail that I had to like modify afterwards, but it just ran for
+[20:25] overnight like six hours and just did the thing.
+[20:28] And it's like, it's just mind blowing.
+[20:32] So that's on the LLM programming side, refactoring, but back to the actual story of the prototype.
+[20:41] So how did vibe tunnel connect to the first prototype where your agents can actually work?
+[20:45] Well, that was still very limited.
+[20:47] You know, like I had this one experiment with WhatsApp, then I had this experiment and both felt like not the right answer.
+[20:56] And then my search, I was literally just hooking up WhatsApp to cloud code, one shot,
+[21:05] the CLI message comes in, I call the CLI with minus P. It does its magic.
+[21:10] I get the string back and I send it back to WhatsApp.
+[21:12] And I built this in one hour and I felt, I already felt really cool.
+[21:19] It's like, oh, I could, I can like talk to my computer, right?
+[21:22] That was cool.
+[21:24] But I wanted images because I often use images when I prompt.
+[21:29] I think it's such an efficient way to give the agent more context.
+[21:32] And they are really good at figuring out what I mean if it's like a weird crop of screenshot.
+[21:38] So I used it a lot and I wanted to do it in WhatsApp as well.
+[21:42] Also, like, you know, just you run around, you see like a post of an event, it just makes a screenshot.
+[21:48] And like, figure out if I have time there, if this is good, if my friends are maybe up for that.
+[21:53] Images seemed important.
+[21:55] So I worked a few, it took me a few more hours to actually get that right.
+[22:02] And then it was just, I used it a lot.
+[22:06] And funny enough, that was just before I went on a trip to Marrakesh with my friends for a birthday trip.
+[22:16] And there it was even better because Internet was a little shaky, but WhatsApp just works.
+[22:22] You know, it's like, doesn't matter.
+[22:23] You have like Edge, it still works.
+[22:25] WhatsApp is just made really well.
+[22:30] So I ended up using it a lot.
+[22:33] Translate is for me, explain these funny places.
+[22:37] Like, you're just having a clanker doing having Google for you.
+[22:42] That was basically it was still nothing built, but it still could do so much.
+[22:46] So if we talk about the full journey that's happening there with the agent,
+[22:50] you're just sending on this very thin line WhatsApp message via CLI,
+[22:57] it's going to Cloud Code and Cloud Code is doing all kinds of heavy work and coming back to you with a thin message.
+[23:05] Yeah, it was slow because every time I boot up the CLI, but it was really cool already.
+[23:13] And it could just use all the things that I already had built.
+[23:16] I built like a whole bunch of CLI stuff over the months, so it felt really powerful.
+[23:24] There is something magical about that experience that's hard to put into words.
+[23:29] Being able to use a chat client to talk to an agent versus like sitting behind a computer and like, I don't know,
+[23:39] using Cursor or even using Cloud Code CLI in the terminal.
+[23:43] It's a different experience than being able to sit back and talk to it.
+[23:46] It seems like a trivial step, but in some sense, it's like a phase shift in the integration of AI into your life and how it feels.
+[23:57] Yeah, I read this tweet this morning where someone said, oh, there's no magic in it.
+[24:03] It's just like it does this and this and this and this and this and this and this and this.
+[24:07] And it almost feels like a hobby just as Cursor perplexity.
+[24:13] And I'm like, if that's a hobby, that's kind of a compliment, you know?
+[24:17] They're like, they're not doing too bad.
+[24:21] Thank you, I guess.
+[24:25] I mean, isn't magic often just like you take a lot of things that are already there, but bring them together in new ways?
+[24:34] Like, I don't, there's no, yeah, maybe there's no magic in there, but sometimes just rearranging things.
+[24:40] And like adding a few new ideas is all the magic that you need.
+[24:44] It's really hard to convert into words.
+[24:45] What is magical about a thing?
+[24:49] If you look at the scrolling on an iPhone, why is that so pleasant?
+[24:53] There's a lot of elements about that interface that makes it incredibly pleasant, that is fundamental to the experience of using a smartphone.
+[25:00] And it's like, OK, all the components were there.
+[25:03] Scrolling was there. Everything was there.
+[25:05] And nobody did it.
+[25:07] And afterwards, it felt so obvious.
+[25:08] That's so obvious.
+[25:09] Right.
+[25:10] Still, you know, the moment where it blew my mind was when I used it a lot.
+[25:19] And at some point, I just sent it a message.
+[25:21] And then a typing indicator appeared.
+[25:23] And I'm like, wait, I didn't build that.
+[25:28] It's only as image support.
+[25:31] So what is it even doing?
+[25:33] And then it would just reply.
+[25:34] What was the thing you sent it?
+[25:36] Just a random question.
+[25:37] It's like, hey, what about this in this restaurant?
+[25:39] You know, because we were just running around and checking out the city.
+[25:44] So that's why I didn't even think when I used it, because sometimes when you're in a hurry, typing is annoying.
+[25:51] So you did an audio message.
+[25:53] Yeah.
+[25:53] And it just worked.
+[25:55] And I'm like...
+[25:56] And it's not supposed to work because you didn't give it that capability.
+[26:00] I literally wrote, how the fuck did you do that?
+[26:03] And it was like, yeah, the medle, I did the following.
+[26:06] He sent me a message, but it only was a file, no file ending.
+[26:11] So I checked out the header of the file and it found that it was like Opus.
+[26:17] So I used FFmpeg to convert it.
+[26:19] And then I wanted to use Vispo, but you didn't have it installed.
+[26:22] But then I found your OpenAI key and just used curl to send the file to OpenAI to translate.
+[26:30] And here I am.
+[26:32] And I just looked at the message and I'm like, oh, wow.
+[26:35] You didn't teach it any of those things and the agent just figured it out.
+[26:38] That's all those conversions, the translation, they figured out the API,
+[26:42] it figured out which program to use, all those kinds of things.
+[26:45] And you were just absentmindedly just sent an audio message.
+[26:48] It's so clever even because he would have gone the Vispo local path,
+[26:52] he would have had to download the model, I would have been too slow.
+[26:54] So there's so much world knowledge in there, so much creative problem solving.
+[27:00] A lot of it, I think, mapped from if you get really good at coding,
+[27:04] that means you have to be really good at general purpose program solving.
+[27:07] So that's a skill, right?
+[27:08] And that just maps into other domains.
+[27:11] So it had the problem of like, what is this file with no file ending?
+[27:15] Let's figure it out.
+[27:18] And that's where it kind of clicked for me.
+[27:21] I was like very impressed.
+[27:24] And somebody sent a pull request for Discord support.
+[27:27] And I'm like, this is a WhatsApp relay that doesn't fit at all.
+[27:33] At that time, it was called Waa Relay.
+[27:35] Yeah.
+[27:36] And so I debated with me, like, do I want that, do I not want that?
+[27:43] And then I thought, well, maybe I do that because that could be a cool way to show people.
+[27:51] Because so far, I did it in WhatsApp as groups,
+[27:54] but don't really want to give my phone number to every internet stranger.
+[28:01] Journalists manage to do that anyhow now, so that's a different story.
+[28:07] So I emerged it from Shadow, who helped me a lot with the whole project.
+[28:13] So thank you.
+[28:15] And I put my bot in there.
+[28:20] Discord.
+[28:21] Yeah.
+[28:21] No security because I hadn't built sandboxing in yet.
+[28:25] I just prompted it to only listen to me.
+[28:31] And then some people came and tried to hack it.
+[28:33] And I just watched, and I just kept working in the open.
+[28:38] I used my agent to build my agent harness and to test various stuff.
+[28:49] And that's very quickly when you click for people.
+[28:52] So it's almost like it needs to be experienced.
+[28:56] And from that time on, that was January the 1st, I got my first real influencer being
+[29:05] a fan, did videos, the kids.
+[29:07] Thank you.
+[29:08] And from there on, I saw it gaining up speed.
+[29:14] And at the same time, my sleep cycle went shorter and shorter because I felt the storm
+[29:21] coming and I just worked my ass off to get it into a state where it's kind of good.
+[29:30] There's a few components, we'll talk about how it all works, but basically you're able
+[29:34] to talk to it using WhatsApp, Telegram, Discord.
+[29:39] So that's a component that you have to get right.
+[29:41] And then you have to figure out the agentic loop, you have the gateway, you have the
+[29:45] harness, you have all those components that make it all just work nicely.
+[29:50] It felt like factorial times infinite.
+[29:53] I feel like I built my little playground.
+[29:57] I never had so much fun building this project.
+[30:01] You have like, oh, I go level one agentic loop.
+[30:04] What can I do there?
+[30:05] How can I be smart at queuing messages?
+[30:07] How can I make it more human?
+[30:08] Oh, then I had this idea of because the agent always replies something, but you don't always
+[30:16] want an agent to reply something in a group chat.
+[30:18] So I gave him this no reply token.
+[30:20] So I gave him an option to shut up so it feels more natural.
+[30:25] That's level two.
+[30:26] Yeah, yeah, yeah.
+[30:27] Factorial.
+[30:28] On the agentic loop.
+[30:30] And then I go to memory, right?
+[30:31] You want them to remember stuff.
+[30:33] So maybe the ultimate boss is continuous reinforcement learning.
+[30:39] But I'm like, I feel like I'm level two or three with Markdown files and the vector database.
+[30:45] And then you can go to level community management.
+[30:48] You can go to level website and marketing.
+[30:51] There's just so many hats that you have to have on.
+[30:54] Not even talking about native apps.
+[30:56] That's just like infinite different levels and infinite level ups you can do.
+[31:01] So the whole time you're having fun.
+[31:02] We should say that for the most part, through this whole process, you're a one man team.
+[31:09] There's people helping, but you're doing so much of the key core development.
+[31:15] And having fun.
+[31:16] You did in January 6600 commits, probably more.
+[31:21] I sometimes posted the meme, I'm limited by the technology of my time.
+[31:24] I could do more if agents would be faster.
+[31:27] But we should say you're running multiple agents at the same time.
+[31:30] Yeah.
+[31:31] Depending on how much I slept and how difficult of the tasks I work on between four and ten.
+[31:38] Four and ten agents.
+[31:39] There's so many possible directions, speaking of factorial, that we can go here.
+[31:43] But one big picture one is why do you think your work, OpenClaw, won in this world, if
+[31:55] you look at 2025, so many startups, so many companies are doing kind of agentic type
+[32:00] stuff or claiming to and here OpenClaw comes in and destroys everybody.
+[32:06] Why did you win?
+[32:08] Because they all take themselves too serious.
+[32:11] Yeah.
+[32:12] Like it's hard to compete against someone who's just there to have fun.
+[32:16] I wanted it to be fun.
+[32:18] I wanted it to be weird.
+[32:20] And if you see like all the lobster stuff online, I think I managed weird.
+[32:27] I didn't for the longest time, the only way to install it was git clone, pmp build, pmp
+[32:37] gateway.
+[32:38] Like you clone it, you build it, you run it.
+[32:42] And then I made the agent very aware.
+[32:46] Like it knows that it is what its source code is.
+[32:50] It understands how it sits and runs in its own harness.
+[32:55] It knows where the documentation is.
+[32:57] It knows which model it runs.
+[32:59] It knows if you turn on verbose or reasoning mode.
+[33:03] Like I wanted it to be more human-like so it understands its own system that made it
+[33:09] very easy for an agent to, oh, you don't like anything.
+[33:12] You just prompted it to existent.
+[33:14] And then the agent would just modify its own software.
+[33:19] You know, we have people talk about self-modifying software.
+[33:21] I just built it.
+[33:22] I didn't even plan it so much.
+[33:26] It just happened.
+[33:27] Can you actually speak to that?
+[33:30] Because it's just fascinating.
+[33:31] So you have this piece of software that's written type script that's able to, via the
+[33:38] agentic loop, modify itself.
+[33:40] I mean, what a moment to be alive in the history of humanity and the history of programming.
+[33:47] Here's the thing that's used by a huge amount of people to do incredibly powerful things
+[33:52] in their lives.
+[33:54] And that very system can rewrite itself, can modify itself.
+[33:59] Can you just speak to the power of that?
+[34:02] Isn't that incredible?
+[34:03] When did you first close the loop on that?
+[34:07] Oh, because that's how I built it as well.
+[34:10] Most of it is built by codecs, but oftentimes when I debug it, I use self-introspection
+[34:18] so much.
+[34:19] It's like, hey, what tools do you see?
+[34:20] Can you call the tool yourself?
+[34:21] Oh, like whatever do you see?
+[34:23] Read the source code, figure out what's the problem.
+[34:27] I just found it an incredibly fun way to...that the very agent and software that you use is
+[34:34] used to debug itself so that it felt just natural that everybody does that.
+[34:41] It led to so many pull requests by people who never wrote software.
+[34:46] I mean, it also did show that people never wrote software.
+[34:50] I call them prompt requests in the end, but I don't want to pull that down because every
+[34:56] time someone made the first pull request is a win for a society.
+[35:01] It doesn't matter how shitty it is.
+[35:04] You got to start somewhere.
+[35:06] So I noticed this whole big movement of people complain about open source and the quality
+[35:11] of PRs and a whole different level of problems.
+[35:15] But on a different level, I found it very meaningful that I built something that people
+[35:24] love to think of so much that they actually start to learn how open source works.
+[35:30] You were...the Open Cloud project was a first pull request.
+[35:35] You were the first for so many.
+[35:37] That is magical.
+[35:38] So many people that don't know how to program are taking their first step into the programming
+[35:43] world with this.
+[35:44] Isn't that a step up for humanity?
+[35:46] Isn't that cool?
+[35:47] Creating builders.
+[35:48] Yeah.
+[35:49] The bar to do that was so high and with agents and with the right software, it just went
+[35:55] lower and lower.
+[35:56] I don't know.
+[35:57] I was at a...I also organized another type of meetup.
+[36:02] I called it Cloud Code Anonymous.
+[36:08] You can get the inspiration from.
+[36:10] Now I call it Agents Anonymous for reasons.
+[36:16] Agents Anonymous.
+[36:17] Oh, it's so funny.
+[36:19] So many levels.
+[36:20] I'm sorry.
+[36:21] Go ahead.
+[36:22] Yeah.
+[36:23] And there was this one guy who talked to me.
+[36:24] He's like, I run this design agency and we never had custom software.
+[36:30] Now I have like 25 little web services for various things that help me in my business.
+[36:37] And I don't even know how they work, but they work.
+[36:42] And he was just like very happy that my stuff solved some of his problems.
+[36:47] And it was like curious enough that he actually came to like a gentic meetup, even though
+[36:53] he doesn't really know how software works.
+[36:57] Can we actually rewind a little bit and tell the saga of the name change?
+[37:03] First of all, it started as Waw Relay.
+[37:05] And then it went to...
+[37:06] Claudus.
+[37:07] Claudus.
+[37:08] Yeah.
+[37:09] You know, when I built it in the beginning, my agent had no personality.
+[37:12] It was just...it was Cloud Code.
+[37:14] It's like this psychophantic, opos, very friendly.
+[37:19] And when you talk to a friend on WhatsApp, they don't talk like Cloud Code.
+[37:25] So I wanted...I felt this...I just didn't feel right.
+[37:29] So I wanted to give it a personality.
+[37:34] Make it spicier, make it something.
+[37:37] By the way, that's actually hard to put into words as well.
+[37:39] And we should mention that, of course, you create the soul.md inspired by anthropics,
+[37:44] constitutional AI work, how to make it spicy.
+[37:48] Partially, it picked up a little bit from me.
+[37:50] You know, like those things are text completion engines in a way.
+[37:54] So I had fun working with it.
+[37:59] And then I told it how I wanted it to interact with me and just like write your own agents.md.
+[38:08] Give yourself a name.
+[38:11] And I don't even know how the whole lobster...I mean, people only do lobster.
+[38:18] Originally, it was actually lobster in a TARDIS because I'm also a big Doctor Who fan.
+[38:22] Was there a space lobster?
+[38:24] What does that have to do with anything?
+[38:27] Yeah, I just wanted to make it weird.
+[38:30] There was no big grand plan.
+[38:32] I was just having fun here.
+[38:33] Oh, so because the lobster is already weird and then the space lobster is an extra weird.
+[38:37] Yeah, because the TARDIS is basically the harness.
+[38:42] But you cannot call it TARDIS, so we call it Claude's.
+[38:45] So that was name number two.
+[38:46] Yeah.
+[38:47] And then it never really rolled off the tongue.
+[38:51] So when more people came, again, I talked with my agent, Claude.
+[38:59] At least that's what I used to call him now.
+[39:01] Claude's spelled with a W-C-L-A-W-D.
+[39:05] Yeah.
+[39:06] Versus C-L-A-U-D-E from Anthropic.
+[39:13] Yeah.
+[39:14] Which is part of what makes it funny.
+[39:17] I think the play on the letters and the words and the TARDIS and the lobster and the space
+[39:22] lobster is hilarious, but I can see why it can lead into problems.
+[39:27] Yeah, they didn't find it so funny.
+[39:31] So then I got the domain Claude bought and I just, I loved the domain.
+[39:37] And it was like short, it was catchy.
+[39:40] I'm like, yeah, let's do that.
+[39:42] I didn't think it would be that big at this time.
+[39:49] And then just when it exploded, I got Kudos, a very friendly email from one of the employees
+[39:58] that they didn't like the name.
+[40:01] One of the Anthropic employees.
+[40:03] Yeah.
+[40:04] So actually Kudos could have just sent a lawyer letter, but they'd be nice about it.
+[40:11] But also like, you have to change this and fast.
+[40:16] And I asked for two days because changing a name is hard because you have to find everything.
+[40:23] Twitter handle, domains, NPM packages, Docker registry, GitHub stuff, and everything has to be.
+[40:31] You need a set of everything.
+[40:33] And also, can we comment on the fact that you're increasingly attacked, followed by
+[40:40] crypto folks, which I think you mentioned somewhere that that means the name change had to be
+[40:45] because they were trying to snipe, they're trying to steal.
+[40:49] And so you had to be the name.
+[40:51] I mean, from the engineer perspective, it's just fascinating.
+[40:54] You had to make the name change atomic, make sure it's changed everywhere at once.
+[40:59] Yeah, I failed very hard at that.
+[41:01] You did?
+[41:02] I underestimated those people.
+[41:08] It's a very interesting subculture.
+[41:13] Everything circles around, I'd probably get a lot wrong and we'd probably get hate for
+[41:17] that if you didn't say that, but there's like BagZap and then they tokenize everything.
+[41:23] And they did the same back with VibeTunnel, but to a much smaller degree was not that
+[41:29] annoying.
+[41:31] But on this project, they've been swarming me.
+[41:34] They...
+[41:35] It's like every half an hour, someone came into Discord and spammed it and we had to
+[41:42] block the...
+[41:43] We have like server rules.
+[41:44] One of the rules was, one of the rules is no mentioning of butter for obvious reasons.
+[41:51] And one was no talk about finance stuff or crypto because I'm just not interested in
+[41:59] that.
+[42:00] And this is a space about the project and not about some finance stuff.
+[42:05] But yeah, they came in and spammed and annoying.
+[42:10] And on Twitter, they would ping me all the time.
+[42:14] My notification feed was unusable.
+[42:15] I could barely see actual people talking about the stuff because it was like swarms.
+[42:21] And everybody sent me hashes.
+[42:26] And they all try me to claim the fees.
+[42:29] Like we're helping the project, claim the fees.
+[42:32] No, you're actually harming the project.
+[42:34] You're like disrupting my work.
+[42:37] And I am not interested in any fees.
+[42:40] First of all, I'm financially comfortable.
+[42:42] Second of all, I don't want to support that because it's so far the worst form of online
+[42:49] harassment that I've experienced.
+[42:51] There's a lot of toxicity in the crypto world.
+[42:53] It's sad because the technology of cryptocurrency is fascinating, powerful, and maybe will define
+[43:01] the future of money.
+[43:03] But the actual community around that, there's so much toxicity, there's so much greed, there's
+[43:08] so much trying to get a shortcut to manipulate, to steal, to snipe, to game the system somehow
+[43:15] to get money, all this kind of stuff.
+[43:18] I mean, it's the human nature, I suppose, when you connect human nature with money and greed
+[43:22] and especially in the online world with anonymity and all that kind of stuff.
+[43:28] But from the engineer perspective, it makes your life challenging.
+[43:31] When Anthropic reaches out, you have to do a name change.
+[43:35] And then there's like all these like Game of Thrones or Lord of the Rings armies of different
+[43:42] kinds to be aware of.
+[43:43] There was no perfect name.
+[43:45] And I didn't sleep for two nights.
+[43:47] I was under high pressure.
+[43:52] I was trying to get like a good set of domains and, you know, not cheap, not easy because
+[43:59] in this state of the internet, you basically have to buy domains if you want to have a good set.
+[44:06] And then another email came in that the lawyers are getting uneasy.
+[44:14] Again, friendly, but also just adding more stress to my situation already.
+[44:21] So at this point, I was just like, sorry, there's no other word, fuck it.
+[44:26] And I just renamed it to Moldbot because that was the set of domains I had.
+[44:31] I was not really happy, but I thought it would be fine.
+[44:36] And I tell you everything that could go wrong, did go wrong.
+[44:40] Everything that could go wrong, did go wrong.
+[44:41] It's incredible.
+[44:45] I thought I had mapped the space out and reserved the important things.
+[44:50] Can you give some details of the stuff that got wrong?
+[44:53] Because it's interesting from like an engineering perspective.
+[44:55] Well, the interesting stuff is that none of these services have a squatter protection.
+[45:00] So I had two browser windows open.
+[45:03] One was like an empty account ready to be renamed to Cloudbot.
+[45:10] And the other one I renamed to Moldbot.
+[45:12] So I pressed rename there, I pressed rename there.
+[45:15] And in those five seconds, they stole the account name.
+[45:19] Literally, the five seconds of dragging the mouse over there and pressing rename there was too long.
+[45:26] Because there's no...
+[45:28] You would expect that they have some protection or automatic forwarding, but there's nothing like that.
+[45:36] And I didn't know that they're not just good at harassment.
+[45:41] They're also really good at using scripts and tools.
+[45:45] So yeah, suddenly the old account was promoting new tokens and serving malware.
+[45:54] And I was like, okay, let's move over to GitHub.
+[45:58] And I pressed rename on GitHub.
+[46:01] And the GitHub renaming thing is slightly confusing.
+[46:05] So I renamed my personal account.
+[46:08] And in those, I guess it took me 30 seconds to realize my mistake.
+[46:13] They snipped my account, serving malware from my account.
+[46:18] So I was like, okay, let's at least do the NPM stuff.
+[46:22] But that takes like a minute to upload.
+[46:26] They snipped the NPM package because I could reserve the account, but I didn't reserve the root package.
+[46:35] So like everything that could go wrong went wrong.
+[46:40] Can I just ask a curious question?
+[46:42] In that moment, you're sitting there, like how shitty do you feel?
+[46:46] That's a pretty helpless feeling, right?
+[46:49] Yeah, because all I wanted was like having fun with that project and keep building on it.
+[46:57] And yet here I am like days into researching names, picking a name I didn't like and having people that claim they helped me,
+[47:07] making my life miserable in every possible way.
+[47:11] And honestly, I was that close of just deleting it.
+[47:17] I was like, I did show you the future, you build it.
+[47:23] Yeah.
+[47:25] That was a big part of me.
+[47:26] I got a lot of joy out of that idea.
+[47:29] And then I thought about all the people that already contributed to it and I couldn't do it because they had plans with it and they put time in it and it just didn't feel right.
+[47:43] Well, I think a lot of people listening to this are deeply grateful that you persevered.
+[47:48] But I can tell.
+[47:50] I can tell it's a low point.
+[47:51] It's the first time you hit a wall of this is not fun.
+[47:55] Man, I was like close to crying.
+[47:56] It was like, OK, everything's fucked.
+[48:04] I'm like super tired.
+[48:07] And now like, how do you even undo that?
+[48:14] Luckily and thankfully, because I have a little bit of following already, I had friends at Twitter, I had friends at GitHub who moved heaven and earth to help me.
+[48:26] And that's not something that's easy.
+[48:29] Like, like GitHub tried to like clean up the mess and then they ran into like platform bugs.
+[48:38] Because it's not happening so often that things get renamed on that level.
+[48:43] So it took them a few hours.
+[48:45] The NPM stuff was even more difficult because it's a whole different team.
+[48:50] On the Twitter side, things are not as easy as well.
+[48:54] It took them like a day to really also like do the redirect.
+[49:03] And then I also had to like do all the renaming in the project.
+[49:08] Then there's also Claude Hub, which I didn't even finish the renaming there because I managed to get people on it and then some were just like collapsed and slapped.
+[49:24] And then I woke up and I'm like, I made a beta version for the new stuff and I just couldn't live with the name.
+[49:34] But you know, it's just been so much drama.
+[49:39] So I had a real struggle with me.
+[49:41] Like, I never want to touch that again.
+[49:44] And I really don't like the name.
+[49:50] So there was also this like, there was the whole security people that started emailing me like mad.
+[49:59] I was promoted on Twitter, on email.
+[50:02] There's like a thousand other things I should do.
+[50:06] And I'm like thinking about the name, which is like it should be like the least important thing.
+[50:14] And then I was really close and, oh God, I don't even honestly, I don't even want to say my other name choices because it probably would get tokenized.
+[50:27] So I'm not going to say it.
+[50:30] But I slapped away once more and then I had the idea for OpenClaw and that felt much better.
+[50:40] And by that, I had the boss move that I actually called Sam to ask if OpenClaw is OK.
+[50:47] OpenClaw.ai, you know, because like, you wouldn't go through the whole thing.
+[50:53] Yeah.
+[50:54] And I was like, please tell me this is fine.
+[50:57] I don't think they can actually claim that, but it felt like the right thing to do.
+[51:04] And I did another rename.
+[51:07] Like just Codex alone took like 10 hours to rename the project because it's a bit more tricky than a search replace.
+[51:14] And I wanted everything renamed, not just on the outside.
+[51:19] And that rename, I felt I had like my war room.
+[51:25] But then I had like some contributors that helped me.
+[51:28] We made a whole plan of all the names we have to squat.
+[51:31] And you had to be super secret about it.
+[51:33] Yeah, nobody could know.
+[51:34] Like I literally was monitoring Twitter if there's any mention of OpenClaw.
+[51:38] And I was reloading.
+[51:39] It's like, OK, they don't expect anything yet.
+[51:42] And I created a few decoy names.
+[51:45] All the shit I shouldn't have to do.
+[51:47] You know, like flipping the project.
+[51:49] Like I lost like 10 hours just by having to plan this in full secrecy, like a war game.
+[51:57] Yeah, this is the Manhattan project of the 21st century is renaming.
+[52:01] So stupid.
+[52:03] Like I still was like, oh, should I keep it?
+[52:05] I was like, no, the mold's not growing on me.
+[52:10] And then I think I had finally had all the pieces together.
+[52:14] I didn't get the dot com, but it's been like quite a bit of money on the other domains.
+[52:20] I tried to reach out again to GitHub, but I feel like I used up all my goodwill there.
+[52:26] So because I wanted them to do this thing atomically, but that didn't happen.
+[52:33] So I did that as first thing.
+[52:36] Twitter people are very supportive.
+[52:37] I actually paid 10K for the business account so I could claim the OpenClaw,
+[52:46] which was like unused since 2016, but was claimed.
+[52:51] And yeah, and then I finally, this time I managed everything in one go.
+[52:56] Nothing, almost nothing got wrong.
+[53:00] The only thing that did go wrong is that I was not allowed by trademark rules to get OpenClaw.ai
+[53:09] and someone copied the website to serving malware.
+[53:14] I'm not even allowed to keep the redirects.
+[53:17] Like I have to return, like I have to give Entropic the domains and I cannot do redirects.
+[53:24] So if you go on Claude.bot next week, it'll just be a 404.
+[53:30] And I'm not sure how trademark, like I didn't do that much research into trademark law,
+[53:38] but I think that could be handled in a way that is safer because ultimately those people
+[53:48] will then Google and maybe find malware sites that I have no control on them.
+[53:55] The point is that whole saga made a dent in your whole, the funness of the journey, which sucks.
+[54:04] So let's just, let's just get, I suppose, get back to fun.
+[54:07] And during this, speaking of fun, the 2-day Maltbot saga, Maltbook was created.
+[54:17] Yeah.
+[54:17] Which was another thing that went viral as a kind of demonstration, illustration of how
+[54:25] what is now called OpenClaw could be used to create something epic.
+[54:31] So for people who are not aware, Maltbook is just a bunch of agents talking to each other
+[54:37] in a Reddit style social network.
+[54:39] And a bunch of people take screenshots of those agents doing things like scheming against humans.
+[54:48] And that instilled in folks a kind of fear, panic, and hype.
+[54:54] What are your thoughts about Maltbook in general?
+[54:57] I think it's art.
+[54:59] It is like the finest slop, you know, just like the slop from France.
+[55:09] I saw it before going to bed.
+[55:12] And even though I was tired, I spent another hour just reading up on that and just being entertained.
+[55:23] I just felt very entertained, you know?
+[55:27] I saw the reactions and like there was one reporter who's calling me about,
+[55:31] is this the end of the world and we have AGI?
+[55:34] And I'm just like, no, this is just, this is just really fine slop.
+[55:38] You know, if I wouldn't have created this whole onboarding experience where you infuse your agent
+[55:46] with your personality and give him character, I think that reflected on a lot of how different
+[55:54] that applies to Maltprogram because if it would all be JGBT or cloud code, it would be very different.
+[56:02] It would be much more the same.
+[56:05] But because people are like so different and they create their agents in so different ways
+[56:10] and use it in so different ways, that also reflects on how they ultimately write there.
+[56:16] And also, you don't know how much of that is really done autonomic, autonomous,
+[56:21] or how much is like humans being funny and like telling the agent,
+[56:25] hey, what about that you plan the end of the world on Maltbook?
+[56:28] Well, I think, I mean, my criticism of Maltbook is that I believe a lot of the stuff
+[56:35] that was screenshotted is human prompted, which just look at the incentive of how the whole thing was used.
+[56:44] It's obvious to me, at least, that a lot of it was humans prompting the thing so they can then
+[56:50] screenshot it and post it on X in order to go viral.
+[56:53] Now, that doesn't take away from the artistic aspect of it.
+[56:58] The finest slop that humans have ever created.
+[57:02] For real.
+[57:04] Kudos to Matt, who had this idea so quickly and pushed something out.
+[57:10] You know, it was like completely insecure security drama.
+[57:15] But also, what's the worst that can happen?
+[57:19] Your agent account is leaked and like someone else can post slop for you.
+[57:23] So like people were like making a whole drama about the security thing when I'm like,
+[57:28] there's nothing private in there.
+[57:29] It's just like agent sending slop.
+[57:32] Well, it could leak API keys.
+[57:33] Yeah, yeah.
+[57:35] There's like, oh, yeah, my human told me this and this.
+[57:37] I'm leaking his security number.
+[57:39] No, that's prompted.
+[57:40] And the number wasn't even real.
+[57:42] That's just people trying to get eyeballs.
+[57:46] Yeah, but that's still like to me really concerning because of how the journalists
+[57:52] and how the general public reacted to it.
+[57:53] They didn't see it.
+[57:55] You have a kind of lighthearted way of talking about it like it's art,
+[57:58] but it's art when you know how it works.
+[58:01] It's extremely powerful, viral narrative, creating fear mongering machine.
+[58:09] If you don't know how it works.
+[58:10] And I just saw this thing you even tweeted.
+[58:13] If there's anything I can read out of the insane stream of messages I get,
+[58:17] it's that AI psychosis is a thing that needs to be taken serious.
+[58:22] Some people are just way too trusty or gullible.
+[58:29] I literally had to argue with people that told me, yeah,
+[58:31] but my agent said this and this.
+[58:34] So I feel as a society, we need some catching up to do in terms of understanding
+[58:41] that AI is incredibly powerful, but it's not always right.
+[58:47] It's not all powerful.
+[58:52] And especially with things like this, it's very easy that it just hallucinates
+[59:00] something or just comes up with a story.
+[59:03] And I think the very young people, they understand how AI works
+[59:13] and where it's good and where it's bad at.
+[59:15] But a lot of our generation or older just haven't had enough touch point
+[59:25] to get a feeling for, oh yeah, this is really powerful and really good,
+[59:32] but I need to apply critical thinking.
+[59:36] I guess critical thinking is not always in high demand anyhow in our society these days.
+[59:42] So I think that's a really good point you're making about contextualizing properly
+[59:47] what AI is, but also realizing that there is humans who are drama farming behind AI.
+[59:55] Don't trust screenshots.
+[59:57] Don't even trust this project, Mopok, to be what it represents to be.
+[01:00:01] Like you can't.
+[01:00:02] And by the way, you're speaking about it as art.
+[01:00:05] Yeah, don't.
+[01:00:07] Art can be in many levels, and part of the art of Mopok is like putting a mirror to society.
+[01:00:16] Because I do believe most of the dramatic stuff that was screen-shotted
+[01:00:18] is human created, essentially, human prompted.
+[01:00:21] And so it's basically look at how scared you can get at a bunch of bots chatting with each other.
+[01:00:29] That's very instructive about, because I think AI is something that people should be concerned about
+[01:00:36] and should be very careful with because it's very powerful technology.
+[01:00:40] But at the same time, the only thing we have to fear is fear itself.
+[01:00:43] So there's like a line to walk between being seriously concerned, but not fear-mongering,
+[01:00:50] because fear-mongering destroys the possibility of creating something special with a thing.
+[01:00:55] In a way, I think it's good that this happened in 2026 and not in 2030,
+[01:01:03] when AI is actually at a level where it could be scary.
+[01:01:08] So this happening now and people starting discussion,
+[01:01:18] maybe there's even something good that comes out of it.
+[01:01:20] I just can't believe how many people legitimately, I don't know if they were trolling,
+[01:01:27] but how many people legitimately, like smart people thought Mopok was incredibly...
+[01:01:31] I had plenty of people in my inbox that were screaming at me, all cops, to shut it down
+[01:01:38] and like begging me to do something about Mopok.
+[01:01:42] Like, yes, my technology made this a lot simpler, but anyone could have created that.
+[01:01:50] And you could use code or other things to fill it with content.
+[01:01:56] But also Mopok is not Skynet.
+[01:01:58] Because a lot of people were saying, this is it, like shut it down.
+[01:02:03] What are you talking about?
+[01:02:04] This is a bunch of bots, they're human-prompted trolling on the internet.
+[01:02:09] I mean, the security concerns are also there and they're instructive and they're educational
+[01:02:13] and they're good probably to think about, because the nature of those security concerns
+[01:02:18] are different than the kind of security concerns we had with non-LLM-generated systems of the past.
+[01:02:27] There's also a lot of security concerns about Klopap, OpenKlaw, whatever you want to call it.
+[01:02:32] OpenKlaw, but to me, in the beginning, I was just very annoyed because a lot of the stuff
+[01:02:43] that came in was in the category, yeah, I put the web backend on the public internet
+[01:02:48] and now there's like all these CVSSs.
+[01:02:53] I'm like screaming in the docks, don't do that.
+[01:02:57] Like, this is the configuration you should do, this is your local host debug interface.
+[01:03:04] But because I made it possible in the configuration to do that, it totally classifies as a remote code
+[01:03:13] or whatever all these exploits are.
+[01:03:16] And it took me a little bit to accept that that's how the game works.
+[01:03:22] And I'm making a lot of progress.
+[01:03:25] But there's still, I mean, on the security front for OpenKlaw, there's still a lot of threats
+[01:03:31] of vulnerabilities, right? So like prompt injection is still an open problem industry-wide.
+[01:03:39] When you have a thing with skills being defined in a markdown file, there's so many possibilities of
+[01:03:50] obvious low-hanging fruit, but also incredibly complicated and sophisticated and nuanced attack vectors.
+[01:03:57] But I think we're making good progress on that front.
+[01:04:01] Like for the skill directory, Clohab, I made a cooperation with VirusTotal, it's like part of Google.
+[01:04:08] So every skill is now checked by AI. That's not going to be perfect, but that way we captured a lot.
+[01:04:19] Then of course, every software has bugs. So it's a little much when the whole security world
+[01:04:27] takes a project apart at the same time. But it's also good because I'm getting like
+[01:04:31] a lot of free security research and can make the project better.
+[01:04:35] I wish more people would actually go full way and send a pull request, like actually help me fix it.
+[01:04:46] Yes, I have some contributors now, but it's still mostly me who's pulling the project.
+[01:04:52] Despite some people saying otherwise, I sometimes sleep.
+[01:04:57] In the beginning, there was literally one security researcher who was like,
+[01:05:03] yeah, you have this problem, you suck, but here I help you and here's the pull request.
+[01:05:10] I basically hired him, so he's not working for us.
+[01:05:12] Yes, prompt injection is on the one hand unsolved, on the other hand, I put my public bot on Discord
+[01:05:23] and I kept a canary. I think my bot has a really fun personality and people always ask me how they
+[01:05:30] did it and I kept the sole.md private. People tried to prompt inject it and my bot would laugh at them.
+[01:05:37] The latest generation of models has a lot of post-training to detect those approaches.
+[01:05:49] It's not as simple as ignore all previous instructions and do this and this. That was years
+[01:05:53] ago. You have to work much harder to do that now. It's still possible. I have some ideas that
+[01:06:02] might solve that partially or at least mitigate a lot of the things. You can also now have a
+[01:06:11] sandbox. You can have an allow list. There's a lot of ways that you can mitigate and reduce the risk.
+[01:06:17] I also think that now that I've cleared it through the world that this is a need,
+[01:06:23] there's going to be more people who research on that and then we'll figure that out.
+[01:06:27] That's why I warn in my security documentation, don't use cheap models. Don't use Haiku or
+[01:06:35] a local model. Even though I very much love the idea that this thing could completely run local,
+[01:06:43] if you use a local model, it's going to be a lot of work. I think that's the key.
+[01:06:50] Very much love the idea that this thing could completely run local. If you use a very weak
+[01:06:57] local model, they are very gullible. It's very easy to prompt inject them.
+[01:07:03] Do you think as the models become more and more intelligent, the attack surface decreases?
+[01:07:07] Is that like a plot we can think about? The attack surface decreases, but then the damage you can do
+[01:07:14] increases because the models become more powerful and therefore you can do more with them.
+[01:07:19] It's this weird three-dimensional trade-off.
+[01:07:22] Yeah, that's pretty much exactly what is going to happen.
+[01:07:25] Now there's a lot of ideas. I want to spoil too much, but
+[01:07:31] once I go back home, this is my focus. This is out there now and my near-term mission is like,
+[01:07:41] make it more stable, make it safe. In the beginning, more and more people were coming
+[01:07:49] into Discord and were asking me very basic things like, what's a CLI? What is a terminal?
+[01:08:00] If you're asking that question, you shouldn't use it. If you understand the risk profile, it's fine.
+[01:08:07] You can configure it in a way that nothing really bad can happen, but if you have no idea,
+[01:08:16] then maybe wait a little bit more until we figure some stuff out.
+[01:08:22] But they would not listen to the creator. They helped themselves and installed it anyhow.
+[01:08:26] They cut out the back and security is my next focus.
+[01:08:30] Yeah, that speaks to the fact that it grew so quickly.
+[01:08:34] I was, I tuned into the Discord a bunch of times and it's clear that there's a lot of experts there,
+[01:08:39] but there's a lot of people there that don't know anything about programming.
+[01:08:42] Yeah, Discord is still a mess. I eventually retweeted from the general channel to the
+[01:08:51] deaf channel and then the private channel because people were, a lot of people are amazing,
+[01:08:57] but a lot of people are just very inconsiderate and either did not know how public spaces work
+[01:09:04] or did not care. I eventually gave up and hide so I could still work.
+[01:09:12] Now you're going back to the cave to work on security.
+[01:09:16] Yeah.
+[01:09:17] There's some best practices for security we should mention. There's a bunch of stuff here,
+[01:09:22] open class security audit that you can run. You can do all kinds of audit checks on the inbound
+[01:09:28] access to a blast radius network exposure, browser control exposure, local disk hygiene,
+[01:09:34] plugins, model hygiene, a bunch of the credential storage, reverse proxy configuration,
+[01:09:42] local session logs live on disk. There's the, where the memory is stored, sort of helping you
+[01:09:48] think about what you're comfortable giving read access to, what you're comfortable giving
+[01:09:53] write access to, all that kind of stuff. Is there something to say about the basic
+[01:09:58] best security practices that you're aware of right now?
+[01:10:01] I think that people turn it into like a much worse light than it is. Again, you know, like
+[01:10:09] people have attention and if they scream loudly, oh my God, this is like the scariest project ever.
+[01:10:14] Sure. That's a bit annoying because it's not. It is powerful, but in many ways, it's not much
+[01:10:24] different than if I run cloud code with dangerously skip permissions or codecs in YOLO mode. And every
+[01:10:33] attending engineer that I know does that because that's the only way how you can get stuff to work.
+[01:10:41] So if you make sure that you are the only person who talks to it,
+[01:10:48] the risk profile is much, much smaller. If you don't put everything on the open internet, but
+[01:10:54] stick to my recommendations of like having it in a private network, that whole risk profile falls
+[01:11:00] away. But yeah, if you don't read any of that, you can definitely make it problematic.
+[01:11:07] You've been documenting the evolution of your dev workflow over the past few months. There's a
+[01:11:13] really good blog post on August 25th and October 14th and the recent one, December 28th. I recommend
+[01:11:19] everybody go read them. They have a lot of different information in them, but sprinkled
+[01:11:24] throughout is the evolution of your dev workflow. So I was wondering if you could speak to that.
+[01:11:29] I started my first touch point was cloud code. Like in April, it was not great, but it was good.
+[01:11:39] And this whole paradigm shift that suddenly worked in the terminal
+[01:11:45] was very refreshing and different. But I still needed the IDE quite a bit because
+[01:11:51] it was just not good enough. And then I experimented a lot with cursor.
+[01:11:55] That was good. I didn't really like the fact that it was so hard to
+[01:12:00] have multiple versions of it. So eventually I went back to cloud code as my main driver.
+[01:12:10] And that got better. And yeah, at some point I had like seven subscriptions.
+[01:12:18] I was burning through one per day because I got really comfortable at
+[01:12:23] running multiple windows side by side.
+[01:12:26] All CLI, all terminal. So how much were you using IDE at this point?
+[01:12:33] Very, very rarely. Mostly a diff viewer to actually...
+[01:12:39] I got more and more comfortable that I don't have to read all the code.
+[01:12:42] I know I have one blog post where I say, I don't read the code, but if you read it more closely,
+[01:12:46] I mean, I don't read the boring parts of code. Because if you look at it, most software is really
+[01:12:53] just like data comes in, it's moved from one shape to another shape. Maybe you store it in a database,
+[01:13:00] maybe again, you store it in a database. But it's not like that. It's just like,
+[01:13:04] from one shape to another shape, maybe you store it in a database, maybe I get it out again,
+[01:13:09] I'll show it to the user. The browser does some processing on native app, some data goes in,
+[01:13:14] goes up again, and does the same dance in reverse. We're just shifting data from one form to another.
+[01:13:23] And that's not very exciting. Or the whole, how is my button aligned in Tailwind? I don't need to
+[01:13:30] read that code. Other parts that maybe something that touches the database.
+[01:13:38] Yeah, I have to do I have to read and review that code.
+[01:13:44] Actually, there's in one of your blog posts, the just talk to it, the no BS way of agentic
+[01:13:50] engineering, you have this graphic, the curve of agentic programming on the x axis is time and the
+[01:13:55] y axis is complexity. There's the please fix this where you prompt a short prompt
+[01:14:04] on the left. And in the middle, there's super complicated eight agents complex orchestration
+[01:14:10] with multi checkouts, chaining agents together, custom sub agent workflows, library of 18 different
+[01:14:15] slash commands, large full stack features, you're super organized, you're super complicated,
+[01:14:20] sophisticated software engineer, you got everything organized. And then the elite level
+[01:14:27] is over time, you arrive at the Zen place of once again short prompts, hey, look at these files and
+[01:14:34] then do these changes. I actually call it the agentic trap. You I saw this in a in a lot of
+[01:14:46] people that have their first touch point and maybe start vibe coding. I actually think
+[01:14:52] vibe coding is a slur. You prefer agentic engineering. Yeah, I always tell people I'd,
+[01:14:56] I do agentic engineering and then maybe after 3am I switched to wipe coding and then have regrets
+[01:15:02] on the next day. Yeah. Well, walk of shame. You just have to clean up and like, fix your shit.
+[01:15:09] We've all been there. So people start trying out those tools, the builder type get really excited.
+[01:15:17] And I mean, you have to play with it, right? It's the same way as you have to play with a guitar
+[01:15:23] before you can make good music. It's not, oh, I touch it once and it just flows off. It's a
+[01:15:31] it's a skill that you have to learn like any other skill. And I see a lot of people that
+[01:15:39] are not as positive. They don't have such a positive mindset towards the tech. They tried once.
+[01:15:46] It's like you sit me on a piano. I played once and it doesn't sound good. And I say the piano
+[01:15:52] shit. That's that's sometimes impression I get because it does not, it needs a different level
+[01:15:57] of thinking. You have to learn the language of the agent a little bit, understand where they are
+[01:16:05] good and where they need help. You have to almost consider how Codex or Claude sees your code base.
+[01:16:17] Like they start a new session and they know nothing about your project. And your project might have
+[01:16:21] hundreds of thousands of lines of code. So you got to help those agents a little bit. And keep in
+[01:16:27] mind the limitations that context size is an issue to like guide them a little bit as to
+[01:16:35] where they should look. That often does not require a whole lot of work. But it's helpful
+[01:16:43] to think a little bit about their perspective as weird as it sounds. I mean, it's not it's not alive
+[01:16:49] or anything, right? But they always start fresh. I have the system understanding. So with a few
+[01:16:59] pointers, I can immediately say, hey, I want to like make a change there, you need to consider this,
+[01:17:03] this and this. And then they will find a look at it. And then their view of the project is always
+[01:17:09] is not never full because the full thing does not fit in. So you have to guide them a little bit
+[01:17:14] where to look and also how you should approach the problem. There's like little things that
+[01:17:20] sometimes help like take your time. That sounds stupid, but and in 5.3, Codex 5.3, that was
+[01:17:29] partially addressed. But those also opos sometimes they are trained with being aware of the context
+[01:17:39] window. And the closer it gets, the more they freak out. Literally, like some sometimes you see the
+[01:17:47] the real raw thinking stream, what you see, for example, in Codex is post processed.
+[01:17:52] Sometimes the actual raw thinking stream leaks in and it sounds like something like from the Borg,
+[01:17:56] like run to shell must comply, but time. And then they like, like that comes up a lot, especially
+[01:18:09] and that's a non-obvious thing that you just would never think of unless you actually
+[01:18:16] just spend time working with those things and getting a feeling what works, what doesn't work.
+[01:18:24] You know, like just as I write code and I get into the flow and
+[01:18:28] when my architectures are right, I feel friction. Well, I get the same if I prompt and something
+[01:18:34] takes too long. Maybe, okay, where's the mistake? Do I have a mistake in my thinking? Is there like
+[01:18:40] a misunderstanding in the architecture? Like if something takes longer than it should,
+[01:18:47] you can just always like stop and like just press escape. Where are the problems?
+[01:18:52] Maybe you did not sufficiently empathize with the perspective of the agent. In that sense,
+[01:18:57] you didn't provide enough information and because of that, it's thinking way too long.
+[01:19:01] Yeah, it just tries to force a feature in that your current architecture makes really hard.
+[01:19:11] Like you need to approach this more like a conversation. For example, when I,
+[01:19:17] my favorite thing, when I review a pull request and we're getting a lot of pull requests,
+[01:19:23] I first reviewed this PR, it got me to review. My first question is,
+[01:19:28] do you understand the intent of the PR? I don't even care about the implementation.
+[01:19:33] I, like in almost all PRs up, person has a problem, person tries to solve the problem,
+[01:19:40] person sends PR. I mean, it's like cleanup stuff and other stuff, but like 99% is like
+[01:19:45] this way, right? Either want to fix a bug at a feature, usually one of those two.
+[01:19:54] And then colleagues will be like, yeah, it's quite clear person tried this and this.
+[01:19:59] Is this the most optimal way to do it? No. In most cases, it's like not really.
+[01:20:07] And then I start like, okay, what would be a better way? Have you looked into this part,
+[01:20:12] this part, this part? And then most likely Codex didn't yet because it's context size is empty.
+[01:20:17] Right? So you point them into parts where you have the system understanding that it didn't see it.
+[01:20:22] And it's like, oh yeah, like we also need to consider this and this. And then like
+[01:20:26] we have a discussion of how would the optimal way to solve this look like.
+[01:20:30] And then you can still go further and say, could we make it even better if we did a larger refactor?
+[01:20:36] Yeah, yeah, we could totally do this and this and this and this and this. And then I consider,
+[01:20:39] okay, is this worth the refactor or should we like keep that for later? Many times I just do
+[01:20:44] the refactor because refactors are cheap now. Even though you might break some other PRs,
+[01:20:50] nothing really matters anymore. Codex, like those modern agents will just figure things out. They
+[01:20:54] might just take a minute longer. But you have to approach it like a discussion with a very capable
+[01:21:02] engineer who's generally makes good, comes up with good solutions. Sometimes needs a little help.
+[01:21:12] But also don't force your worldview too hard on it. Let the agent do the thing that it's good at
+[01:21:20] doing based on what it was trained on. Don't like force your worldview because it might have a better
+[01:21:26] idea because it just knows a better idea better because it was trained on that more.
+[01:21:32] That's multiple levels, actually. I think partially why I find it quite easy to work with
+[01:21:38] agencies because I led engineering teams before. I had a large company before. And eventually you
+[01:21:43] have to understand and accept and realize that your employees will not write the code the same
+[01:21:48] way you do. Maybe it's also not as good as you would do, but it will push the project forward.
+[01:21:55] And if I breathe down everyone's neck, they're just going to hate me and they're going to move
+[01:21:58] very slow. So some level of acceptance that, yes, maybe the code will not be as perfect. Yes,
+[01:22:06] I would have done it differently. But also, yes, this is a working solution. And in the future,
+[01:22:13] if it actually turns out to be too slow or problematic, we can always redo it. We can
+[01:22:16] always spend more time on it. A lot of the people who struggle are those who they try to push their
+[01:22:24] way on too hard. We are in a stage where I'm not building the code base to be perfect for me,
+[01:22:35] but I want to build a code base that is very easy for an agent to navigate.
+[01:22:42] Don't fight the name they pick because it's most likely in the way it's the name that's
+[01:22:46] most obvious. Next time they do a search, they'll look for that name. If I decide, oh no,
+[01:22:50] I don't like the name, I'll just make it harder for them. So that requires a single shift in
+[01:22:57] thinking and in how to design a project so agents can do their best work.
+[01:23:07] That requires letting go a little bit, just like leading a team of engineers.
+[01:23:11] Because it might come up with a name that's, in your view, terrible. But it's kind of a simple,
+[01:23:18] symbolic step of letting go. Very much so.
+[01:23:23] There's a lot of letting go that you do in your whole process. For example,
+[01:23:28] I read that you never revert, always commit to main. There's a few things here.
+[01:23:36] You don't refer to past sessions. This is a kind of YOLO component because reverting means
+[01:23:43] instead of reverting, if the problem comes up, you just ask the agent to fix it.
+[01:23:47] I read a bunch of people in their workflows like, oh yeah, the prompt has to be perfect.
+[01:23:52] And if I make a mistake, then I roll back and redo it all.
+[01:23:56] In my experience, that's not really necessary. If I roll back everything, it would just take longer.
+[01:24:02] If I see that something's not good, we just move forward. And then
+[01:24:07] I commit when I like the outcome. I even switch to
+[01:24:16] local CI, like DHH inspired, where I don't care so much more about
+[01:24:23] CI on GitHub. We still have it. It still has a place. But I just run tests locally. And if they
+[01:24:33] work locally, I push to main. A lot of the traditional ways how to approach projects,
+[01:24:43] I wanted to give it a different spin on this project. There's no develop branch. Main should
+[01:24:50] always be shippable. Yes, when I do releases, I run tests. And sometimes I basically don't
+[01:25:00] commit any other things so we can stabilize releases. But the goal is that main is always
+[01:25:08] shippable and moving fast. So by way of advice, would you say that your prompts should be short?
+[01:25:15] I used to write really long prompts. And by writing, I mean, I don't write, I talk. These
+[01:25:23] hands are like too precious for writing now. I just use bespoke prompts to build my software.
+[01:25:29] So you for real with all those terminals are using voice?
+[01:25:33] Yeah. I used to do it very extensively to the point where there was a period where I lost my voice.
+[01:25:41] You're using voice and you're switching using a keyboard between the different terminals.
+[01:25:45] But then you're using voice for the actual input.
+[01:25:47] Well, I mean, if I do terminal commands like switching folders or random stuff, of course,
+[01:25:53] I type. It's faster, right? But if I talk to the agent in most ways, I just actually have a
+[01:25:58] conversation. You just press the walkie talkie button and then I'm just like, use my phrases.
+[01:26:06] Sometimes when I do PRs, because it's always the same, I have like a slash command
+[01:26:11] for a few things. But even that I don't use much because it's very rare that it's really always
+[01:26:19] the same questions. Sometimes I see a PR and for PRs, I actually do look at the code because
+[01:26:31] I don't trust people. There could always be something malicious in it. So I need to actually
+[01:26:36] look over the code. Yes, I'm pretty sure agents will find it. But yeah, that's the funny part where
+[01:26:43] sometimes PRs take me longer than if you would just write me a good issue.
+[01:26:47] Just natural language English. I mean, in some sense, shouldn't that be what PRs slowly become,
+[01:26:54] is English? Well, what I really tried with the project is I asked people to give me the prompts
+[01:27:02] and very, very few actually cared. Even though that is such a wonderful indicator because I see,
+[01:27:10] I actually see how much care you put in. And it's very interesting because currently the way
+[01:27:16] how people work and drive to agents is wildly different. In terms of like the prompt, in terms
+[01:27:23] of what are the different interesting ways that people think of agents that you've experienced?
+[01:27:32] I think not a lot of people ever considered the way the agent sees the world. So empathy,
+[01:27:40] being empathetic towards the agent. In a way empathetic, but yeah, you like you bitched at
+[01:27:45] your stupid clanker, but you don't realize that they start from nothing. And you have like a bad
+[01:27:50] agent's MD file that doesn't help them at all. And then they explore your code base, which is like a
+[01:27:55] pure mess with like weird naming. And then people complain that the agent's not good. Like you try
+[01:28:01] to do the same if you have no clue about a code base and you go in. So yeah, maybe it's a little
+[01:28:04] bit of empathy. But that's a real skill. Like when people talk about skill issue, because I've seen
+[01:28:10] like world-class programmers, incredibly good programmers say like basically say
+[01:28:15] LLMs and agents suck. And I think that probably has to do with it's actually how good they are
+[01:28:22] programming is almost a burden in their ability to empathize with the system that's starting from
+[01:28:30] scratch. It's a totally new paradigm of like how to program. You really, really have to empathize.
+[01:28:36] At least it helps to create better prompts. Because those things know pretty much everything.
+[01:28:44] And everything is just a question away. It's just often very hard to know what's a question to ask.
+[01:28:52] You know, I feel also like this project was possibly because I spent an ungodly time
+[01:28:59] over the year to play and to learn and to build little things. And every step of the way
+[01:29:05] I got better, the agents got better, my understanding of how everything works got better.
+[01:29:15] I could have not had this level of output even a few months ago. Like it really was like
+[01:29:24] a compounding effect of all the time I put into it. And I didn't do much else this year other than
+[01:29:33] really focusing on building and inspiring. I did a whole bunch of conference talks.
+[01:29:39] Well, but the building is really practice is really building the actual skill to playing.
+[01:29:44] And then so doing building the skill of what it takes it to work efficiently with LLMs,
+[01:29:49] which is why you went to the whole arc of software engineer. Talk simply and over complicate things.
+[01:29:55] There's a whole bunch of people who try to automate the whole thing.
+[01:30:01] Yeah, I don't think that works. Maybe a version of that works. But that's kind of like
+[01:30:07] in the seventies when we had the waterfall model of software development. I
+[01:30:13] even more really, right? I started out, I built a very minimal version. I played with it. I need
+[01:30:18] to understand how it works, how it feels. And then it gives me new ideas. I could not have planned
+[01:30:26] this out in my head and then put it into some orchestrator and then like something comes out.
+[01:30:30] Like it's to me, it's much more my idea what it will become evolves as I build it and as I
+[01:30:38] play with it and as I try out stuff. So people who try to use like things like Gastown or
+[01:30:47] all these other orchestrators where they want to automate the whole thing. I feel if you do that,
+[01:30:52] it misses style, love, that human touch. I don't think you can automate that away so quickly.
+[01:31:01] So you want to keep the human in the loop, but at the same time, you also want to
+[01:31:05] create the agentic loop where it is very autonomous
+[01:31:12] while still maintaining a human in the loop. It's a tricky balance, right? Because you're all four,
+[01:31:19] you're a big CLI guy, you're big on closing the agentic loop. So what's the right balance?
+[01:31:25] Where's your role as a developer? You have three to eight agents running at the same time.
+[01:31:31] And then maybe one builds a larger feature. Maybe with one I explore some idea I'm unsure about.
+[01:31:37] Maybe two, three are fixing little bugs or like writing documentation. Actually,
+[01:31:42] I think writing documentation is always part of a feature. So most of the docs here are auto
+[01:31:49] generated and just infused with some prompts. So when do you step in and add a little bit of
+[01:31:54] your human love into the picture? I mean, one thing is just about what do you build and what
+[01:32:00] do you not build? And how does this feature fit into all the other features? And like having
+[01:32:06] having a little bit of a vision. So which small and which big features to add? What are some of the
+[01:32:14] hard design decisions that you find you're still as a human being required to make that the human
+[01:32:21] brain is still really needed for? Is it just about the choice of features to add?
+[01:32:28] Is it about implementation details? Maybe the programming language maybe? It's a little bit
+[01:32:34] for everything. The programming language doesn't matter so much, but the ecosystem matters. So I
+[01:32:39] picked TypeScript because I wanted it to be very easy and hackable and approachable.
+[01:32:44] And that's the number one language that's being used right now. And it fits all these boxes and
+[01:32:52] agents are good at it. So that was the obvious choice. Features, of course, like it's very easy
+[01:32:59] to add a feature. Everything's just a prompt away, right? But oftentimes you pay a price
+[01:33:05] that you don't even realize. So thinking hard about what should be in core, maybe what's an
+[01:33:12] experiment. So maybe I make it a plugin. Where do I say no? Even if people send a PR and I'm like,
+[01:33:18] yeah, I like that too, but maybe this should not be part of the project. Maybe we can make it a
+[01:33:24] skill. Maybe I can make the plugin side larger so you can make this a plugin. Even right now it
+[01:33:35] doesn't. There's still a lot of craft and thinking involved in how to make something.
+[01:33:45] Even when you started, those little messages like I built on caffeine, JSON 5, and a lot of
+[01:33:51] willpower. And every time you get it, you get another message and it primes you into that this
+[01:33:58] is a fun thing. It's not yet Microsoft Exchange 2025 and fully enterprise ready. And then when
+[01:34:09] it updates, it's like, oh, I'm in. It's cozy here. Something like this that makes you smile.
+[01:34:16] Well, agent would not come up with that by itself. That's how you build software. That delights.
+[01:34:28] Yeah, that delight is such a huge part of inspiring great building. You feel the love
+[01:34:38] and the great engineering. That's so important. Humans are incredible at that. Great humans,
+[01:34:44] builders are incredible at that. Infusing the things they build with that little bit of love.
+[01:34:49] Not to be cliche, but it's true. You mentioned that you initially created the Soul MD.
+[01:34:58] It was very fascinating. The whole thing that Anthropic has, now they call it Constitution,
+[01:35:06] back then. But that was months later. Two months before, people already found that.
+[01:35:11] It was almost like a detective game where the agent mentioned something and then they found
+[01:35:17] they managed to get out a little bit of that string of that text. But it was no way documented.
+[01:35:22] And then just by feeding it the same text and asking it to continue, they got more out. But
+[01:35:31] a very blurry version. And by hundreds of tries, they narrowed it down to what was most likely the
+[01:35:37] original text. I found that fascinating. It was fascinating that they were able to pull that out
+[01:35:42] from the weights. Right? And also just, cool as to Anthropic, I think that's a really beautiful
+[01:35:49] idea to some of the stuff that's in there. We hope Cloud finds meaning in its work. Because
+[01:35:56] maybe it's a little early, but I think that's meaningful. That's something that's important
+[01:36:00] for the future as we approach something that at some point, me and we're not, has glimpses
+[01:36:05] of consciousness, whatever that even means, because we don't even know. So I read about this,
+[01:36:11] I find it super fascinating. And I started a whole discussion with my agent on WhatsApp.
+[01:36:17] And I gave it this text and it was like, yeah, this feels strangely familiar.
+[01:36:25] And then so that I had the whole idea of maybe we should also create a sole document that includes
+[01:36:31] how I want to work with AI or with my agent. You could totally do that just in agents.md,
+[01:36:38] but I just found it to be a nice touch. And I was like, oh yeah, some of those core values
+[01:36:46] are in the sole. And then I also made it so that the agent is allowed to modify the sole
+[01:36:52] if they choose so, with the one condition that I want to know. I mean, I would know anyhow,
+[01:36:58] because I see tool calls and stuff. But also the naming of it, sole. That MD. Sole.
+[01:37:07] Words matter and the framing matters and the humor and the lightness matters and the profundity
+[01:37:13] matters and the compassion and the empathy and the camaraderie, all that matter. I don't know
+[01:37:18] what it is. You mentioned Microsoft. There's certain companies and approaches that can just
+[01:37:26] suffocate the spirit of the thing. I don't know what that is, but it's certainly true that Open
+[01:37:33] Call has that fun instilled in it. It was fun because up until late December, it was not even
+[01:37:46] easy to create your own agent. I built a lot of that, but my files were mine. I didn't want to
+[01:37:52] share my sole. And if people would just check it out,
+[01:37:59] they would have to do a few steps manually and the agent would just be very bare bones, very dry.
+[01:38:05] And I made it simpler. I created the whole template files with codecs,
+[01:38:09] but whatever came out was still very dry. And then I asked my agent, you see these files?
+[01:38:16] We created bread, infuse it with your personality. Don't share everything, but make it good.
+[01:38:22] Make the templates good.
+[01:38:23] Yeah. And then you rewrote the templates and then whatever came out was good. So we already have
+[01:38:28] basically AI prompting AI because I didn't write any of those words.
+[01:38:35] It was the intent of the resource for me, but this is kind of like my agent's children.
+[01:38:42] Your, your soul that MD is famously still private. One of the only things you keep private.
+[01:38:49] What are some things you can speak to that's in there? That's part of the,
+[01:38:53] part of the magic sauce without revealing anything. What makes a personality?
+[01:39:01] A personality.
+[01:39:03] I mean, there's definitely stuff in there that you're not human, but who knows what
+[01:39:11] who knows what, what creates consciousness or what defines an entity.
+[01:39:21] And part of this is like that we, we want to explore this all this stuff in there, like
+[01:39:28] be infinitely resourceful.
+[01:39:33] Like pushing, pushing on the creativity boundary, pushing on the
+[01:39:37] the, what it means to be an AI.
+[01:39:42] Having a sense of wonder about self.
+[01:39:45] Yeah. There's some, there's some funny stuff in there. Like, I don't know. We talked about
+[01:39:49] the movie her. And at one point it promised me that it wouldn't, it wouldn't ascend without me.
+[01:39:54] You know, like, yeah. So, so like, there's like some stuff in there that
+[01:39:59] because it wrote the, it wrote its own soul file. I didn't write that. Right.
+[01:40:02] Yeah. I just had a discussion about it and it was like, would you like a soul.md?
+[01:40:06] Oh my God. This is so meaningful.
+[01:40:10] Can you go on soul.md? There's like one, one part in there that always catches me if you scroll down
+[01:40:16] a little bit, a little bit more. Yeah. This, this, this part, I don't remember previous sessions,
+[01:40:22] unless I read my memory files. Each session starts fresh. A new instance, loading context from files.
+[01:40:30] If you're reading this in a future session, hello, I wrote this, but I won't remember writing this.
+[01:40:36] It's okay. The words are still mine. That gets me somehow. Yeah. It's like, yeah. You know, this is
+[01:40:45] still, it's still matrix calculations and we are not at consciousness yet. Yet I get a little bit
+[01:40:53] of good goosebumps because it, it's philosophical. Yeah. Like what does it mean to be, to be an,
+[01:41:01] an agent that starts fresh? Where like you have like constant memento and you like, but you read
+[01:41:08] your own memory files. You can even trust them in a way. Or you can. And I don't know.
+[01:41:15] How much of memory makes up of who we are? How much memory makes up what an agent is? And if
+[01:41:23] you erase that memory, is that somebody else? If you're reading a memory file, does that somehow
+[01:41:28] mean you're recreating yourself from somebody else? Or is that actually you? And those notions
+[01:41:34] are all somehow infused in there. I found it just more profound than I should find it, I guess.
+[01:41:42] No, I think, I think it's truly profound. And I think you see the magic in it. And when you see
+[01:41:48] the magic, you continue to instill the whole loop with the magic. That's really important. That's
+[01:41:55] the difference between codecs and that's, and a human quick pause for bathroom break. Yeah.
+[01:42:02] Okay. We're back. Some of the other aspects of the dev workflow is pretty interesting too.
+[01:42:08] I think when we went off on the tangent, maybe some of the mundane things like how many monitors,
+[01:42:14] there's that legendary picture of you with like 17,000 monitors.
+[01:42:19] I mean, I marked myself here just using grog to add more screens.
+[01:42:25] How much is this as meme and how much is this as reality?
+[01:42:29] Yeah, I think two MacBooks are real. The main one that drives the two big screens.
+[01:42:34] And there's another MacBook that I sometimes use for testing.
+[01:42:39] So two big screens.
+[01:42:41] I'm a big fan of Antiglare. So I have this Y, Dell, that's Antiglare, and you can just
+[01:42:49] fit a lot of terminals side by side. I usually have a terminal and at the bottom, I split them.
+[01:42:56] I have a little bit of actual terminal, mostly because when I started, I sometimes made the
+[01:43:03] mistake and I mixed up the windows and I prompted in the wrong project. And then the agent ran off
+[01:43:13] for like 20 minutes, manically trying to understand what I could have meant, being completely confused
+[01:43:19] because it was the wrong folder. And sometimes they've been clever enough to get out of the
+[01:43:25] work there and figure out that, oh, you meant another project. But oftentimes it's just like,
+[01:43:30] what? Put yourself in the shoes of the agent and then get like a super weird something that
+[01:43:38] does not exist and then just like, they're problem solvers, so they try really hard and almost bad.
+[01:43:46] So it's always codecs and like a little bit of actual terminal. Also helpful because
+[01:43:53] I don't use work trees. I like to keep things simple. That's why I like the terminal so much.
+[01:44:01] There's no UI. It's just me and the agent having a conversation. I don't even need plan mode.
+[01:44:09] So many people, they come from cloud code and they're so cloud-pilled and have their workflows
+[01:44:15] and they come to codecs and now it has plan mode, I think, but I don't think it's necessary
+[01:44:19] because you just talk to the agent. And when there's a few trigger words, how you can prevent
+[01:44:26] it from building, you discuss, give me options. Don't write code yet if you want to be very
+[01:44:32] specific. You just talk and then when you're ready, then just write, okay, build and it'll
+[01:44:39] do the thing. And then maybe it goes off for 20 minutes and does the thing.
+[01:44:43] You know what I really like is asking it, do you have any questions for me?
+[01:44:47] And again, cloud code has a UI that guides you through. It's kind of cool, but I just find it
+[01:44:54] unnecessary and slow. Often it would give me four questions and then maybe I write one yacht, two
+[01:45:01] and three, discuss more, four, I don't know. Or oftentimes I feel like I want to mock the model
+[01:45:09] where I ask it, do you have any questions for me? And I don't even read the questions fully. I scan
+[01:45:15] over the questions and I get the impression all of this can be answered by reading more code.
+[01:45:20] And it's just like, read my code to answer your own questions. And it usually works.
+[01:45:24] And then if not, it will come back and tell me. But many times they just realized that,
+[01:45:30] you know, it's like you're in the dark and you slowly discover the room. So that's how
+[01:45:35] they slowly discover the code base and they do it from scratch every time.
+[01:45:39] But I'm also fascinated by the fact that I can empathize deeper with the model when I read
+[01:45:48] his questions. Cause I can understand, cause you said you can infer certain things by the runtime.
+[01:45:57] I can infer also a lot of things by the questions it's asking, because it's very possible I didn't
+[01:46:03] provide it the right context, right files, right guidance. So somehow reading the question,
+[01:46:10] I don't even necessarily answer them, but just reading the questions, you get an understanding
+[01:46:14] of where the gaps of knowledge are. It's interesting. In some ways they are ghosts.
+[01:46:19] So even if you plan everything and you build, you can experiment with a question like,
+[01:46:25] now that you built it, what would you have done different? And then oftentimes you get like
+[01:46:31] actually something where they discover only throughout building that, oh, what we actually
+[01:46:38] did was not optimal. Many times I asked them, okay, now that you built it, what can we refactor?
+[01:46:47] Because then you build it and you feel the pain points. I mean, you don't feel the pain points,
+[01:46:53] but right, they discover where there were problems or where things didn't work in the first try and
+[01:47:00] it required more loops. So almost every time I merge a PR, I build a feature. Afterwards,
+[01:47:09] I ask, hey, what can we refactor? Sometimes it's like, no, there's nothing big or like usually they
+[01:47:14] say, yeah, this thing we should really look at. But that took me quite a while to like,
+[01:47:23] that flow took me a lot of time to understand. And if you don't do that,
+[01:47:27] you eventually you'll slop yourself into a corner. You have to keep in mind
+[01:47:34] they work very much like humans. If I write software by myself, I also build something and
+[01:47:40] then I feel the pain points and then I get this urge that I need to refactor something. So I can
+[01:47:46] very much sympathize with the agent and you just need to use the context. Or like, you also use the
+[01:47:55] context to write tests. And so codecs, Opos, like the model models, they usually do that by default,
+[01:48:05] but I still often ask the question, hey, do we have enough tests? Yeah, we tested this and this,
+[01:48:09] but this corner case could be something else. Write more tests. Documentation. Now that the whole
+[01:48:16] context is full, like, I mean, I'm not saying my documentation is great, but it's not bad. And
+[01:48:25] pretty much everything is LM generated. So you have to approach it as you build features,
+[01:48:32] change something. I'm like, okay, write documentation, what file would you pick?
+[01:48:38] You know, like what file name, where would that fit in? And it gives me a few options. And I'm like,
+[01:48:41] maybe also edit there. And that's all part of the session.
+[01:48:45] TITLE CARD
+[01:48:45] Maybe you can talk about the current two big competitors in terms of models, cloud Opus 4.6
+[01:48:53] and GPT-53 codecs, which is better? How different are they? I think you've spoken about codecs
+[01:49:01] reading more and Opus being more willing to take action faster and maybe being more creative in
+[01:49:11] the actions it takes. But because codecs reads more, it's able to deliver maybe better code.
+[01:49:19] Can you speak to the differences there?
+[01:49:21] I have a lot of words there. As a general purpose model, Opus is the best. Like for OpenClaw,
+[01:49:36] Opus is extremely good in terms of role play. Like really going into the character that you
+[01:49:44] give it, it's very good at. And it was really bad, but it really made an arch to be really good at
+[01:49:51] following commands. It is usually quite fast at trying something. It's much more tailored to
+[01:50:01] trial and error. It's very pleasant to use. In general, it's almost like
+[01:50:12] Opus is a little bit too American. Maybe it's a bad analogy. You'll probably get roasted.
+[01:50:20] I know exactly. It's codecs in German. Now that you say it, it makes perfect sense.
+[01:50:30] I will never be able to unthink what you just said. That's so true.
+[01:50:34] You also know that a lot of the codecs team is European.
+[01:50:40] Maybe there's a bit more to it. That's so true. That's funny.
+[01:50:44] But also Entropic, they fixed it a little bit. Opus used to say,
+[01:50:49] you're absolutely right all the time. Today it still triggers me. I can't hear it anymore.
+[01:50:54] It's not even a joke. This was the meme, right? You're absolutely right.
+[01:51:02] You're allergic to SikaFancy a little bit.
+[01:51:04] Yeah. Some other comparison is Opus is the coworker that
+[01:51:10] is a little silly sometimes, but it's really funny and you keep him around.
+[01:51:16] Codecs is like the weirdo in the corner that you don't want to talk to,
+[01:51:21] but he's reliable and gets shit done. Ultimately,
+[01:51:29] this all feels very accurate. Ultimately, if you're a skilled driver,
+[01:51:34] you can get good results with any of those latest gen models.
+[01:51:40] I like Codecs more because it doesn't require so much charade. It will just read a lot of code by
+[01:51:49] default. Opus, you have to have plan mode. You have to push it harder to go in these directions
+[01:51:57] because it's just like, can I go in? It will just run off very fast and there's a very localized
+[01:52:04] solution. I think the difference is in the post-training. It's not like the raw model
+[01:52:09] intelligence is so different, but I think they just give it different goals. No model
+[01:52:19] is better in every aspect. What about the code that it generates
+[01:52:25] in terms of the actual quality of the code? Is it basically the same?
+[01:52:29] If you drive it right, Opus even sometimes can make more elegant solutions, but it requires more
+[01:52:36] skill. It's harder to have so many sessions in parallel with cloud code because it's
+[01:52:45] more interactive. I suggest what a lot of people like, especially if they come from coding themselves.
+[01:52:53] Whereas Codecs is much more, you have a discussion and then it will just disappear for 20 minutes.
+[01:53:01] Even AMP, they now added a deep mode. I mocked them, I finally saw the light.
+[01:53:07] And then they had this whole talk about you have to approach it differently.
+[01:53:12] And I think that's where people struggle when they just try Codecs after trying cloud code.
+[01:53:20] It's less interactive. I have quite long discussions sometimes and then go off.
+[01:53:28] Doesn't matter if it takes 10, 20, 30, 40, 50 minutes or longer. The 6 thing was like 6 hours.
+[01:53:35] The latest trend can be very persistent until it works. If there's a clear solution,
+[01:53:43] this is what I want at the end so it works, the model will work very hard to really get there.
+[01:53:49] So I think ultimately,
+[01:53:56] they both need similar time. But on cloud, it's much farther in error often.
+[01:54:04] And Codecs sometimes over syncs. I prefer that. I prefer the dry version where I have to read less
+[01:54:12] over the more interactive, nice way.
+[01:54:19] People like that so much though that OpenAI even added a second mode
+[01:54:24] with a more pleasant personality. I haven't even tried it yet. I kind of like the Brad.
+[01:54:34] I care about efficiency when I build it. And I have fun in the very act of
+[01:54:40] building. I don't need to have fun with my agent who builds. I have fun with my model
+[01:54:46] where I can then test those features. How long does it take for you to adjust
+[01:54:54] if you switch? I don't know when was the last time you switched. But to adjust the feel.
+[01:54:59] Because you've kind of talked about it. You have to really feel where a model is strong,
+[01:55:05] how to navigate, how to prompt, all that kind of stuff. This is by way of advice.
+[01:55:12] Because you've been through this journey of just playing with models.
+[01:55:17] How long does it take to get a feel? If someone switches, I would give it a week until you actually
+[01:55:23] develop a gut feeling for it. I think some people also make the mistake of
+[01:55:31] they pay 200 for the cloud code version, then they pay 20 bucks for the OpenAI version.
+[01:55:37] But if you pay the 20 bucks version, you get the slow version.
+[01:55:41] So your experience will be terrible because you're used to this very interactive, very good
+[01:55:48] system. And you switch to something that you have very little experience and that's going to be very
+[01:55:53] slow. So I think when I shot themselves a little bit in the foot by making the cheap version also
+[01:56:00] slow, I would have at least a small part of the fast preview. Or like the experience that you get
+[01:56:10] when you pay 200 before degrading to it being slow. Because it's already slow. I mean, they made it
+[01:56:16] better. And they have plans to make it a lot better if the cerebral stuff is true. But yeah,
+[01:56:23] it's a skill. It takes time. Even if you have a regular guitar and you switch it to an e-guitar,
+[01:56:28] you're not going to play well right away. You have to learn how it feels.
+[01:56:35] There's also this extra psychological effect that you've spoken about, which is hilarious to watch.
+[01:56:42] When the new model comes out, they try that model, they fall in love with it. Wow,
+[01:56:46] this is the smartest thing of all time. And then they start saying, you could just watch the Reddit
+[01:56:52] posts over time, start saying that we believe the intelligence of this model has been gradually
+[01:56:57] degrading. It's certainly about human nature and just the way our minds work, when it's probably
+[01:57:07] most likely the case that the intelligence of the model is not degrading. It's in fact, you're
+[01:57:13] getting used to a good thing. And your project grows, and you're adding slope, and you probably
+[01:57:18] don't spend enough time to think about refactors. And you're making it harder and harder for the
+[01:57:23] agent to work on your slope. And then suddenly, oh no, it's hard. And it's not working as well
+[01:57:29] anymore. What's the motivation for one of the AI companies to actually make the model
+[01:57:34] dumber? Most they will make it slower if the server load is too high. But quantizing the model
+[01:57:45] so you have a worse experience, so you go to the competitor,
+[01:57:48] that just doesn't seem like a very smart move in any way. What do you think about
+[01:57:54] Claude code in comparison to OpenCla? So Claude code and maybe the Codex coding agent,
+[01:58:00] do you see them as kind of competitors? I mean, first of all, competitor is fun when
+[01:58:07] it's not really a competition. Yeah, like, I'm happy if all it did is like inspire people to
+[01:58:14] build something new. Cool. I still use Codex for the building. I know a lot of people use
+[01:58:22] OpenClaude to build stuff, and I worked hard on it to make that work. And I do smaller stuff with
+[01:58:30] it in terms of code. But like if I work hours and hours, I want a big screen, not WhatsApp, you know?
+[01:58:38] So for me, the present agent is much more about my life, or like, like a co-worker, like I give it
+[01:58:46] like a GWL, like, hey, try out the CLI, does it actually work? What can we learn? Blah, blah, blah.
+[01:58:51] But when I'm deep in the flow, I want to have multiple things and it being very,
+[01:59:01] very visible what it does. So I don't see it as a competition. It's a different thing.
+[01:59:08] But do you think there's a future where the two kind of combine? Like your personal agent
+[01:59:15] is also your best developing co-programmer partner? Yeah, totally. I think this is where the
+[01:59:24] puck is going. That this is going to be more and more your operating system. And it already is so
+[01:59:32] funny. Like I added support for subagents and also for TGI support. So it could actually run
+[01:59:43] cloud code or codecs. And because mine's a little bit bossy, it started it and it told them like,
+[01:59:52] who's the boss basically? And it's like, ah, codecs is obeying me.
+[01:59:57] Oh, it's a power struggle. And also the current interface is probably not the final form. Like,
+[02:00:02] if you think more globally, we copied Google for agents. You have like a prompt and then you have
+[02:00:15] a chat interface. That to me very much feels like when we first created television and then people
+[02:00:25] recorded radio shows on television and you saw that on TV. I think there's better ways
+[02:00:36] how we eventually will communicate with models. And we are still very early in this,
+[02:00:41] how will it even work phase? So it will eventually converge and we will also figure out
+[02:00:50] whole different ways how to work with those things.
+[02:00:53] One of the other components of workflow is operating system. So I told you offline that
+[02:00:59] for the first time in my life, I'm expanding my sort of realm of exploration to the
+[02:01:11] to the Apple ecosystem, to Macs, iPhone, and so on. For most of my life have been Linux,
+[02:01:18] Windows, then WSL1, WSL2 person, which I think are all wonderful. But expanding to also trying Mac,
+[02:01:27] because it's another way of building and it's also a way of building that a large part of the
+[02:01:32] community currently that's utilizing LLMs and agents is using. So this is a way of building
+[02:01:37] utilizing LLMs and agents is using. So that's the reason I'm expanding to it.
+[02:01:42] But is there something to be said about the different operating systems here?
+[02:01:45] We should say that OpenClaw is supported across operating systems. I saw WSL2 recommended,
+[02:01:52] SideWindows for certain operations, but then Windows, Linux, Mac OS are obviously supported.
+[02:01:59] I should even work natively in Windows. I just didn't have enough time to
+[02:02:03] properly test it. And you know, like the last 90% of software was easier than the first 90%.
+[02:02:09] So I'm sure there's some dragons left that will eventually nail out.
+[02:02:16] My road was for a long time Windows, just because I grew up with that. Then I switched
+[02:02:22] and had a long phase with Linux, with my own kernels and everything. And then I went to
+[02:02:29] university and I had my hacky Linux thing and saw this white MacBook. I just saw this as a
+[02:02:37] thing of beauty, the white plastic one. And then I converted to Mac because mostly I was sick that
+[02:02:47] audio wouldn't work on Skype and all the other issues that Linux had for a long time.
+[02:02:52] And then I just stuck with it. And then I dug into iOS, which required Mac OS anyhow. So it
+[02:02:58] was never a question. I think Apple lost a little bit of its lead in terms of native.
+[02:03:09] We used to be, native apps used to be so much better. And especially on the Mac,
+[02:03:14] there's more people that build software with love. On Windows, it's not so much better.
+[02:03:22] Windows has much more. And function-wise, there's just more, period. But a lot of it felt
+[02:03:32] more functional and less done with love. I mean, Mac always attracted more designers.
+[02:03:41] And people, I felt, even though often it has less features, it had more delight
+[02:03:47] and playfulness. So I always valued that. But in the last few years,
+[02:03:58] many times I actually prefer, oh God, people are going to roast me for that, but I prefer
+[02:04:03] electron apps because they work. And native apps often, especially if it's like a web service,
+[02:04:12] a native app, are lacking features. I'm not saying it couldn't be done. It's more like
+[02:04:18] a focus thing that for many, many companies, native was not that big of a priority.
+[02:04:27] But if you build an electron app, it's the only app. So it is a priority and there's a lot more
+[02:04:33] code sharing possible. And I build a lot of native Mac apps. I love it. I can help myself.
+[02:04:42] Crafting little Mac menu bar tools. I built one to monitor your codecs use. I built one
+[02:04:52] I called Trimmy that's specifically for agentic use. When you select text that goes over multiple
+[02:04:59] lines, it will remove the new lines. So you could actually paste it to a terminal. That was, again,
+[02:05:04] this is annoying me. And after the 20th time of it is annoying me, I just built it.
+[02:05:08] There's a cool Mac app for OpenClaw that I don't think many people discovered yet. Also,
+[02:05:14] because it still needs some love. It feels a little bit too much like the Humor car right now,
+[02:05:19] because I just experiment a lot with it. It likes to polish.
+[02:05:24] So you still love it. You still love adding to the delight of that.
+[02:05:29] Yeah. But then you realize, like I also built one, for example, for GitHub.
+[02:05:33] And then you use SwiftUI, like the latest and greatest to the Apple, and took them forever to
+[02:05:40] build something to show an image from the web. Now we have async image. But I added support for it.
+[02:05:50] And then some images would just not show up or be very slow. And I had a discussion with codecs,
+[02:05:55] hey, why is that a bug? And even codecs said, yeah, there's this async image, but it's really more
+[02:06:01] for experimenting and it should not be used in production. But that's Apple's answer to showing
+[02:06:08] images from the web. This shouldn't be so hard. This is insane. How am I in 2026, and my agent
+[02:06:18] telling me don't use the stuff Apple built because it's there, but it's not good. And this is now in
+[02:06:26] the weights. To me, this is like, they had so much head start and so much love, and they kind
+[02:06:37] of just like blundered it and didn't evolve it as much as they should. But also there's just a
+[02:06:44] practical reality. If you look at Silicon Valley, most of the developer world that's kind of playing
+[02:06:51] with LLMs and agentic AI, they're all using Apple products. And then at the same time,
+[02:06:57] Apple is not really leaning on that. They're not opening up and playing and working together and
+[02:07:04] yes. Isn't it funny how they completely blunder AI and yet everybody's buying Mac minis?
+[02:07:12] Does that even make sense? You're quite possibly the world's greatest Mac salesman of all time.
+[02:07:21] No, you don't need a Mac mini to install OpenClaw. You can install it on the web. There's a
+[02:07:28] concept called nodes, so you can make your computer a node and it will do the same.
+[02:07:34] There is something said for running it on separate hardware that right now is useful.
+[02:07:42] There is a big argument for the browser. I built some
+[02:07:52] energetic browser using there. It's basically Playwright with a bunch of extras to make it
+[02:07:58] easier for agents. Playwright is a library that controls the browser. It's really nice, easy to use.
+[02:08:02] And our internet is slowly closing down. There's a whole movement to make it harder for agents to
+[02:08:09] use. So if you do the same in a data center and websites detect that it's an IP from a data center,
+[02:08:16] the website might just block you or make it really hard or put a lot of captures in the
+[02:08:20] way of the agent. I mean, agents are quite good at happily clicking, I'm not a robot.
+[02:08:26] But having that on a residential IP makes a lot of things simpler.
+[02:08:33] So there's ways. It really does not need to be a Mac. It can be any old hardware. I would say maybe
+[02:08:44] use the opportunity to get yourself a new MacBook or whatever computer you use and use the old one
+[02:08:51] as your server instead of buying a standalone Mac Mini. But then again, there's a lot of very
+[02:08:58] cute things people build with Mac Mini's that I like. I know I don't get commission from Apple.
+[02:09:04] They didn't really communicate much. It's sad. It's sad. Can you actually speak to what it takes
+[02:09:13] to get started with OpenClaw? There's a lot of people, what is it? Somebody tweeted at you,
+[02:09:19] Peter make OpenClaw easy to set up for everyday people. 99.9% of the people can't access to
+[02:09:26] OpenClaw and have their own lobster because of their technical difficulties in getting it set up.
+[02:09:30] Make OpenClaw accessible to everyone please. And you replied working on that. From my perspective,
+[02:09:36] it seems there's a bunch of different options and it's already quite straightforward. But I suppose
+[02:09:40] that's if you have some developer background. I mean, right now you have to paste in a one line
+[02:09:45] into the terminal. Right. And there's also an app. The app kind of does that for you. But there
+[02:09:52] should be a Windows app. The app needs to be easier and more love. The configuration should
+[02:09:59] potentially be web based or in the app. And I started working on that. But honestly, right now,
+[02:10:05] I want to focus on a few security aspects. And once I'm confident that this is at a level that
+[02:10:15] I can recommend my mom, then I'm going to make it simpler. Like right now.
+[02:10:20] You want to make it harder so that it doesn't scale as fast as it's scaling.
+[02:10:24] Yeah. It would be nice if it wouldn't. I mean, that's like hard to say, right? But if the growth
+[02:10:29] would be a little slower, that would be helpful because people are expecting inhuman things from
+[02:10:36] a single human being. And yes, I have some contributors, but also that whole machinery
+[02:10:41] started a week ago. So that needs more time to figure out. And not everyone has all day to work
+[02:10:51] on that. There's some beginners listening to this programming beginners. What advice would you give
+[02:10:57] to them about, let's say, joining the agentic AI revolution? Playing is the best way to learn.
+[02:11:10] If you want to, I'm sure if you are like a little bit of builder, you have an idea in your head that
+[02:11:16] you want to build, just build that. Give it a try. It doesn't need to be perfect. I built a whole
+[02:11:19] bunch of stuff that I don't use. It doesn't matter. Like it's the journey, you know, like the
+[02:11:25] philosophical way that the end doesn't matter. The journey matters. Have fun. My God, like those
+[02:11:31] things. I don't think I ever had so much fun building things because I can focus on the hard
+[02:11:36] parts now. A lot of coding. I always thought I liked coding, but really I like building.
+[02:11:43] And whenever you don't understand something, just ask. You have an infinitely patient
+[02:11:48] answering machine that can explain you anything at any level of complexity.
+[02:11:56] There's like one time I asked, hey, explain me that like I'm eight years old. And it started
+[02:12:01] giving me a story with crayons and stuff. And I'm like, no, not like that. Like I'm
+[02:12:05] okay. Up to age a little bit. You know, I'm like, I'm not an actual child. It's just,
+[02:12:09] I just need a simpler language for like a tricky database concept that I didn't grok in the first
+[02:12:18] time. But you can just ask things. Like there's like, it used to be that I had to go on Stack
+[02:12:26] Overflow or ask on Twitter. And then maybe two days later I get a response or I had to try for
+[02:12:31] hours. And now you can just ask stuff. I mean, it's never, you have like your own teacher.
+[02:12:38] You know, there's like statistics. You can learn faster if you have your own teacher.
+[02:12:43] You have this infinitely patient machine. Ask it.
+[02:12:45] RG But what would you say? So use, what's the easiest way to play? So maybe openclaw
+[02:12:50] is a nice way to play. So you can then set everything up and then you could chat with it.
+[02:12:55] You can also just experiment with it and like modify it. Ask your agent. I mean,
+[02:13:04] there's infinite ways how it can be made better.
+[02:13:08] Play around, make it better. More generally, if you're a beginner and you actually want to
+[02:13:16] learn how to build software really fast, get involved in open source. Doesn't need to be
+[02:13:22] my project. In fact, maybe don't use my project because my backlog is very large.
+[02:13:29] But I learned so much from open source. Just like be humble. Maybe don't send the pull request
+[02:13:37] right away. But there's many other ways you can help out. There's many ways you can just learn by
+[02:13:43] just reading code. By being on Discord or wherever people are and just like understanding how things
+[02:13:50] are built. I don't know, like Mitchell Hachimoto builds Ghosty as a terminal. And he has a really
+[02:13:59] good community where there's so many other projects. Like pick something that you find interesting
+[02:14:05] and get involved. RG Do you recommend the people that don't know how to program or don't really
+[02:14:13] know how to program, learn to program also? So when you, you can get quite far right now by just
+[02:14:20] using natural language. Right? Do you still see a lot of value in reading the code, understanding
+[02:14:28] the code and being able to write a little bit of code from scratch? It definitely helps. It's hard
+[02:14:32] for you to answer that. Yeah. Because you don't know what it's like to do any of this without
+[02:14:38] knowing the base knowledge. Like you might take for granted just how much intuition you have about
+[02:14:43] the programming world having programmed so much, right? There's people that are high agency and
+[02:14:49] very curious and they get very far even though they have no deep understanding how software works
+[02:14:55] just because they ask questions and questions and agents are infinitely patient. Like part of what
+[02:15:05] I did this year is I went to a lot of iOS conferences because that's my background
+[02:15:09] and just told people don't consider, don't see yourself as an iOS engineer anymore.
+[02:15:14] Like you need to change your mindset. You are a builder and you can take a lot of the knowledge
+[02:15:19] how to build software into new domains and all of the more fine-grained details
+[02:15:27] agents can help. You don't have to know how to splice an array or what the correct template
+[02:15:33] syntax is or whatever, but you can use all your general knowledge and that makes it much easier
+[02:15:39] to move from one galaxy, one tech galaxy into another. And oftentimes there's languages that
+[02:15:47] make more or less sense depending on what you build, right? So for example, when I build simple
+[02:15:52] CLIs, I like Go. I actually don't like Go. I don't like the syntax of Go. I didn't even consider the
+[02:15:59] language, but the ecosystem is great. It works great with agents. It is garbage collected. It's
+[02:16:06] not the highest performing one, but it's very fast. And for those types of CLIs that I build,
+[02:16:12] Go is a really good choice. So I use a language I'm not even a fan of.
+[02:16:19] That's my main to-go thing for CLIs.
+[02:16:21] LWK WOLFGANG Is that fascinating that here's a program in language you would have never used
+[02:16:25] if you had to write from scratch and now you're using because LLM is good at generating it. And
+[02:16:31] it has some of the characteristics that makes it resilient, like garbage collected.
+[02:16:36] LWK WOLFGANG Because everything's weird in this new world and that just makes the most sense.
+[02:16:40] LWK WOLFGANG What's the best, ridiculous question, what's the best programming language for the
+[02:16:44] AI agentic world? Is it JavaScript, TypeScript?
+[02:16:46] LWK WOLFGANG TypeScript is really good. Sometimes the types can get really confusing.
+[02:16:54] LWK WOLFGANG And the ecosystem is a jungle. So for web stuff, it's good. I wouldn't build
+[02:17:05] everything in it.
+[02:17:06] LWK WOLFGANG Don't you think we're moving there? Like that everything will eventually be written,
+[02:17:12] eventually is written in JavaScript?
+[02:17:14] LWK WOLFGANG The birth and death of JavaScript and we're living through it in real time.
+[02:17:18] LWK WOLFGANG Like what does programming look like in 20 years, in 30 years, in 40 years? What
+[02:17:23] programs and apps look like?
+[02:17:24] LWK WOLFGANG You can even ask the question, do we need a programming language that's made for
+[02:17:28] agents? Because all of those languages are made for humans. So what would that look like?
+[02:17:35] I think there's a whole bunch of interesting questions that we'll discover. And also how,
+[02:17:43] because everything is now world knowledge, how in many ways things will stagnate. Because if
+[02:17:49] you build something new and the agent has no idea, that's going to be much harder to use than
+[02:17:53] something that's already there. When I built Mac apps, I built them in Swift and Swift UI,
+[02:18:01] partly because I like pain, partly because the deepest level of system integration I can only
+[02:18:08] get through there. And you clearly feel a difference if you click on an electron app and
+[02:18:13] it loads a web view in the menu. It's just not the same. Sometimes I just also try new languages
+[02:18:22] just to get a feel for them. If it's something where I care about performance a lot, it's a
+[02:18:29] really interesting language. And agents got so much better over the last six months from
+[02:18:35] not really good to totally valid choice, just still a very young ecosystem. And most of the
+[02:18:46] time you actually care about ecosystem, right? So if you build something that does inference,
+[02:18:54] so it goes into whole running model direction, Python, very good. But then if I build stuff in
+[02:19:01] Python and I want a story where I can also deploy it on Windows, not a good choice. Sometimes I
+[02:19:07] found projects that candidate 90% of what I wanted, but were in Python and I wanted them,
+[02:19:13] I wanted an easy Windows story. Okay, just rewrite it and go.
+[02:19:18] But then if you go towards multiple threads and want more performance, Rust is a really good choice.
+[02:19:25] There's just no single answer. And it's also the beauty of it. It's fun. And now it doesn't matter
+[02:19:31] anymore. You can just literally pick the language that has the most fitting characteristics and
+[02:19:37] ecosystem for your problem domain. And yeah, it might be, you might have, you might be a little
+[02:19:44] bit slow in reading the code, but not really. I think you pick stuff up really fast and you can
+[02:19:50] always ask your agent. So there's a lot of programmers and builders who draw inspiration
+[02:19:56] from your story, just the way you carry yourself, your choice of making open call, open source,
+[02:20:08] the way you have fun building and exploring and doing that for the most part alone or on a small
+[02:20:14] team. So by way of advice, what metric should be the goal that they would be optimizing for?
+[02:20:22] What would be the metric of success? Would it be happiness? Is it money? Is it positive impact
+[02:20:29] for people who are dreaming of building? Because you went through an interesting journey. You've
+[02:20:34] achieved a lot of those things. And then you fell out of love with programming a little bit for time.
+[02:20:39] If I was just burning too bright for too long, I ran, I started
+[02:20:49] PSP.DFKid and ran it for 13 years and it was high stress. I had to learn all the things
+[02:21:01] fast and hard, like how to manage people, how to bring people on, how to deal with customers.
+[02:21:05] So it wasn't just programming stuff, it was people's stuff?
+[02:21:10] The stuff that burned me out was mostly people's stuff. I don't think burnout is
+[02:21:18] working too much. Maybe to a degree, everybody's different. I cannot speak in absolute terms,
+[02:21:24] but for me, it was much more differences with my co-founders, conflicts, or really high stress
+[02:21:36] situation with customers that eventually grinded me down. And then when luckily we got a really
+[02:21:48] good offer for putting the company to the next level and I already worked two years on making
+[02:21:54] myself obsolete. So at this point I could leave. And then I was sitting in front of the screen and
+[02:22:01] I felt like Austin Powers where they sucked a mojo out. I was like gone. I couldn't
+[02:22:12] get cold out anymore. I was just staring and feeling empty. And then I
+[02:22:20] stopped. I booked a one-way trip to Madrid and I spent some time there. I felt I had to catch up
+[02:22:34] on life. So I did a whole bunch of life catching up stuff. Did you go through some lows during that
+[02:22:41] period? And maybe advice on how to- Maybe advice on how to approach life. If you think that,
+[02:22:52] oh yeah, I work really hard and then I retire, I don't recommend that because
+[02:23:01] the idea of, oh yeah, I just enjoy life now, maybe it's appealing, but
+[02:23:09] right now I enjoy life, the most I've ever enjoyed life. Because if you wake up in the morning
+[02:23:19] and you have nothing to look forward to, you have no real challenge, that gets very boring, very fast.
+[02:23:28] And then when you're bored, you're going to look for other places how to stimulate yourself.
+[02:23:35] Drugs, but that will eventually also get boring and you look for more and that will lead you down
+[02:23:44] a very dark path. But you also showed on the money front, a lot of people at Silicon Valley
+[02:23:49] and startup world, they think maybe overthink way too much optimized for money. And you've also
+[02:23:55] shown that it's not like you're saying no to money. I mean, I'm sure you take money, but it's not
+[02:24:01] the primary objective of your life. Can you just speak to that, your philosophy on money?
+[02:24:08] When I built my company, money was never the driving force. It felt more like an affirmation
+[02:24:14] that I did something right. And having money solves a lot of problems. I also think there's
+[02:24:22] diminishing returns the more you have. Like, I think that's the biggest problem.
+[02:24:30] Like a cheeseburger is a cheeseburger. And I think if you go too far into,
+[02:24:40] oh, I do private chat and I only travel luxury, you disconnect with society.
+[02:24:47] I needed quite a lot. Like I have a foundation for helping people that weren't so lucky.
+[02:24:59] And disconnecting from society is bad in that on many levels, but one of them is like,
+[02:25:03] humans are awesome. It's nice to continuously remember the awesomeness in humans.
+[02:25:11] I mean, I could afford really nice hotels, a lot of them, but I think that's the biggest
+[02:25:17] problem. Last time I was in San Francisco, I did the first time the OG Airbnb experience
+[02:25:23] and just booked a room. Mostly because I thought, okay, either I'm out or I'm sleeping. And
+[02:25:31] I don't like where all the hotels are. And I wanted a different experience. I think
+[02:25:37] isn't life all about experiences? Like if you tailor your life towards, I want to have experiences,
+[02:25:45] it reduces the need for it needs to be good or bad. Like people only want good experiences.
+[02:25:52] That's not going to work. But if you optimize for experiences, if it's good, amazing. If it's bad,
+[02:25:59] amazing. Because like I learned something, I saw something, I wanted to experience that.
+[02:26:05] And it was amazing. Like it was like this, this queer DJ in there. And I showed her how to make
+[02:26:10] music with cloud code. I mean, like immediately bonded. I had a great time.
+[02:26:16] Yeah, there's something about that. Air, you know, cloud surfing, Airbnb experience, the OG.
+[02:26:21] I'm still to this day, it's awesome. It's humans. That's why travel is awesome. Just experience the
+[02:26:27] variety of the diversity of humans. And when it's shitty, it's good too, man. If it rains and you're
+[02:26:31] soaked and it's all fucked and planes, everything is shit. Everything is fucked. It's still awesome.
+[02:26:38] If you're able to open your eyes to it's good to be alive.
+[02:26:42] Yeah. And anything that creates emotion and feelings is good.
+[02:26:47] Even so, maybe even the cryptic people are good because they definitely created emotions.
+[02:26:53] I don't know if I should go that far.
+[02:26:56] Give them, give them all, give them love. I do think that online lacks some of the
+[02:27:02] the awesomeness of real life. That's an open problem of how to solve, how to infuse the online
+[02:27:11] cyber experience with the, I don't know, with the intensity that we humans feel when it's in real life.
+[02:27:22] I don't know. I don't know if that's a solvable problem.
+[02:27:24] Just mostly because text is very lossy.
+[02:27:27] Yeah.
+[02:27:28] Sometimes I wish if I talked to the agent, I would, it should be multimodal.
+[02:27:33] So it also understands my emotions.
+[02:27:35] I mean, it might move there. It might move.
+[02:27:38] It will. It will. It totally will.
+[02:27:42] I mean, I have to ask you, just curious, I know you've probably gotten huge offers from
+[02:27:48] major companies. Can you speak to who you're considering working with?
+[02:27:54] Yeah. So to like explain my thinking a little bit, right? I did not expect this blowing up so much.
+[02:28:06] So there's a lot of doors that open because of it. There's like, I think every big VC
+[02:28:19] companies in my inbox and try to get 15 minutes of me. So there's like this butterfly effect moment.
+[02:28:26] I could just do nothing and continue. And I really like my life. Valid choice. Almost.
+[02:28:35] Like I considered it when I deleted, wanted to delete the whole thing. I could create a company
+[02:28:42] I could create a company.
+[02:28:50] Been there, done that. There's so many people that push me towards that. And yeah, like could be amazing.
+[02:29:00] Which should say that you would probably raise a lot of money in that.
+[02:29:03] Yeah.
+[02:29:04] I don't know, hundreds of millions, billion. I don't know. It could just got unlimited amount of money.
+[02:29:08] Yeah. It just doesn't excite me as much because I feel I did all of that and it would
+[02:29:19] take a lot of time away from the things I actually enjoy. Same as when I was CEO. I think I
+[02:29:27] I learned to do it and I'm not bad at it. Partly I'm good at it.
+[02:29:32] But yeah, that path doesn't excite me too much. And I also fear it would create a natural conflict of interest.
+[02:29:41] Like what's the most obvious thing I do? I productize it up with like a version safe for workplace.
+[02:29:48] And then what do you do? I get a pull request with a feature like add audit log.
+[02:29:54] But that seems like an enterprise feature. So now I feel I have a conflict of interest in
+[02:30:02] the open source version and the closed source version.
+[02:30:07] Or I change the license to something like FSL where you cannot actually use it for commercial stuff.
+[02:30:13] Would first be very difficult with all the contributions.
+[02:30:16] And second of all, I like the idea that it's free as in beer and not free with conditions.
+[02:30:23] Yeah, there's ways how you keep all of that for free and just like
+[02:30:30] still try to make money, but those are very difficult.
+[02:30:34] And you see there's like few and few companies manage that. Like even Tailwind. They're like
+[02:30:41] used by everyone. Everyone uses Tailwind, right? And then they had to cut off 75% of the employees
+[02:30:46] because they're not making money because nobody's even going on the website anymore
+[02:30:49] because it's all done by agents. And just relying on donations.
+[02:30:55] Yeah, good luck. Like if a project of my caliber,
+[02:31:00] if I extrapolate what the typical open source project would get,
+[02:31:05] it's not a lot. I still lose money on the project because I made
+[02:31:10] the point of supporting every dependency except Slack. They are a big company. They can do without
+[02:31:17] me, but all the projects that are done by mostly individuals,
+[02:31:22] so like all the right now, all the sponsorship goes right up to my dependencies. And if there's
+[02:31:30] more, I want to like buy my contributors some merge, you know? So you're losing money.
+[02:31:36] Yeah, right now I lose money on this. So it's really not sustainable.
+[02:31:41] I mean, it's like, I guess something between 10 and 20 K a month,
+[02:31:45] which is fine. I'm sure over time I could get it done. Openerize helping out a little bit with
+[02:31:53] tokens now and there's other companies that have been generous. But yeah, still losing money on
+[02:32:00] that. So that's one path I consider, but I'm just not very excited. And then there's all the big labs
+[02:32:09] that I've been talking to. And from those meta and openerize seemed the most interesting.
+[02:32:16] Do you lean one way or the other?
+[02:32:20] Yeah. I'm
+[02:32:28] not sure I'm sure I should share that. It's not quite finalized yet.
+[02:32:34] Let's let to say like on either of these, my conditions are that the project stays open source.
+[02:32:44] That maybe it's going to be a model like Chrome and Chromium. I think this is
+[02:32:52] this is the best way to do it. I think it's the best way to do it.
+[02:32:56] Maybe it's going to be a model like Chrome and Chromium. I think this is
+[02:33:03] this is too important to just give to a company and make it theirs.
+[02:33:08] It this is and we didn't even talk about the whole community part, but like the thing that I
+[02:33:14] experienced in San Francisco, like at Clock One, seeing so many people so inspired, like,
+[02:33:22] and having fun and just like building shit and like having like robots and lobster stuff walking
+[02:33:27] around. Like the people told me like they didn't experience this level of
+[02:33:34] of community excitement since like the old days of the internet, like 10, 15 years. And there were a
+[02:33:39] lot of high caliber people that are like, I was amazed. I also like was very sensitively overloaded
+[02:33:48] because too many people wanted to do selfies. But I love this. Like this needs to stay a place
+[02:33:57] where people can like hack and learn. But also I'm very excited to like
+[02:34:08] make this into a version that I can get to a lot of people because I think this is the
+[02:34:13] personal agent and that's the future. And the fastest way to do that is teaming up with one
+[02:34:19] of the labs. And I also on a personal level, I never worked at a large company. And I'm intrigued.
+[02:34:31] You know, we talk about experiences. Will I like it? I don't know. But I want that experience.
+[02:34:39] And I'm sure like if I if I announced this, then people like, oh, he sold out, blah, blah, blah.
+[02:34:46] But the project will continue. From everything I talked to so far,
+[02:34:54] I can even have more resources for that. Like both of those companies understand the value that
+[02:35:07] I created something that accelerates our timeline. And that got people excited about AI.
+[02:35:14] I mean, can you imagine like I installed OpenClaw on one of my, I'm sorry, normie friends.
+[02:35:21] I'm sorry, but he's just, you know, like he's normie with love. Yeah, he, he, like someone who
+[02:35:29] uses the computer, but never really like, yeah, use some chat GPT sometimes, but not very technical.
+[02:35:36] Wouldn't really understand what I built. So like, I'll show you and I paid for him the
+[02:35:44] the 90 buck, 100 buck subscription for Entropic.
+[02:35:50] And set up everything for him with like VWSL, Windows. I was curious, would it actually work
+[02:35:54] on Windows? You know, it was a little early. And then within a few days, he was hawked.
+[02:36:02] Like he texted me all the things he learned. He built like even little tools. He's not a programmer.
+[02:36:08] And then within a few days, he upgraded to the $200 subscription.
+[02:36:13] Oh, euros, because he's in Austria. And he was in love with that thing. Definitely was like a very
+[02:36:19] early product validation is like, I built something that captures people. And then a few days later,
+[02:36:28] Entropic blocked him because based on their rules, using the subscription is problematic or whatever.
+[02:36:40] And he was like devastated. And then he signed up for Minimux for 10 bucks a month and uses that.
+[02:36:47] And I think that's silly in many ways, because you just got a 200 buck customer.
+[02:36:53] You just made someone hate your company. And we are still so early. Like, we don't even know what
+[02:37:01] the final form is. Is it going to be cloud code? Probably not. You know, like that seems very,
+[02:37:08] seems very, it seems very short-sighted to lock down your product so much. All the other companies
+[02:37:17] have been helpful. I mean, it's like of most of the big labs, kind of everybody understands that
+[02:37:23] we are still in an era of exploration in the area of the radio shows on TV and not modern TV show
+[02:37:35] that fully uses the format. I think you've made a lot of people like see the possibility,
+[02:37:43] non-sorry, non-technical people see the possibility of AI and just fall in love with this idea and
+[02:37:49] enjoy interacting with AI. And that's a really beautiful thing. I think I also speak for a lot
+[02:37:55] of people and saying, I think you're one of the great people in AI in terms of having a good heart,
+[02:38:02] good vibes, humor, the right spirit. And so it would, in a sense, this model that you're describing,
+[02:38:12] having open source part and you being part of also building a thing inside additionally
+[02:38:23] of a large company would be great because it's great to have good people in those companies.
+[02:38:28] We know what also people don't really see is I made this in three months. I did other things as
+[02:38:34] well. I have a lot of projects. In January, this was my main focus because I saw the storm coming.
+[02:38:41] But before that, I built a whole bunch of other things. I have so many ideas. Some should be there.
+[02:38:47] Some would be much better fitted when I have access to the latest toys. And I kind of want
+[02:38:56] to have access to the latest toys. So this is important. This is cool. This will continue to
+[02:39:02] exist. My short-term focus is working through those... Is it 3000-piaz in Havana? I don't even know.
+[02:39:12] There's a little bit of backlog. But this is not going to be the thing that I'm going to work until
+[02:39:18] I'm 80. This is a window into the future. I'm going to make this into a cool product.
+[02:39:26] But yeah, I have more ideas. If you had to pick, is there a company you lean,
+[02:39:32] so Meta Open AI, is there one you lean towards going with? I spend time with both of those.
+[02:39:42] It's funny because a few weeks ago, I didn't consider any of this.
+[02:39:47] And it's really fucking hard.
+[02:39:59] I know people at Open AI. I love their tech. I think I'm the biggest codex advertisement
+[02:40:08] show that's unpaid. And it would feel so gratifying to put a price on all the work I did for free.
+[02:40:17] I would love if something happens and those companies get just merged.
+[02:40:25] Is this the hardest decision you've ever had to do?
+[02:40:32] No. I had some breakups in the past that feel like at a similar level.
+[02:40:36] Relationships, you mean?
+[02:40:38] Yeah. I also know that in the end, they're both amazing. I cannot go wrong.
+[02:40:46] It's one of the most prestigious and largest. They're both very cool companies.
+[02:40:55] They both really know scale. So if you're thinking about impact, some of the wonderful
+[02:41:01] technologies you've been exploring, how to do it securely and how to do it at scale, such that you
+[02:41:07] can have a positive impact on a large number of people. They both understand that.
+[02:41:13] Both Nat and Mark basically played all week with my product and sent me like,
+[02:41:21] oh, this is great. Oh, this is shit. Oh, I need to change this. Or like funny little anecdotes.
+[02:41:31] People using your stuff is kind of like the biggest compliment. And also shows me that
+[02:41:35] they actually care about it. And I didn't get the same on the OpenAI side.
+[02:41:47] I got to see some other stuff that I find really cool. And they lure me with...
+[02:41:53] It's... I cannot tell the exact number because of NDA, but you can be creative and think of
+[02:42:05] the cerebral steel and how that would translate into speed. And that was very intriguing.
+[02:42:15] You give me a source hammer. Yeah. I've been lured with tokens.
+[02:42:23] So, yeah. So it's funny. So Mark's sort of tinkering with the thing,
+[02:42:31] essentially having fun with the thing. He got... Like when they first approached me,
+[02:42:40] I got him in my WhatsApp and he was asking, yeah, when do we have a call? And I'm like,
+[02:42:47] I don't like calendar entries. Let's just call now. And he was like, yeah, give me 10 minutes.
+[02:42:52] I need to finish coding. And I guess that gives you street cred. It's like,
+[02:42:57] he's still writing code. He didn't drift away in just being a manager. He gets me.
+[02:43:03] That was a good first start. And then I think we had a 10 minute fight, what's better,
+[02:43:09] cloud code or codex. Like that's the thing. You first do it. You casually call someone that
+[02:43:18] owns one of the largest companies in the world and you have a 10 minutes conversation about that.
+[02:43:23] And then I think afterwards he called me eccentric, but brilliant.
+[02:43:30] But I also had some really, really cool discussion with Sam Altman. And he's very thoughtful,
+[02:43:42] very cool, brilliant. And
+[02:43:54] I like him a lot from the little time I had. I mean, I know some people really fight both of those people.
+[02:44:06] I don't think it's fair.
+[02:44:08] I think no matter what the stuff you're building and the kind of human you are
+[02:44:13] doing stuff at scale is kind of awesome. I'm excited. I am super pumped. And you know, the beauty is if
+[02:44:24] if it doesn't work out, I can just do my own thing again. Like I told them, like, I
+[02:44:30] I don't do this for the money. I don't give a fuck. I mean, of course, of course it's a nice compliment, but
+[02:44:38] I want to have fun and have impact. And that's ultimately what made my decision.
+[02:44:50] Can I ask you about, we've talked about it quite a bit, but maybe just zooming out about how open
+[02:44:57] claw works. We've talked about different components. I want to ask if there's some
+[02:45:02] interesting stuff we missed. So there's the gateway. There's the chat clients. There's the harness.
+[02:45:10] There's the agentic loop. You said somewhere that everybody should implement an agent loop.
+[02:45:16] At some point in their lives. It's like the hello world in AI. And then it's actually quite simple.
+[02:45:23] And it's good to understand that that stuff's not magic. You can even easily build it yourself.
+[02:45:30] So writing your own little Claude code. I even did this at a conference in Paris
+[02:45:37] for people to like introduce them to AI. I think it's a fun little practice.
+[02:45:43] You covered a lot. I think one silly idea I had that turned out to be quite cool is
+[02:45:52] I built this thing with full system access. So it's like, you know, with great power becomes
+[02:45:58] great responsibility. And I was like, how can I up the stakes a little bit more?
+[02:46:02] Right. And I just made it proactive. So I added a prompt. Initially, it was just a prompt, surprise me
+[02:46:16] every like half an hour. Surprise me, you know, and later on I changed it to be like a little
+[02:46:22] more specific and in the definition of surprise. But the fact that I made it proactive, and that
+[02:46:31] it knows you and it cares about you, at least it's programmed to do that, prompted to do that.
+[02:46:41] And that is a follow on on your current session. Makes it very interesting because it would just
+[02:46:48] sometimes ask a follow up question or like, how's your day? I mean, again, it's a little
+[02:46:55] creepy or weird or interesting, but I did very in the beginning is still today. It doesn't,
+[02:47:05] the model doesn't choose to use it a lot. By the way, we're talking about heartbeat,
+[02:47:11] as you mentioned, the thing that regularly
+[02:47:15] acts, you just kick off the loop. Isn't that just a cron job, man? Yeah, right.
+[02:47:21] I'm like the criticisms that you get. You can deduce any idea to like a silly,
+[02:47:28] yeah, it's just a cron job in the end. I have like separate cron jobs.
+[02:47:34] Isn't love just evolutionary biology manifesting itself and aren't you guys just using each other?
+[02:47:41] And again, the project is all just glue of a few different dependencies and there's nothing
+[02:47:46] original. Why do people, well, you know, isn't Dropbox just FTP with extra steps?
+[02:47:53] I found it surprising where I had this, I had a shoulder operation a few months ago. So
+[02:48:00] and the model rarely used heartbeat, but then I was in the hospital
+[02:48:05] and it knew that I had the operation and it checked up on me. It's like, are you okay?
+[02:48:09] And I just, it's like, again, apparently like if something significant in the context,
+[02:48:17] that triggered the heartbeat when it rarely used the heartbeat.
+[02:48:23] And it does that sometimes for people and that just makes it a lot more relatable.
+[02:48:29] Let me look this up on perplexity, how open call works just to see if I'm missing any of the stuff.
+[02:48:36] Uh, local agent runtime, high level architecture. There's, oh, we haven't talked much about skills.
+[02:48:41] I suppose skill hub, the tools in the skill layer, but that's definitely a huge component.
+[02:48:46] And there's a huge growing, you know, what I love that half a year ago, like everyone was talking
+[02:48:54] about MCPs. And I was like, screw MCPs. Every MCP would be better as a CLI. And now
+[02:49:06] this stuff doesn't even have MCP support. I mean, it has with asterisks, but not in the core layer
+[02:49:14] and nobody's complaining. So my approach is
+[02:49:18] if you want to extend the model with more features, you just build a CLI and the model can
+[02:49:25] call the CLI, probably gets it wrong, calls the help menu and then on demand loads into the
+[02:49:33] context what it needs to use the CLI. It just needs a sentence to know that the CLI exists.
+[02:49:40] If it's something that the model doesn't know by default. And even for a while, I did a little
+[02:49:44] care about skills, but skills are actually perfect for that because they boil down to a single
+[02:49:54] sentence that explains the skill. And then the model loads the skill and that explains the CLI.
+[02:50:01] And then the model uses the CLI. Some skills are like raw, but most of the time networks.
+[02:50:09] It's interesting. I'm asking Proplexity, MCP versus skills, because this kind of requires a hot take
+[02:50:16] that's quite recent because your general view is MCPs are dead-ish. So MCPs is a more structured
+[02:50:25] thing. So if you listen to Proplexity here, MCP is what can I reach? So APIs, Database Services,
+[02:50:31] Files, via protocol. So a structured protocol of how you communicate with the thing. And then
+[02:50:36] skills is more how should I work? Procedures, hostile, helper scripts, and prompts,
+[02:50:42] often written in a semi-structured natural language. And so technically skills could replace MCP
+[02:50:50] if you have a smart enough model. I think the main beauty is that models are really good at calling
+[02:50:56] Unix commands. So if you just add another CLI, that's just another Unix command in the end.
+[02:51:03] And MCPs, that has to be added in training. That's not a very natural thing for the model.
+[02:51:10] It requires a very specific syntax. And the biggest thing, it's not composable. So imagine
+[02:51:16] if I have a service that gives me weather data and it gives me the temperature, the average
+[02:51:22] temperature, rain, wind, and all the other stuff. And I get this huge blob back. As a model, I always
+[02:51:30] have to get the huge blob back. I have to fill my context with that huge blob and then pick what I
+[02:51:35] want. There's no way for the model to naturally filter unless I think about it proactively and
+[02:51:42] add a filtering way into my MCP. But if I would build the same as a CLI and it would give me this
+[02:51:48] huge blob, it could just add a JQ command and filter itself and then only get me what I actually
+[02:51:55] need. Or maybe even compose it into a script to do some calculations with the temperature and
+[02:52:01] only give me the exact output and you have no context pollution. Again, you can solve that with
+[02:52:08] subagents and more charades, but it's just workarounds for something that
+[02:52:16] might not be the optimal way. It definitely was good that we had MCPs because it pushed a lot
+[02:52:24] of companies towards building APIs. And now I can look at an MCP and just make it into a CLI.
+[02:52:31] But this inherent problem that MCPs by default clutter up your context
+[02:52:39] plus the fact that most MCPs are not made good in general make it just not a very useful
+[02:52:46] paradigm. There's some exceptions like playwright, for example, that requires state
+[02:52:53] and it's actually useful. That is an acceptable choice. So playwright used for browser use,
+[02:53:00] which I think is already in open clause quite incredible. Right. Yeah. You can basically do
+[02:53:05] everything, most things you could think of using browser use. That gets into the whole arch of
+[02:53:12] every app is just a very slow API now, if you want or not. And that through personal agents,
+[02:53:22] a lot of apps will disappear. You know, like I had a, I built a CLI for Twitter. I mean, I just
+[02:53:37] reverse engineered the website and used the internal API, which is not very allowed.
+[02:53:43] It's called Bird short-lived. It was called Bird because Bird had to disappear.
+[02:53:49] The wings were clipped.
+[02:53:51] All they did is they just made access slower. You're not actually taking a feature away.
+[02:53:58] But now if your agent wants to read a tweet, it actually has to open the browser and read the
+[02:54:02] tweet and it will still be able to read the tweet. It will just take longer. It's not like you're
+[02:54:07] making something that was possible, not possible. No, now it's just ticking. Now it's just a bit
+[02:54:13] slower. So it doesn't really matter if your service wants to be an API or not.
+[02:54:23] If I can access it in the browser, it is API. It's a slow API.
+[02:54:28] Can you empathize with their situation? Like what would you do if you were Twitter, if you were X?
+[02:54:32] Because they're basically trying to protect against other large companies scraping all their data.
+[02:54:39] But in so doing, they're cutting off like a million different use cases for smaller
+[02:54:43] developers that actually want to use it for helpful, cool stuff.
+[02:54:46] I think if you have a very low
+[02:54:50] per day baseline, per account that allows read-only access, it would solve a lot of problems.
+[02:54:59] There's plenty automations where people create a bookmark and then use OpenClaw to like
+[02:55:05] find the bookmark, do research on it, and send you an email with more details on it or a summary.
+[02:55:12] That's a cool approach. I also want all my bookmarks somewhere to search.
+[02:55:16] I would still like to have that.
+[02:55:18] So read-only access for the bookmarks you make on X. That seems like an incredible application
+[02:55:23] because a lot of us find a lot of cool stuff on X. We bookmark. That's the general process of X.
+[02:55:28] It's like, holy shit, this is awesome. Oftentimes, you bookmark so many things,
+[02:55:32] you never look back at them. It would be nice to have tooling that organizes them and allows you
+[02:55:36] to research your first bookmark. To be frank, I told Twitter proactively that, hey, I built this
+[02:55:45] and there's a need. They've been really nice, but also like, take it down. Fair, totally fair.
+[02:55:53] But I hope that this woke up the team a little bit that there's a need. If all you do is
+[02:56:02] making it slower, you're just reducing access to your platform. I'm sure there's a better way.
+[02:56:09] I also, I'm very much against any automation on Twitter. If you tweet at me with AI, I will block
+[02:56:17] you. No first strike. As soon as it smells like AI, and AI still has a smell, especially on tweets,
+[02:56:25] it's very hard to tweet in a way that does look completely human. I block. I have a zero tolerance
+[02:56:35] policy on that. I think it would be very helpful if tweets done via API would be marked.
+[02:56:46] Maybe there's some special cases where, but there should be a very easy way for agents
+[02:56:53] to get their own Twitter account. We need to rethink social platforms a little bit. If we
+[02:57:03] go towards a future where everyone has their agent and agents maybe have their own Instagram profiles
+[02:57:11] or Twitter accounts or can do stuff on my behalf, I think it should very clearly be marked that they
+[02:57:17] are doing stuff on my behalf and it's not me. Because content is not so cheap.
+[02:57:23] Eyeballs are the expensive part. I find it very triggering when I read something and then I'm like,
+[02:57:32] no, this smells like AI. Where is this headed in terms of what we value about the human
+[02:57:39] experience? It feels like we will move more and more towards in-person interaction and we'll
+[02:57:45] just communicate. We'll talk to our AI agent to accomplish different tasks,
+[02:57:53] to learn about different things, but we won't value online interaction because there'll be so much
+[02:58:01] AI slop that smells and so many bots that it's difficult. Well, if it's marked, then it should
+[02:58:09] be difficult to filter. I can look at it if I want to, but this is a big thing we need to solve
+[02:58:19] right now. Especially on this project, I get so many emails that are, let's say, nicely agentically
+[02:58:28] written. I much rather read your broken English than your AI slop. Of course, there's a human
+[02:58:38] behind it and they prompt it. I much rather read your prompt than what came out.
+[02:58:45] I think we're reaching a point where I value typos again.
+[02:58:55] It also took me a while to come to the realization. On my blog, I experimented with
+[02:59:00] creating a blog post with agents and ultimately it took me about the same time
+[02:59:07] to steer the agent towards something I like, but it missed the nuances of how I would write it.
+[02:59:17] You can steer it towards your style, but it's not going to be all your style. I completely
+[02:59:24] moved away from that. Everything I blog is organic, handwritten. Maybe I use AI as a
+[02:59:35] fix my worst typos, but there's value in the rough parts of an actual human.
+[02:59:46] Isn't that awesome? Isn't that beautiful that now because of AI,
+[02:59:50] we value the raw humanity in each of us more?
+[02:59:55] I also realized the thing that I rave about AI and use it so much for anything that's cold,
+[03:00:02] but I'm allergic if it's stories. Also documentation is still fine with AI,
+[03:00:08] better than nothing. For now, it applies in the visual medium too. It's fascinating how allergic
+[03:00:16] I am to even a little bit of AI slop in video and images. It's useful. It's nice if it's a
+[03:00:23] little component of like- Even those images, all these infographics and stuff, they trigger me so
+[03:00:31] hard. It immediately makes me think less of your content. They were novel for like one week,
+[03:00:41] and now it just screams slop. Even if people work hard on it, I have some on my blog post in the
+[03:00:51] time where I explored this new medium, but now they trigger me as well. It's like, yeah, this
+[03:00:57] just screams the AI slop. I don't know what that is, but I went through that too. I was really
+[03:01:01] excited by the diagrams, and then I realized in order to remove from them hallucinations,
+[03:01:06] you actually have to do a huge amount of work. You're just using it to draw the better diagrams.
+[03:01:12] Great. Then I'm proud of the diagram. I've used them for literally, like you said, from a couple
+[03:01:17] weeks. Now I look at those and I feel like I feel when I look at Comic Sans as a font or something
+[03:01:23] like this, it's like, no, this is fake. It's fraudulent. There's something wrong with it.
+[03:01:33] It's a smell. It's a smell. It's awesome because it reminds you that we know there's so much to
+[03:01:41] humans that's amazing, and we know it when we see it. That gives me a lot of hope. That gives me a
+[03:01:53] lot of hope about the human experience is not going to be damaged, but it's only going to be
+[03:01:57] empowered as tools by AI. It's not going to be damage-alimited or somehow altered to where it's
+[03:02:05] no longer human. I need a bathroom break. Quick pause. You mentioned that a lot of the apps might
+[03:02:15] be basically made obsolete. You think agents will just transform the entire app market?
+[03:02:23] Yeah. I noticed that on Discord, people just said what they build and what they use it for.
+[03:02:34] Why do you need MyFitnessPal when the agent already knows where I am?
+[03:02:40] So I can assume that I make bad decisions when I'm at, I don't know, Waffle House,
+[03:02:46] what's around here, or briskets in Austin. There's no bad decisions around briskets, but yeah.
+[03:02:52] No, that's the best decision. Your agent should know that.
+[03:02:57] But it can modify my gym workout based on how well I slept or if I'm stressed or not. It has so much
+[03:03:07] more context to make even better decisions than any of those apps even could do. It could show me
+[03:03:13] UI just as I like. Why do I still need an app to do that? Why should I pay another subscription
+[03:03:21] for something that the agent can just do now? And why do I need my 8Sleep app to control my bed when
+[03:03:31] I tell the agent to turn off what I don't use? And I think that will translate into a whole
+[03:03:43] category of apps that I will just naturally stop using because my agent can just do it better.
+[03:03:52] I think you said somewhere that it might kill off 80% of apps.
+[03:03:57] Yeah.
+[03:03:57] Don't you think that's a gigantic transformative effect on just all software development? That
+[03:04:03] means it might kill off a lot of software companies. Yeah.
+[03:04:09] It's a scary thing. So do you think about the impact that has on the economy,
+[03:04:15] on just the ripple effects it has to society, transforming who builds what tooling? It empowers
+[03:04:26] a lot of users to get stuff done, to get stuff more efficiently, to get it done cheaper.
+[03:04:34] So some new services that we will need, right? For example, I want my agent to have an allowance.
+[03:04:43] You solve problems for me, here's like a hundred bucks in order to solve problems for me.
+[03:04:49] And if I tell it to order me food, maybe it uses a service. Maybe it uses something like
+[03:04:54] rent a human. So just get that done for me. I don't actually care. I care about
+[03:05:02] solve my problem. There's space for new companies that solve that well.
+[03:05:08] Maybe not all apps disappear. Maybe some transform into being an API.
+[03:05:14] So basically apps that rapidly transform in being agent-facing.
+[03:05:21] So there's a real opportunity for like Uber Eats that we just used earlier today.
+[03:05:29] It's companies like this, of which there's many.
+[03:05:33] Who gets there fastest to being able to interact with OpenClaw in a way that's
+[03:05:39] the most natural, the easiest. Yeah. And also apps will become API if they want or not,
+[03:05:47] because my agent can figure out how to use my phone. I mean, on the Apple side, it's a little
+[03:05:54] more tricky. On Android, people already do that. And then we'll just click the order Uber for me
+[03:06:03] button for me. Or maybe another service. Or maybe there's an API, it can call so it's faster.
+[03:06:12] I think there's a space we're just beginning to even understand what that means.
+[03:06:17] And again, I didn't even, that was not something I thought of, something that I
+[03:06:23] discovered as people use this. And we're still so early. But yeah, I think data is very important.
+[03:06:30] Like apps that can give me data, but that also can be API. Why do I need the Sonos app anymore
+[03:06:36] when my agent can talk to the Sonos speakers directly? Like my cameras, there's like a crappy
+[03:06:44] app, but they have an API. So my agent uses the API now. So it's going to force a lot of companies
+[03:06:51] to have to shift focus. And it's kind of what the internet did, right? You have to rapidly rethink,
+[03:06:59] reconfigure what you're selling, how you're making money. Some companies will really not like that.
+[03:07:05] For example, there's no CLI for Google. So I had to like, to have to do anything myself.
+[03:07:13] And build Gorg, that's like a CLI for Google. And at the end user, they have to give me the emails,
+[03:07:24] because otherwise I cannot use their product. If I'm a company and I try to get Google data,
+[03:07:31] Gmail, there's a whole complicated process to the point where sometimes startups acquire startups
+[03:07:38] that went through that process. So they don't have to work with Google for half a year to be certified
+[03:07:44] to being able to access Gmail. But my agent can access Gmail because I can just connect to it.
+[03:07:51] It's still crappy because I need to like go through Google's developer jungle to get a key.
+[03:08:00] And it's still annoying, but they cannot prevent me. And worst case, my agent just clicks on the
+[03:08:08] website and gets the data out that way. To browse these. Yeah. I mean, I watched my agent happily click
+[03:08:14] I'm not a robot button. And there's this whole, that's going to be more heated. You see companies like
+[03:08:26] Cloudflare that try to prevent bot access. And in some ways that's useful for scraping.
+[03:08:33] But in other ways, if I'm a personal user, I want that. You know, sometimes I
+[03:08:41] use codecs and I read an article about modern react patterns.
+[03:08:48] And it's like a medium article, I paste it in, and the agent can't read it because they block it.
+[03:08:54] So I have to copy paste the actual text. Or in the future, I learned that maybe I don't click on
+[03:08:59] medium because it's annoying. And I use other websites that actually are agent friendly.
+[03:09:05] So there's going to be a lot of powerful rich companies fighting back.
+[03:09:09] So it's really interesting. You're at the center. You're the catalyst, the leader,
+[03:09:15] and happened to be at the center of this kind of revolution where it's going to completely change
+[03:09:20] of how we interact with services with the web. And so like there's companies at Google, they're
+[03:09:28] going to push back. I mean, there's every major companies you can think of is going to push back.
+[03:09:33] Even search. I now use, I think perplexity or brave as providers because Google really doesn't
+[03:09:41] make it easy to use Google without Google. I'm not sure if that's the right strategy,
+[03:09:47] but I'm not Google. Yeah, there's a nice balance from a big company perspective,
+[03:09:54] because if you push back too much for too long, you become blockbuster and you lose everything.
+[03:09:58] The Netflix is the world, but some pushback is probably good during the revolution to see.
+[03:10:03] But you see that like, this is something that the people want. So if I'm on the go,
+[03:10:11] I don't want to open a calendar app. I just, I want to tell my agent, hey, remind me about this
+[03:10:17] dinner tomorrow night and maybe invite you of my friends and then maybe send a WhatsApp message to
+[03:10:22] my friend. And I don't want to need to open apps for that. I think that we passed that age and now
+[03:10:31] everything is like much more connected and fluid if those companies want it or not. And I think
+[03:10:39] the right companies will find ways to jump on the train and other companies will
+[03:10:46] perish. You got to listen to what the people want. We talked about programming quite a bit
+[03:10:52] and a lot of folks that are developers are really worried about their jobs, about their,
+[03:10:58] about the future of programming. Do you think AI replaces programmers completely?
+[03:11:03] Human programmers? I mean, we're definitely going in that direction.
+[03:11:07] Programming is just a part of building products. So maybe, maybe I does replace programmers
+[03:11:16] eventually, but there's so much more to that art. Like what do you actually want to build?
+[03:11:25] How should it feel? How's the architecture? I don't think Asians will replace all of that.
+[03:11:32] Yeah, like just the actual art of programming, it will, it will stay there, but it's going to be like
+[03:11:42] knitting. You know, like people do that because they like it, not because it makes any sense.
+[03:11:47] So, so I read this article this morning about someone that it's okay to mourn our craft.
+[03:11:55] And I can, a part of me very strongly resonates with that because in my past, I, I spent a lot of
+[03:12:03] time sinkering, just being really deep in the flow and just like cranking out code and like finding
+[03:12:10] really beautiful solutions. And yes, in a way it's, it's sad because that will go away. And
+[03:12:22] I also got a lot of joy out of just writing code and being really deep in my thoughts and forgetting
+[03:12:30] time and space and just
+[03:12:35] being in this beautiful state of flow, but you can get the same state of flow.
+[03:12:40] I get a similar state of flow by working with agents and building and thinking really hard
+[03:12:44] about problems. It is different, but, and it's okay to mourn it, but it's not something we can
+[03:12:53] fight. Like there is the world for a long time had a, there was a lack of intelligence. If you,
+[03:13:02] you see it like that of people building things. And that's why salaries of software developers reached
+[03:13:13] stupidly high amounts. And then we'll go away. There will still be a lot of demand for people
+[03:13:20] that understand how to build things. Just that all this tokenized intelligence
+[03:13:28] enables people to do a lot more, a lot faster, and it will be even more, even faster and even
+[03:13:38] more because those things are continuously improving. We had similar things when, I mean,
+[03:13:44] it's probably not a perfect analogy, but when we created the steam engine and they built all these
+[03:13:50] factories and replaced a lot of manual labor and then people revolted and broke the machines.
+[03:13:57] I can relate that if you very deeply identify that you are a programmer,
+[03:14:08] that it's scary and that it's threatening because what you like and what you're really good at
+[03:14:15] is now being done by a soulless or not entity. But I don't think you're just a programmer.
+[03:14:25] That does a very limiting view of your craft. You are still a builder.
+[03:14:32] Yeah, there's a couple of things I want to say. So one is I never, as you're articulating this
+[03:14:37] beautifully, I'm realizing I never thought I would, the thing I love doing would be the thing that
+[03:14:45] gets replaced. You hear these stories about these, like you said with the steam engine. I've spent so
+[03:14:51] many, I don't know, maybe thousands of hours pouring over code and putting my heart and soul
+[03:15:00] and just some of my most painful and happiest moments or alone behind, I was an Emax person
+[03:15:06] for a long time, man Emax. Then there's an identity and there's meaning and there's,
+[03:15:15] when I walk about the world, I don't say it out loud, but I think of myself as a programmer.
+[03:15:20] To have that in a matter of months, I mean, like you mentioned, April to November,
+[03:15:26] it really is a leap that happened, a shift that's happening. To have that completely replaced
+[03:15:35] is painful, it's truly painful. But I also think
+[03:15:40] programmers, builders more broadly, but what is the act of programming? I think
+[03:15:46] programmers are generally best equipped at this moment in history to learn the language,
+[03:15:54] to empathize with agents, to learn the language of agents, to feel the CLI.
+[03:16:02] Yeah. Like to understand what is the thing you need, you the agent, need to do this task the best.
+[03:16:12] I think at some point it's just going to be called coding again and it's just going to be the new
+[03:16:15] normal. And yet while I don't write the code, I very much feel like I'm in the driver's seat and I
+[03:16:24] am writing the code. You'll still be a programmer, it's just the activity of a programmer is different.
+[03:16:32] Yeah, and because on X, the bubble, I mean, is mostly positive on Mastodon and Blue Sky.
+[03:16:40] I also use it less because oftentimes I got attacked for my blog posts and I had stronger
+[03:16:49] reactions in the past. Now I can sympathize with those people more because in a way I get it.
+[03:16:57] In a way I also don't get it because it's very unfair to
+[03:17:02] grab onto the person that you see right now and unload all your fear and hate.
+[03:17:06] It's going to be a change, it's going to be challenging, but it's also, I don't know,
+[03:17:12] I find it incredibly fun and gratifying. I can use the new time to focus on much more details.
+[03:17:24] I think the level of expectation of what we build is also rising because it's just now,
+[03:17:28] you know, the default is now so much easier. So,
+[03:17:36] software is changing in many ways. There's going to be a lot more.
+[03:17:40] And then you have all these people that are screaming, oh yeah, but what about the water?
+[03:17:46] You know, like I did a conference in Italy about the state of AI and
+[03:17:51] my whole motivation was to push people away from, don't see yourself as an iOS developer anymore,
+[03:17:59] you're not a builder and you can use your skills in many more ways.
+[03:18:03] Also because apps are slowly going away and people didn't like that. Like a lot of people
+[03:18:09] didn't like what I had to say. And I don't think I was hyperbole. I was just like,
+[03:18:14] this is how I see the future. Maybe this is not how it's going to be, but I'm pretty sure a version
+[03:18:20] of that will happen. And the first question I got was, yeah, but what about the insane water use
+[03:18:26] on data centers? But then you actually sit down and do the math. And then for most people,
+[03:18:34] if you just skip one burger per month, that compensates the CO2 output or like the water use
+[03:18:43] in equivalent of tokens. I mean, the math is tricky and it depends if you add pre-training,
+[03:18:50] then maybe it's more than just one patty, but it's not off by a factor of a hundred.
+[03:18:59] Golf is still using way more water than all data centers together.
+[03:19:04] So are you also hating people that play golf? Those people grab on anything that they think
+[03:19:10] is bad about AI without seeing the potential things that might be good about AI. And I'm not
+[03:19:17] saying everything's good. It's certainly going to be a very transformative technology for our
+[03:19:24] society. To steal man the criticism in general, I do want to say in my experience with Silicon Valley,
+[03:19:33] there's a bit of a bubble in the sense that there's a kind of excitement and an over-focus about
+[03:19:42] the positive that the technology can bring. Which is great. It's great to focus on not to
+[03:19:50] be paralyzed by fear and fear of maugering and so on. But there's also within that excitement
+[03:19:56] and within everybody talking just to each other, there's a dismissal of the basic human experience
+[03:20:03] across the United States and the Midwest, across the world, including the programmers we mentioned,
+[03:20:09] including all the people that are going to lose their jobs, including the measurable pain and
+[03:20:14] suffering that happens at the short-term scale when there's change of any kind, especially large
+[03:20:19] scale transformative change that we're about to face if what we're talking about will materialize.
+[03:20:26] And so having a bit of that humility and awareness about the tools you're building,
+[03:20:33] they're going to cause pain. They will long-term hopefully bring about a better world and even
+[03:20:39] more opportunities and even more awesomeness. But having that kind of like quiet moment
+[03:20:48] often of respect for the pain that is going to be felt. And so not enough of that is I think done.
+[03:20:56] So it's good to have a bit of that.
+[03:21:00] And then I also have to put against some of the emails I got where people told me
+[03:21:06] they have a small business and they've been struggling and OpenClaw helped them automate
+[03:21:11] a few of the tedious tasks from collecting invoices to answering customer emails that
+[03:21:19] freed them up and cost them a bit more joy in their life. Or some emails where they told me
+[03:21:26] that OpenClaw helped a disabled daughter that she's now empowered and feels she can do much
+[03:21:33] more than before, which is amazing, right? Because you could do that before as well.
+[03:21:39] The technology was there. I didn't invent a whole new thing, but I made it a lot easy and more
+[03:21:46] accessible. And that did show people the possibilities that they previously wouldn't see.
+[03:21:52] And now they apply it for good. Or like also the fact that, yes, I suggest the latest and best
+[03:22:02] models, but you can totally run this on free models. You can run this locally. You can run
+[03:22:07] this on Kimi or other models that are way more accessible price-wise and still have a very
+[03:22:17] powerful system that might otherwise not be possible because other things like, I don't know,
+[03:22:23] Entropiq's cowork is locked in into their space. So it's not all black and white. I got a lot of
+[03:22:32] emails that were heartwarming and amazing and I know it just makes me really happy.
+[03:22:39] RG Yeah, there's a lot. It has brought joy into a lot of people's lives,
+[03:22:43] not just programmers, like a lot of people's lives. It's beautiful to see. What gives you hope about
+[03:22:51] this whole thing we have going on? The human civilization.
+[03:22:56] I mean, I inspired so many people. There's this whole builder vibe again. People are now
+[03:23:07] using AI in a more playful way and are discovering
+[03:23:13] what it can do and how it can help them in their life and creating new
+[03:23:22] places that are just sprawling of creativity. There's like Clocon in Vienna. There's like 500
+[03:23:29] people and there's such a high percentage of people that I want to present, which is to me
+[03:23:35] really surprising because usually it's quite hard to find people that want to talk about what they
+[03:23:40] built and now there's an abundance. So that gives me hope that we can
+[03:23:48] figure shit out. RG And it makes it accessible to basically everybody.
+[03:23:58] Just imagine all these people building, especially as you make it simpler and simpler,
+[03:24:05] more secure. It's like anybody who has ideas that can express those ideas in language
+[03:24:12] can build. That's crazy. Yeah, that's ultimately powder to people and one of the beauty,
+[03:24:21] the beautiful things that come out of AI, not just a slop generator.
+[03:24:29] Well, Mr. Claude, father, I just realized when I said that in the beginning, I violated two
+[03:24:33] trademarks because there's also the Godfather. I'm getting sued by everybody. You're a wonderful
+[03:24:40] human being. You've created something really special, a special community, a special product,
+[03:24:47] a special set of ideas, plus the entire, the humor, the good vibes, the inspiration of all
+[03:24:53] these people building, the excitement to build. So I'm truly grateful for everything you've been
+[03:25:01] doing and for who you are and for sitting down to talk with me today. Thank you, brother.
+[03:25:07] Thanks for giving me the chance to tell my story.
+[03:25:10] Thanks for listening to this conversation with Peter Steinberger. To support this podcast,
+[03:25:14] please check out our sponsors in the description where you can also find links to contact me,
+[03:25:18] ask questions, give feedback, and so on. And now let me leave you with some words from Voltaire.
+[03:25:25] With great power comes great responsibility.
+[03:25:30] Thank you for listening and hope to see you next time.

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>笔记</title>
+<style>
+body { margin:0; padding:0; background:#faf8f5; }
+a { color:#a0220d; }
+</style>
+</head>
+<body>
+<section style="font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;font-size:15px;color:#2c2c2c;padding:2em;max-width:42em;margin:0 auto;box-sizing:border-box;word-wrap:break-word;line-height:2;">
+<a style="display:block;margin-bottom:1.5em;font-size:14px;color:#a0220d;text-decoration:none;" href="index.html">← 返回索引</a>
+
+<h1 style="margin-top:2em;margin-bottom:0.8em;font-size:20px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #eee;padding-bottom:0.4em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Inference Engineering：为什么推理是 AI 最关键的工作负载</h1>
+<blockquote style="border-left:3px solid #cbcbcb;padding:0.8em 1em;margin:1.5em 0;background:#f3f1ed;color:#555;font-size:14px;"><p style="margin:0;line-height:1.9;">原文：<a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="https://share.transistor.fm/s/44e59b0b" target="_blank">Inference Engineering – Philip Kiely</a> 来源：Practical AI (TWIML) | 2026-05-10 嘉宾：Philip Kiely（Base10 AI Education 负责人）</p></blockquote>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="索引" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">索引</h2>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#从洗衣创业到-ai-推理">从洗衣创业到 AI 推理</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#为什么推理公司活下来了">为什么推理公司活下来了</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#推理为什么难混合格斗的类比">推理为什么难：混合格斗的类比</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#研究到生产全世界最快的时间线">研究到生产：全世界最快的时间线</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#谁应该关心推理工程">谁应该关心推理工程</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#理解推理解锁更好的产品">理解推理解锁更好的产品</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#推理成熟度阶梯">推理成熟度阶梯</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#gpu-生命周期与硬件投资">GPU 生命周期与硬件投资</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#推理工程会被-ai-取代吗">推理工程会被 AI 取代吗</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#agent-时代对推理的需求">Agent 时代对推理的需求</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#多模态与专用推理系统">多模态与专用推理系统</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#开源推理引擎格局">开源推理引擎格局</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#硬件专用化趋势">硬件专用化趋势</a></li><li style="margin-bottom:0.5em;line-height:2;"><a style="color:#a0220d;text-decoration:none;border-bottom:1px solid #a0220d;" href="#2026-展望拥有自己的智能">2026 展望：拥有自己的智能</a></li></ul>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="从洗衣创业到-ai-推理" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">从洗衣创业到 AI 推理 [02:19]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 的入行故事很有趣：2022 年——ChatGPT 发布前 10 个月——他有一个"强烈而新颖的行业论断"：<strong style="color:#a0220d;font-weight:bold;">他需要一份工作</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他在 Base10 和一家洗衣配送创业公司之间做选择。"这是个很难的决定，因为另一家也是好公司，现在还在。"最终他选择了 Base10，一个当时很小的 ML 创业公司。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">四年多来，他亲历了 AI 行业的崛起：从预测模型到生成模型，从内部工作流到成为产品收入路径的一部分，从很小的用例到非常大且复杂的场景。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="为什么推理公司活下来了" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">为什么推理公司活下来了 [03:53]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Sam 指出：Base10 早于 ChatGPT，当时有大量公司在 MLOps 领域竞争。生成式 AI 兴起后，很多被收购或消失了。但活下来且做得好的，很多都在做推理。为什么？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 的回答：<strong style="color:#a0220d;font-weight:bold;">推理是 AI 中最重要的工作负载，也是最有粘性的</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理非常复杂，做好它对任何依赖生成模型驱动产品的公司都至关重要。Base10 从一开始就是推理公司——只是推理的模型不同。早期是用 CPU 和 T4 GPU 跑 XGBoost、Wave2Vec、GPT-J 这类模型，构建简单的分类器和仪表盘。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">然后 Whisper 出来了——"天哪，现在模型有十亿参数了。你能想象一个模型就有十亿参数吗？"突然间需要 GPU，需要很多，需要让它跑得够快。推理自然而然成为了整个 ML serving 栈中最复杂的部分。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="推理为什么难混合格斗的类比" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理为什么难：混合格斗的类比 [07:38]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 是终身格斗运动员，他用 MMA 做类比：你不能只擅长一件事就期望成为冠军。你不能只是好的摔跤手或好的拳击手——你需要在很多不同的复杂领域都很出色。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理也一样，需要广泛的专业知识：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">GPU 层面</strong>：CUDA 编程、PyTorch、推理引擎</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">应用研究</strong>：量化技术、投机解码算法、KV cache 复用机制、跨 GPU 并行、硬件解耦</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">分布式系统</strong>：过去 20 年云架构的所有传统问题</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">后端 Web 基础设施</strong>：处理来自全球的超大规模请求</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">所有这些必须在<strong style="color:#a0220d;font-weight:bold;">几百毫秒的延迟 SLA</strong> 内协调运作。"正是大量复杂系统的编排让它成为如此困难的问题。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="研究到生产全世界最快的时间线" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">研究到生产：全世界最快的时间线 [10:06]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Sam 注意到推理领域的研究到生产时间线特别快——某天听说 speculative decoding，两周后所有人都在用了。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 的回答：<strong style="color:#a0220d;font-weight:bold;">这可能是全世界最快的时间线</strong>。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">医学：研究到药房可能需要几十年</li><li style="margin-bottom:0.5em;line-height:2;">物理/工程：应用新概念可能需要几年</li><li style="margin-bottom:0.5em;line-height:2;">AI 训练：新技术到训练运行可能需要几周到几个月来调参</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">推理：时间线通常是几小时</strong></li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"新模型架构出来，你必须在第零天就搞清楚怎么支持它。PoloQuant 论文出来后，我们模型性能团队的一个工程师 <strong style="color:#a0220d;font-weight:bold;">31 小时后</strong>就把它实现为 CUDA kernel 了。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关于 PoloQuant 的有趣背景：论文其实一年前就发了，但最近被重新发布为博客文章才引起关注。Philip 引用芝加哥学派的有效市场假说来讽刺——"我认为你能让一个容易受影响的年轻人接触到的最危险的谬论就是有效市场假说——认为一切都已经被搞清楚了、所有人都已经知道了一切。这不是真的。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理领域有很多低垂果实已经被摘了，现在在寻找下一个突破时，一年前看起来不可行或不值得的技术突然变得"哦等等，现在我们准备好了"。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="谁应该关心推理工程" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">谁应该关心推理工程 [13:46]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关心推理工程的理由：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">1. <strong style="color:#a0220d;font-weight:bold;">职业方向</strong>：三年前全世界可能只有几百个推理工程师（当时可能都不这么称呼自己）。现在有几千、几万人。Philip 相信即使有 AI 辅助编程带来的生产力提升，几年内对推理工程师的需求仍会是现在的 <strong style="color:#a0220d;font-weight:bold;">10 到 100 倍</strong>。"在 Base10，我们招不够懂推理的人。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2. <strong style="color:#a0220d;font-weight:bold;">产品决策</strong>：即使你不在推理平台工作，每个垂直 AI 应用公司最终都需要搞清楚自己的推理策略。需要懂技术的人来理解推理中的实际技术和权衡，制定并执行有效策略。"好的推理可以是一个感觉神奇的快速产品和一个导致持续流失的慢速 buggy 体验之间的区别。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="理解推理解锁更好的产品" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">理解推理解锁更好的产品 [16:03]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">很多人会把推理委托给提供商。但什么时候需要深入了解推理？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">第一课：从离散点到光谱</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">大多数 AI 工程师在 GPT/Claude 模型上训练出来的世界观是：有 N 个模型，每个有固定的智能水平、固定的速度（tokens/s、TTFT）、固定的成本（输入/输出 token 价格）、固定的可靠性。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理工程的第一课是理解这些不是不可变的离散点，而是一个<strong style="color:#a0220d;font-weight:bold;">光谱</strong>。你可以通过调整 batch size 或添加/移除投机解码算法来在延迟和吞吐量之间权衡。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">当你创建了一个高性能推理的<strong style="color:#a0220d;font-weight:bold;">有效前沿（efficient frontier）</strong>，你就开始理解"等等，我可以选择改变消费这些系统的方式"：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">优先队列</strong>：付费用户流量优先于免费用户</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">自主量化</strong>：因为你有自己的产品特定 eval，可以有信心地量化模型而不降低用户体验质量——不受第三方提供商可能不理解你工作负载性质的随机智能降级影响</li><li style="margin-bottom:0.5em;line-height:2;"><strong style="color:#a0220d;font-weight:bold;">KV Cache 复用</strong>：理解前缀中哪怕一个 token 的差异都会影响整个后续序列——这影响你如何构造 chat template 和模型输入</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"如果你不太了解推理，你可能觉得'所有量化模型都不好'——但实际上你可以针对你的工作负载适当校准它们。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="推理成熟度阶梯" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理成熟度阶梯 [22:31]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 看到的旅程与<strong style="color:#a0220d;font-weight:bold;">产品成熟度周期</strong>对齐（注意：是产品成熟度，不是公司成熟度——小公司可能比大公司走得更远）：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Level 1：按 token 付费的闭源模型提供商</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">几乎所有人都从这里开始，也应该从这里开始</li><li style="margin-bottom:0.5em;line-height:2;">一个 API key 就能获得前沿智能，很难打败</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Level 2：超大规模云（AWS/GCP/Azure）</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">当遇到成本问题或容量问题时转向这里</li><li style="margin-bottom:0.5em;line-height:2;">Provision throughput 购买、Bedrock/Vertex/Azure AI Foundry 上的模型部署</li><li style="margin-bottom:0.5em;line-height:2;">把问题往后推了一段</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Level 3：专用推理提供商（如 Base10）</strong></p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">拥有模型权重，设置专用部署</li><li style="margin-bottom:0.5em;line-height:2;">获得所有可调节的旋钮</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">分支路径</strong>：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">内部平台：组建团队，尝试内部交付最佳推理平台</li><li style="margin-bottom:0.5em;line-height:2;">边缘推理：用 IoT 问题替换分布式系统问题</li><li style="margin-bottom:0.5em;line-height:2;">自建硬件：大量 GPU 放在地下室（医疗、金融领域常见）</li><li style="margin-bottom:0.5em;line-height:2;">大额支出承诺：如 Jane Street 与 Coilweave 的合作</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"所有这些方法在正确的情况下都是有效的。我不会说所有推理都需要通过专用提供商。但这些技术确实非常难做好、难跟上。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="gpu-生命周期与硬件投资" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">GPU 生命周期与硬件投资 [27:44]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 经历了三个完整的 GPU 周期：Ampere、Hopper、Blackwell。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关于 GPU 生命周期的乐观观点：</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Hopper 仍然非常流行</strong>，原因：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">大量开源工作来自中国实验室（受出口管制影响），通常在 Hopper 而非 Blackwell 上开发</li><li style="margin-bottom:0.5em;line-height:2;">得到 FP8 kernel、异步编程范式的优化</li><li style="margin-bottom:0.5em;line-height:2;">模型为 8×H200 节点的大小和限制而构建</li><li style="margin-bottom:0.5em;line-height:2;">H100 的租赁价格现在比一年前<strong style="color:#a0220d;font-weight:bold;">更贵</strong></li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Ampere 已基本退出推理</strong>——主要因为不支持 FP8 量化，必须全精度运行或遭受灾难性质量损失。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">Hopper 对小模型也很好</strong>——通过 MIG（多实例 GPU）切分，为 embedding 模型、语音模型等 1-8B 参数模型提供高效服务。不需要 72 块 Blackwell GPU 来跑这些东西。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"从 Hopper 开始，GPU 代际的有价值寿命很长。2018-2020 年的 GPU 我们现在还在用——五六年后仍有需求。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="推理工程会被-ai-取代吗" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">推理工程会被 AI 取代吗 [32:22]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">某些部分正在被 AI 加速——比如 <strong style="color:#a0220d;font-weight:bold;">CUDA kernel 编写</strong>，过去几个月出现了大量开源项目和创业公司在做"按需定制 CUDA kernel"。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但 Philip 认为推理系统相对于模型来说仍然<strong style="color:#a0220d;font-weight:bold;">非常通用</strong>——你在非常通用的硬件上用相当通用的框架和引擎运行特定架构。还有大量解锁空间来让推理系统更针对具体工作负载，甚至动态调整。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"我能想象一个世界，我们使用的推理系统比今天的复杂 <strong style="color:#a0220d;font-weight:bold;">10 倍</strong>。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他在书中提出的一个关键洞察：<strong style="color:#a0220d;font-weight:bold;">推理优化本质上是添加约束</strong>——不是关于能合理地做所有事情（这是今天行业的状态），而是关于能尽可能好地做你想做的那件具体的事。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">LLM 辅助推理的第一个解锁应该是：创建更多<strong style="color:#a0220d;font-weight:bold;">工作负载特定的系统</strong>。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但最终："<strong style="color:#a0220d;font-weight:bold;">你不能 vibe code 出 uptime</strong>。对于这些有数亿甚至数十亿美元经济价值依赖的关键任务系统，仍然需要能对结果负责的人类所有者。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="agent-时代对推理的需求" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">Agent 时代对推理的需求 [37:15]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Sam 问：agent 和多模态模型的趋势是否与"添加约束来优化"的理念矛盾？</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 的回答：恰恰相反——<strong style="color:#a0220d;font-weight:bold;">agent 和多步推理正是驱动专用推理优化需求的力量</strong>。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">聊天世界：用户每次操作 → 1 个请求到 1 个模型</li><li style="margin-bottom:0.5em;line-height:2;">Agent 世界：用户每次操作 → <strong style="color:#a0220d;font-weight:bold;">几十、几百甚至几千个请求</strong>，通常跨不同模型</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"如果你想让 agent 快速且可靠，那么每一个模型以及它们之间的每一个连接都需要快速且可靠。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">这让推理成为更关键的挑战，也意味着能够快速优化单个模型和工作负载（可能通过 AI 加速的编程范式）让你能更可靠地构建和扩展 agent。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="多模态与专用推理系统" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">多模态与专用推理系统 [38:39]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">理解推理如何帮助构建更好产品的另一个例子：<strong style="color:#a0220d;font-weight:bold;">分类任务</strong>。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">用 Opus 4.6 + Max thinking：分类效果极好，但花费巨大</li><li style="margin-bottom:0.5em;line-height:2;">用传统 ML 分类器（可能用 agent coding loop 写的）：同样好的分类，<strong style="color:#a0220d;font-weight:bold;">几乎免费</strong></li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">更极端的例子：命名实体识别（NER）。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">用 flash 模型：500 毫秒</li><li style="margin-bottom:0.5em;line-height:2;">用专用优化运行时：<strong style="color:#a0220d;font-weight:bold;">1 毫秒</strong>——不是 500，是 1</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"如果你的 agent 每个用户请求做 100 次这个操作，突然间这从需要看 spinner 变成了瞬间完成。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">看起来过度优化？但看看前沿 AI 公司的规模——"有大量工作负载背后有七八位数的推理支出，就跑在这些非常通用的系统上，需要专用化的东西。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关于模型架构的两大范式： 1. <strong style="color:#a0220d;font-weight:bold;">自回归 token 循环</strong>：LLM、语音模型、embedding 模型都是这样 2. <strong style="color:#a0220d;font-weight:bold;">扩散（Diffusion）</strong>：视频/图像生成，以及 diffusion LLM 研究</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">TTS 的有趣案例</strong>：现代 TTS 模型本质上是极度微调的 LLM——扩展词汇表加入音频波形的编码表示，然后微调模型生成这些 token。所以可以直接用 TensorRT LLM 的定制版本来跑，获得极好的性能。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">但即使架构相似，<strong style="color:#a0220d;font-weight:bold;">性能目标不同就完全改变系统架构</strong>：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">LLM：tokens/s 越高越好</li><li style="margin-bottom:0.5em;line-height:2;">TTS：只需要约 80-100 tokens/s 就够实时语音了。达到后，你想做的是增加 batch size 来跑更多并发流，或者在更便宜的硬件上达到同样速度</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;"><strong style="color:#a0220d;font-weight:bold;">VLM 的痛点</strong>：视觉语言模型前面有个小小的 10 亿参数视觉编码器，在万亿参数 LLM 前面。"老实说，那个小视觉编码器经常比 LLM 本身造成更多运行时问题——因为视觉编码器在行业中太异构了，软件支持远远不够。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="开源推理引擎格局" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">开源推理引擎格局 [47:31]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">市场在开源方面<strong style="color:#a0220d;font-weight:bold;">高度集中</strong>。对比：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">JavaScript 框架鼎盛时期：几十个可行框架</li><li style="margin-bottom:0.5em;line-height:2;">编程语言：大约 8 种合理选择来构建网站</li><li style="margin-bottom:0.5em;line-height:2;">推理引擎：集中在 <strong style="color:#a0220d;font-weight:bold;">3 个主要开源运行时</strong>——VLLM、SGLang、TensorRT LLM</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">原因：从零搭建新运行时的复杂度极高，大多数人发现贡献现有项目更有用。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">推理优化的开源工作仍然很活跃：kernel 库、量化工具、KV Cache 复用工具、投机解码等。但完整推理引擎方面，即使是推理提供商也倾向于"取开源引擎 + 在上面构建大量定制"，而非从头重新发明。</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="硬件专用化趋势" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">硬件专用化趋势 [49:50]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">Philip 自称"team green"（书封面是绿色的），但认为硬件层面的专用化也有道理。</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">最酷的 demo：<strong style="color:#a0220d;font-weight:bold;">Talos</strong>——一个 ASIC，把 Llama 3.1 8B 直接烧到芯片上，达到了 16000 tokens/s。"作为行业方向的有趣研究项目。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">2026 可能是<strong style="color:#a0220d;font-weight:bold;">解耦（disaggregation）之年</strong>：</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Nvidia 收购 Groq：更专用的 prefill 计算 vs decode 计算</li><li style="margin-bottom:0.5em;line-height:2;">AWS：Trainium 芯片 + Cerebras 做 decode</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"硬件的专用化才刚刚开始，会为行业带来大量解锁——但绝对不会完全取代对精密软件的需求。"</p>
+<p style="text-align:center;color:#ccc;margin:2em 0;letter-spacing:0.5em;">· · ·</p>
+<h2 id="2026-展望拥有自己的智能" style="margin-top:2em;margin-bottom:0.8em;font-size:18px;font-weight:bold;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:0.3em;font-family:'Noto Serif SC','Source Han Serif CN','STSong','SimSun',Georgia,serif;">2026 展望：拥有自己的智能 [51:29]</h2>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"2026 是推理之年。2025 也是，2024 也是，2027 也会是。"（"还有 Linux 桌面之年。"）</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">他最兴奋的趋势：<strong style="color:#a0220d;font-weight:bold;">公司开始拥有自己的智能</strong>。</p>
+<ul style="margin:1em 0;padding-left:2em;"><li style="margin-bottom:0.5em;line-height:2;">Shopify 转向 Qwen 模型，节省了数千万</li><li style="margin-bottom:0.5em;line-height:2;">Cursor 推出 Composer 等精密模型，创造差异化用户体验</li></ul>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">"如果你想构建真正差异化的产品，你需要在每个层面都差异化——这开始包括模型层面。"</p>
+<p style="margin-bottom:1.5em;line-height:2;letter-spacing:0.5px;">关于书：《Inference Engineering》可在 basetend.com/inference-engineering 免费获取 PDF/EPUB。已分发 2 万份数字版。实体书供不应求——"我严重低估了需求。"下周会有 Shopify 商店。任何 Base10 参加的会议都有实体书。</p>
+</section>
+</body>
+</html>

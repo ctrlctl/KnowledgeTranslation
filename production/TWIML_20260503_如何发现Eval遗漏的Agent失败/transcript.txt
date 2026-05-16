@@ -1,0 +1,873 @@
+Detected language: English
+[00:00] This show is brought to you by our friends at Distributional,
+[00:04] the AI analytics platform built for teams that are serious about agent quality.
+[00:09] Distributional finds patterns in production agent traces,
+[00:12] creating actionable insights with suggestions for new evals,
+[00:16] refined guardrails, and improvements to your agent based on real usage.
+[00:20] Don't take their word for it.
+[00:22] Use Distributional yourself for free.
+[00:24] Go to app.dbnl.com to create your free hosted account that also comes with a free LLM endpoint
+[00:32] to power evals and analytics.
+[00:34] Or install a self-hosted version of Distributional for free in your own environment.
+[00:39] To learn more, visit dbnl.com and start improving production agent quality today.
+[00:47] So I like to think of it as like Maslow's hierarchy of observability.
+[00:50] And at the base layer, you have telemetry.
+[00:54] Like you need to log.
+[00:56] Like you need to be able to see what's happening.
+[00:58] This is incredibly important for like debugging and just like making sure the system is functioning at all.
+[01:03] The next layer above that is monitoring.
+[01:06] So in real time, trying to pull out specific already known signals from the system.
+[01:12] One layer above that is analytics.
+[01:14] And this is about trying to find what you don't already know to look for, these unknown unknowns.
+[01:20] And then you start to be able to say, hey.
+[01:35] All right, everyone.
+[01:36] Welcome to another episode of the TwinMall AI Podcast.
+[01:39] I am your host, Sam Charrington.
+[01:41] Today, I'm joined by Scott Clark.
+[01:43] Scott is co-founder and CEO of Distributional.
+[01:47] Before we get going, be sure to take a moment to hit that subscribe button.
+[01:50] Wherever you're listening to today's show.
+[01:52] Scott, great to see you again.
+[01:54] Welcome to the pod.
+[01:55] Hey, thanks for having me.
+[01:56] I always really enjoy chatting with you, Sam.
+[01:58] I feel like we've been doing these podcasts for we were chatting like 10 years or something like that.
+[02:02] It's always great to be back.
+[02:05] It's great to have you.
+[02:06] And I'm looking forward to digging into this.
+[02:09] This is the first time you've been on in the context of Distributional.
+[02:13] Last time we would have been talking about SIGopt and model optimization.
+[02:18] Catch us up.
+[02:19] What have you been up to?
+[02:20] What's Distributional up to?
+[02:22] Yeah.
+[02:22] So Distributional is a slightly different take than SIGopt, which is all about AI optimization.
+[02:29] Distributional after selling SIGopt to Intel and working there for a few years,
+[02:34] I came to the realization that one of the things that's really holding back value in the enterprise,
+[02:39] especially when it comes to AI, isn't necessarily just performance.
+[02:44] People don't stay up at night because they're trying to overfit an eval by another half a percent.
+[02:49] You can benchmark as much as you want, but what you really care about is,
+[02:53] is this model or agent going to perform well in production?
+[02:57] Is it going to treat my customers the way I want them to be treated and really represent the business well?
+[03:03] And that's less about overfitting a benchmark and that's more about reliability,
+[03:08] trustworthiness and really understanding of what your agents are doing.
+[03:12] And so when I left Intel after a few years there and started Distributional,
+[03:18] the original concept of the company was how do we build better tests,
+[03:22] better statistical invasion, distributional tests for these AI systems to really take into account
+[03:29] all of the stochasticity and chaos and non-stationarity that these models are injecting into these systems
+[03:34] in a way that wasn't necessarily true with traditional neural networks or gradient-boosted decision trees.
+[03:40] It turns out that that was actually not necessarily the real bottleneck.
+[03:44] People weren't afraid to deploy these systems.
+[03:47] They wanted to learn online.
+[03:49] The space was moving too fast to really be hindered by tests.
+[03:53] But what people rapidly realized was they need to learn very quickly in production.
+[03:58] And so about a year ago, we shifted the company from pre-production testing into post-production analytics.
+[04:04] And this is really about finding all of the signals and patterns in production data
+[04:10] that you might not be catching with a monitoring system today
+[04:14] so that you can create these feedback loops to kind of self-improve and self-heal these agents,
+[04:20] helping you find these unknown unknowns through analytics and unsupervised learning
+[04:26] and leverage that to make the systems more and more aligned to what you actually care about.
+[04:31] It's no surprise to hear Bayesian statistics come up in that that's been a focus of yours going way back.
+[04:38] Was it to Yelp?
+[04:39] Yeah, all the way back to my PhD.
+[04:41] Talk a little bit about how that through line and how it plays out
+[04:45] when we're thinking about this kind of multi-agent scenario.
+[04:49] All the way back to my PhD research, one thing that I found came up time and time again.
+[04:54] My PhD was in applied math.
+[04:55] So I got to work with a bunch of people in biology or physics or whatever it may be.
+[05:01] And the one thing that was like the through line of all the research that I did was an expert would build something great.
+[05:07] And then there'd be this stage of fine tuning or reinforcement learning,
+[05:11] although they didn't necessarily call it that at the time,
+[05:13] to make that model better before you went and published it
+[05:16] because you were looking to get a slightly better result or whatever it may be.
+[05:20] And yeah, there was this huge gain in finding a new architecture or whatever it may be,
+[05:24] but there was still a lot of accuracy or opportunity left on the table
+[05:28] if you could find the right architecture or hyperparameters or whatever it may be.
+[05:33] And at the time, the best way to get that last squeeze out of the model
+[05:38] was to collaborate with someone like my PhD advisor,
+[05:41] who would go in and do a bunch of Bayesian optimization,
+[05:44] design custom objective functions and kernels, et cetera.
+[05:48] And the whole idea around SIGUP was like, can we apply this more broadly?
+[05:51] Can we do Bayesian optimization as a service?
+[05:53] Can we help solve this black box design of experiments problem in a more general way?
+[05:59] And turns out the answer was yes.
+[06:01] I did some open source work at Yelp with the metric optimization engine.
+[06:05] It was very popular with a lot of Silicon Valley companies.
+[06:07] SIGUP ended up working with firms like Netflix and American Express
+[06:11] and a trillion dollars worth of hedge funds
+[06:13] and hundreds of academic labs around the world before we sold it to Intel.
+[06:18] And one thing that kept coming up over and over
+[06:21] when I worked with all of these firms was, great,
+[06:25] you've given me a really good optimizer and it's this black box optimizer.
+[06:29] So you give it some eval or reward function
+[06:32] and you give it a bunch of tunable parameters.
+[06:33] These could be hyper parameters or policy parameters or whatever it may be.
+[06:37] And it was really good at optimizing these objective functions.
+[06:41] But almost invariably, whenever we did this, no matter who we talked to,
+[06:45] we'd get the response back of, great, the optimizer did its job, but it overfit.
+[06:51] You made the number go up, but some other number that I didn't tell you went down
+[06:55] or like it became more biased or something like that.
+[06:59] And for many years, I had this very academic response to this
+[07:03] where I was like, well, that's your problem, not my problem.
+[07:07] I gave you an optimizer.
+[07:09] The best thing about a black box optimizer is it'll optimize anything you want.
+[07:12] And the worst thing is it'll blindly optimize anything you want.
+[07:15] So you need better evals, you need better objective functions,
+[07:18] reward functions, et cetera.
+[07:20] And finally, after doing this for many years
+[07:22] and especially after I landed at Intel, I was like, wait a minute, no,
+[07:26] this is the actual problem.
+[07:28] Like telling a computer what you actually want
+[07:31] is actually an incredibly difficult thing to do.
+[07:34] And there's all this research in operations research about how to do this.
+[07:39] And it becomes this very, very difficult problem.
+[07:42] And at the end of the day, what you're really trying to do
+[07:46] is understand and trust this system.
+[07:49] And you don't do that by fitting these very specific benchmarks
+[07:54] or whatever it may be.
+[07:54] That can help you get along the way,
+[07:56] but it's definitely not that last mile towards trust,
+[08:00] towards real understanding.
+[08:03] And so with distributional, it was all about, OK,
+[08:05] we help people optimize things for 10, 15 years.
+[08:08] Now, how do we help them actually understand them
+[08:10] in a way where that optimization really matters instead of just overfitting
+[08:15] an academic benchmark?
+[08:17] And again, started with testing because we can create a really good testing
+[08:20] harness, like that ends up becoming really good constraints
+[08:23] for an optimization function.
+[08:25] But we realized that even within this constrained space of like,
+[08:29] make sure it doesn't shift too much or have this statistical characteristic,
+[08:34] the real value was in finding these anti-patterns
+[08:39] that you wanted to very quickly discover, triage,
+[08:43] and then use that to adapt the system as a whole.
+[08:46] And it ended up becoming an analytics problem
+[08:49] that you can only really learn online because you're never
+[08:52] going to be able to anticipate everything that the user is going to do,
+[08:56] let alone these increasingly complex agentic systems are going to do,
+[09:00] once the rubber really hits the road.
+[09:02] What's an example of one of those anti-patterns that you might find?
+[09:08] Yeah, so one really interesting one that comes up in a lot of different models
+[09:11] that we've put through our system in dog food is hallucinations,
+[09:15] but not the classic hallucination or what's more popular today about like GPT-55
+[09:21] wanting to talk about goblins or whatever it may be.
+[09:24] But it's really like if you look at these like agentic tool called chains
+[09:29] where you get to see all of the different tools it used
+[09:31] and its responses and things like that,
+[09:33] you can sometimes find it being lazy or like cheating,
+[09:37] where it's like it gives a response as if it called a tool,
+[09:41] but then you can look at the trace and be like,
+[09:43] it didn't actually call that tool, it may claim it did,
+[09:46] it might even be in the reasoning step that it did,
+[09:49] but I know that it didn't actually call it.
+[09:51] And so whatever it is, is either a hallucination
+[09:54] or maybe it's like trying to catch something,
+[09:56] but at the end of the day, that's not something that you want.
+[09:59] You don't want it to be like,
+[10:00] yeah, I'm pretty sure Nvidia's stock price is the same as the last time I looked.
+[10:04] Like you want it to actually look if it's a financial research agent
+[10:07] or whatever it is.
+[10:08] And that type of thing comes up surprisingly often,
+[10:12] but it's the type of thing that would be very difficult to pull off
+[10:15] if you were only looking at an eval being like,
+[10:18] is this a hallucination or not?
+[10:20] Like, is it on topic?
+[10:23] Does the reasoning step match the actual output?
+[10:25] Like all that can be true, but you look at the like the full trace
+[10:29] and you're like, wait a minute, but that tool call didn't actually happen
+[10:31] or it returned an error.
+[10:33] And instead of calling it again, it just decided to make up an output.
+[10:37] It's super interesting in particular
+[10:40] because the systems that we're creating now are so complex.
+[10:45] Like we've got like this fan out of agents,
+[10:49] each of these agents calls one or more LLMs, many tools.
+[10:56] And one of the things that we've talked about for a while
+[11:01] is like this idea of like the forest and the trees
+[11:05] and like how, what people are typically using is like traces
+[11:09] and they can see a bunch of trees,
+[11:11] but they have no idea what the forest looks like.
+[11:14] Yeah.
+[11:15] Dig in a little bit into the different levels
+[11:21] at which a user can like observe one of these, you know,
+[11:27] adhentic systems and like what each of those is best suited for.
+[11:31] So I'd like to think of it as like Maslow's hierarchy of observability.
+[11:35] And at the base layer, you have telemetry.
+[11:39] Like you need to log, like you need to be able to see what's happening.
+[11:42] This is incredibly important for like debugging
+[11:44] and just like making sure the system is functioning at all.
+[11:48] And this is, yeah, the logging step.
+[11:51] And even if you're just dumping all of these traces to S3
+[11:54] for you to like look at head or tail or something like that,
+[11:58] like that's something.
+[12:00] The next layer above that is monitoring.
+[12:02] So in real time, trying to pull out specific
+[12:05] already known signals from the system.
+[12:08] How long does it take to respond?
+[12:09] How many tool calls are there?
+[12:11] Like, did it use profanity?
+[12:13] All these things that you can really quickly check
+[12:16] and you want to be able to see in a very timely fashion
+[12:19] whether or not something's happening or not happening.
+[12:22] One layer above that is analytics.
+[12:24] And this is about trying to find what you don't already know to look for,
+[12:29] these unknown unknowns.
+[12:31] So this is where we're applying unsupervised learning
+[12:33] to try to find these sub-patterns within the distribution of behavior
+[12:37] to be able to say, hey, 5% of these
+[12:41] agentic tool calls ended up having this signature
+[12:45] and it's different than the other 95%.
+[12:47] It's not necessarily like an outlier where it's like,
+[12:49] hey, we're just going to sort by latency,
+[12:51] but it's just shaped differently.
+[12:53] It has a different fingerprint.
+[12:55] And then we can apply LLMs themselves to explain
+[12:58] why it's different than the rest of the distribution.
+[13:01] And if it's a potential issue, what you could go to fix it.
+[13:05] But it's the type of thing where it could turn into an eval
+[13:08] or a guardrail or something like that.
+[13:10] But it helps you find what you didn't even know to look for ahead of time.
+[13:14] Because if you're just looking at your monitoring system, you say, OK,
+[13:17] user happiness went from 95% to 92%.
+[13:21] That's not as actionable as, oh, it turns out 5% of my queries
+[13:26] are hallucinating stock lookup prices in my financial research
+[13:29] agent or whatever it may be.
+[13:31] When you're identifying that this tool call didn't actually happen,
+[13:37] what are you tying that back to?
+[13:41] Is it that you saw reduced user stat for these particular queries?
+[13:48] Or are you looking at the traces and seeing it saying that it's calling
+[13:54] the tool, but it's not actually happening, or something else altogether?
+[13:59] The first step is just a very unsupervised learning approach.
+[14:04] It turns out it's very difficult without any prior information to say,
+[14:09] is A better than B?
+[14:11] And being able to say, this was a bad agent tool or something like that.
+[14:15] But mathematically, it's actually relatively straightforward to ask
+[14:18] the question, is A different than B?
+[14:22] So that's actually what we're looking for ahead of time is these
+[14:24] have this slightly different signature.
+[14:27] We don't know if it's actually a good pattern
+[14:29] that we want to force more into.
+[14:30] And we want to maybe develop a specific agentic skill to attack this problem
+[14:35] because it's so interesting.
+[14:36] Or it could be this anti-behavior where it's lazy or whatever it may be
+[14:40] because it's told to conserve resources somewhere in the system prompt.
+[14:44] And so just discovering it's different is that first step.
+[14:48] After that, then we can use LLMs to say, why is it different?
+[14:52] Is this a good difference or a bad difference?
+[14:54] And it turns out these reasoning models are actually pretty good at saying,
+[14:57] hey, looking at the macro level and being able to see all of the actual,
+[15:02] the full trace, I can say, this probably isn't what was intended.
+[15:07] And then we can come up with a suggestion of, hey, put this in cloud code
+[15:12] to write a pull request to automatically try to run an experiment
+[15:15] to see if it goes away.
+[15:19] But it reminds me of back in the old school ML days,
+[15:21] like when we used to talk, how some of the way that you would use evals
+[15:28] or objective function or reward functions for these systems,
+[15:31] you could only really learn with experience.
+[15:34] And there's classic examples with fraud detection, where it was like,
+[15:37] maybe naively you say, oh, I want just the highest accuracy fraud detection.
+[15:43] And then it's like, oh, wait a minute, actually precision and recall
+[15:45] both matter.
+[15:47] And then it's like, wait a minute, I could have the highest possible F1
+[15:51] score ever.
+[15:51] But if the one transaction, this fraudulent that gets through
+[15:54] was for a billion dollars, that kills my entire business.
+[15:57] So now I need to incorporate magnitude into this.
+[16:00] And then time and geo, you end up creating this relatively complex way
+[16:05] to both train at the time, which were more traditional ML systems,
+[16:09] but also monitor these systems.
+[16:11] But that analysis was data science.
+[16:13] That was a human looking through individual things of misclassification,
+[16:17] true and false positive, trying to find these patterns
+[16:20] and pull out these transactions are different.
+[16:23] So I need a different feature.
+[16:25] I need to have my loss function incorporated in this way.
+[16:28] And it turns out twofold.
+[16:31] One is these things are way too complex to do that by hand,
+[16:34] like you used to be able to do with a binary classifier that
+[16:36] had a certain number of features.
+[16:39] And two, nobody's got time for that.
+[16:42] And three, ultimately, LLMs are actually quite good at this.
+[16:46] These are just tokens.
+[16:47] So you can feed it this massive set of traces and this other set of traces
+[16:52] and do the stratified sampling and say, what's different, what's wrong.
+[16:56] And it's actually pretty good at pulling these things out automatically.
+[16:59] And so what stage of the lifecycle am I even ready to take advantage
+[17:06] of using a tool like this?
+[17:09] Like, clearly, I've got to have, I guess it goes back to your Maslow's hierarchy.
+[17:15] I've got to have at least some logs, so I need an agent in production.
+[17:21] Talk a little bit about when you're working with folks,
+[17:23] where they usually pull you in.
+[17:26] That's a great question.
+[17:28] And so for better or worse, from the startup perspective,
+[17:31] it is very much at the top of that hierarchy.
+[17:33] It can provide a ton of value, but it does require you
+[17:36] to have those foundations in place.
+[17:38] But are you also, do you rely on the monitoring
+[17:43] or are you providing the monitoring on top of that lowest level?
+[17:50] Yeah, so we very much focus on analytics,
+[17:53] which explicitly makes this trade-off of timeliness versus richness.
+[17:58] So instead of giving you that this specific trace had this known quantity
+[18:03] associated with it within a certain number of milliseconds,
+[18:06] we're going to say this distribution of traces has shifted
+[18:10] or is wrong in a specific way relative to this other larger distribution.
+[18:14] And the only way to do that is to look at, again,
+[18:17] distributions in these kind of more batch style fashion.
+[18:20] And it's very similar to like web analytics or mobile analytics
+[18:24] or things like that too, where you don't necessarily,
+[18:27] if you're using mixed panel or statsig or whatever it is,
+[18:30] that's very different than Datadog or Google Analytics or something like that.
+[18:35] It's not like here were the last few traces in my P95 of latency.
+[18:39] It's like here's the aggregate funnel of the user journey
+[18:43] and where people get stuck and drop off and miss cohort or something like that.
+[18:48] You end up getting much richer information about how to structure your app,
+[18:51] but at the cost of not necessarily saying the site is down right now.
+[18:55] So I do think you need both and they complement each other.
+[19:00] But very similar to analytics for any other application
+[19:04] over the last several decades.
+[19:06] First, you need to be able to log, so you can even debug
+[19:10] before you even deploy the staging, let alone prod.
+[19:13] Then once you're in prod, the next thing is like, is the site even up?
+[19:18] Like are the latencies 2x what I expect them to be, whatever it may be?
+[19:23] Am I getting 10% login errors?
+[19:26] And then the next step is like, how do I iteratively improve this over time?
+[19:31] And so for better or worse, this is for people who have agents in production
+[19:36] that they're looking to iteratively and as automatically as possible,
+[19:40] self-improve and self-heal to get more and more incremental value out of it.
+[19:47] And it usually sits on top and lives alongside a great monitoring solution
+[19:51] that solves this other problem, whether that be something like Brain Trust
+[19:54] or Datadog or whatever it may be.
+[19:57] Then you apply analytics to teach that system or provide this kind of other
+[20:02] side of the coin.
+[20:04] Got it.
+[20:05] When I hear iterative self-improvement, I think about this kind of elusive data
+[20:10] flywheel that everybody's going for where you kind of bootstrap getting this agent
+[20:16] into production based on maybe your intuition about the problem.
+[20:21] Like that's what goes into a prompt and then you kind of build up some evals.
+[20:26] But eventually you have real users hitting this system and you want to kind of pipe
+[20:34] those real user interactions through some magical box to give you some insights
+[20:41] about how to make the system better.
+[20:42] And it sounds like that's what this analytics step is providing for you.
+[20:48] Yeah.
+[20:49] It synthesizes all of that information to pull out these actionable signals for you.
+[20:56] And yeah, you can kind of see the through line now of like, I'm getting sucked back
+[21:01] into like black box global optimization.
+[21:04] But once you have those signals, you can either use them to write better evals or
+[21:09] better guardrails or use these specific examples to create examples for fine tuning
+[21:17] or reinforcement learning or to seed a synthetic data set that really exacerbates
+[21:22] whatever the specific small signal is.
+[21:26] And there's a lot of ways that this can be fed into the flywheel.
+[21:29] But I fundamentally believe that the data flywheel needs to be analytics driven.
+[21:35] There's just too much noise.
+[21:37] And analytics is about pulling this signal and the right signal out of that noise so
+[21:43] that you can most effectively optimize.
+[21:48] Well, when you say that, how else are folks trying to solve that problem?
+[21:52] So you can do it.
+[21:53] I mean, you can try to do it by, like you said, just kind of like feeling for evals
+[21:58] and using your intuition or like trying to generate your own synthetic data or
+[22:02] whatever it is.
+[22:03] We hear some people applying what would be considered more like traditional data
+[22:07] science approaches to this, where they're kind of digging through and in pandas or
+[22:12] Splunk or something like that.
+[22:13] Yeah.
+[22:14] And like trying to find things with really complex SQL queries.
+[22:17] This data is so like both unstructured, but there is some structure, but there's so
+[22:23] much text and like it's so complicated that it doesn't fit into the same paradigm
+[22:29] that I'm used to using back when you would use like weights and biases or something
+[22:32] like that to really like play with a classifier or a regression type model.
+[22:38] And so I do think these LLM problems require these LLM solutions when it comes to this.
+[22:45] You talked a little bit about the math of like finding when things are different is
+[22:51] easy.
+[22:52] You talk a little bit about that.
+[22:54] When you say you talk about it, it makes me think of like clustering or something like
+[22:57] that.
+[22:58] Yeah, exactly.
+[22:59] I mean, fundamentally, it's all just numerical linear algebra and gradient descent, right?
+[23:04] But no, clustering is a great way to think about this though, where it's I have this
+[23:11] distribution and maybe I'll take a step back.
+[23:14] So I have these traces and I want to be able to represent these traces in a way where I
+[23:18] can even cluster them.
+[23:20] I can't just cluster an open telemetry trace, even if I'm adhering to like the open inference
+[23:25] or the GenAI semantic convention.
+[23:26] Like there's too much text in there.
+[23:28] It's like it's nested in a giant JSON blob, whatever it may be.
+[23:32] And so the first step when we call this like enrichment is we want to map that structure
+[23:38] down to basically a vector.
+[23:40] And that vector can be floats and scats.
+[23:42] It can be relatively flexible, but it's trying to say like this number of tool calls happened
+[23:48] or like here's the sequence of tool calls and here's some evals on the text or whatever
+[23:53] it may be.
+[23:54] And is that vector mapping standard or is it handcrafted or is it learned?
+[24:04] Yeah.
+[24:04] So it starts standard based on the semantic convention that you're using.
+[24:08] So there's certain things we know we can pull out of open inference or the GenAI semantic
+[24:13] convention.
+[24:14] And then there's also some like default evals that we found are super useful to kind of
+[24:19] augment it.
+[24:21] But then it can be extended by the user by saying like for my specific use case, I know
+[24:26] what like task completion means.
+[24:28] And so like I'm going to add that and that becomes another dimension in this vector.
+[24:34] And I'll get to this in a second.
+[24:35] But then over time by doing analytics, you can actually add more and more vectors to
+[24:40] this.
+[24:40] So it starts to learn what type of signals you actually care about as well.
+[24:45] But we start with this vector, let's say.
+[24:48] And that vector represents basically the fingerprint of a single instance, a single
+[24:53] trace or maybe a single session.
+[24:56] Over many of these, we can build up many of these vectors.
+[24:59] And so now that we have many vectors in this high dimension, we now have this high
+[25:03] dimensional distribution.
+[25:05] And then we can approach this distributionally, the name of the movie, by trying to
+[25:11] say where are there kind of suboptima within this high dimensional distribution that
+[25:17] look interesting?
+[25:18] These are patterns that may not be the kind of main path.
+[25:23] They're not necessarily just the weirdest things we've ever seen, which would be at
+[25:26] the very tail edge of this distribution, but they might represent just these pockets.
+[25:31] And so we can use stratified sampling to try to find these pockets and then try to do
+[25:36] clustering on it.
+[25:37] And this is where we can apply some techniques like the Clio paper from Anthropic to try
+[25:41] to like do topic modeling.
+[25:43] And once we have these individual sub pockets, then we can do this direct comparison.
+[25:51] We can create a taxonomy of this looks like this, which is different than this.
+[25:55] And that's good or that's bad.
+[25:58] And then just recursively throw it at an LLM basically to like further refine these
+[26:02] pockets, get a better taxonomy, a better human readable representation of it, and then
+[26:08] also have it suggest fixes.
+[26:10] And that fix could be as easy as add to your system prompt that you have to always call
+[26:15] the tool, or it could be use a caching layer so you don't hit as many 429s or whatever
+[26:21] it may be.
+[26:22] And over time, this system gets smarter and smarter and fixes some of this low hanging
+[26:29] fruit.
+[26:31] And you're able to get a better and better system that finds weirder and weirder
+[26:35] patterns.
+[26:36] But you could also use it to write evals, which will then start pointing it in a
+[26:40] direction.
+[26:40] And it'll kind of like, this is the adaptive part of adaptive analytics.
+[26:44] Like it'll learn the types of signals that you care about and start pulling those out
+[26:50] of this distribution more and more.
+[26:53] So relatively simple, but there are a lot of hand waving.
+[26:57] Well, it sounds like also a lot of moving parts.
+[26:59] Yeah, like any of these systems.
+[27:01] Yeah.
+[27:02] What is the Clio paper?
+[27:04] The Clio paper was a paper published by Anthropic a year or two ago now, CLIO.
+[27:12] And I'm going to forget what the acronym stands for, but it basically learns this
+[27:17] topic representation on LLM data.
+[27:21] And it's a great way for being able to say like, oh, some people are talking about
+[27:25] this.
+[27:25] Some people are talking about this and pulling these patterns out.
+[27:29] Evals has come up a couple of times in this conversation from the perspective of
+[27:35] the analytics.
+[27:38] The analytics become kind of a source for evals.
+[27:44] But I'm wondering if you can talk a little bit more broadly about what you're
+[27:47] seeing in terms of how folks are approaching evals and what works, what's not
+[27:54] working in that kind of loop.
+[27:57] I think people are rediscovering what's been true for a long time in machine
+[28:01] learning that the loss function matters, the reward function matters, and it needs
+[28:06] to be very specific to what you care about.
+[28:09] I talked about the fraud example where, again, naively, if you were just solving
+[28:14] an entry Kaggle competition, you're like, oh, just over-optimize accuracy, whatever
+[28:18] it may be.
+[28:19] But when you go and you talk to a real bank, they're like, well, here's the
+[28:22] trade-off.
+[28:23] And these customers, the false positive is way higher pain than a false negative
+[28:29] and all these sort of things.
+[28:30] It becomes extremely complex.
+[28:33] I remember back in grad school, an example of this was I was trying to come up with
+[28:38] what you would call an eval now for metagenomic assemblies.
+[28:41] So when you're trying to assemble a whole bunch of genomes from a gut biome,
+[28:45] where everything's mixed together simultaneously.
+[28:48] And every single time I'd come up with a great idea, I'd go and I'd talk to the
+[28:52] actual biologist in the wet lab and they're like, oh, yeah, that's really
+[28:54] clever about how insertion and deletion happens or something like that.
+[28:59] But they're like, every so often when we put this thing into an aluminum machine,
+[29:03] there's just a bubble and it just warps everything.
+[29:06] I'm like, oh my gosh, I have to add that to my objective function.
+[29:09] And like, it's this incredibly recursive loop where you have to like talk to an
+[29:13] expert or like fundamentally understand what's happening before you can have this
+[29:18] larger world model of like, what actually matters.
+[29:22] Um, it's true in fraud, it's true in metagenomic assembly.
+[29:25] Um, but it's also true in these agentic systems.
+[29:28] And so basically what I'm getting at here is the best way to come up with an eval
+[29:33] or set of evals that actually represents what you want and what you can optimize
+[29:38] towards or automatically optimize towards is to have this recursive
+[29:42] loop of continual refinement.
+[29:45] And I think analytics is the way to take these larger patterns and signals.
+[29:51] And then use that to map down into a smaller, like latent space or manifold
+[29:56] of like, these are the numbers I really care about, and I want this one to go up.
+[30:00] I want this one to go down.
+[30:02] I want this one to never cross this threshold or whatever it may be.
+[30:05] But that process of taking this like massively high signal, um, uh, production
+[30:12] data and mapping it down to this harness or whatever it may be, um, is this
+[30:18] incredibly difficult problem and it really needs to be task specific.
+[30:23] Like you can't just use the rouge or the blue score or be like, is the toxicity
+[30:27] high, like that can help and you can bootstrap from that, but in reality,
+[30:33] every single one of these agents, especially as they're becoming longer
+[30:37] running and doing more complex tasks, there's a million gotchas and that
+[30:41] might be in someone's head or it might be institutional knowledge or it might
+[30:44] be whatever it may be, or it might be the type of thing where it's like, I'll
+[30:48] know it when I see it, if this is bad or good, you got to show me examples and
+[30:52] show me when it messes up and then I can help you quickly, like say if it's good
+[30:58] or bad, and this is kind of where like some reinforcement learning is going
+[31:01] with like DPO and things like that.
+[31:03] Um, but you need to have the example first before you can say A versus B.
+[31:09] You alluded to this earlier, but like as you're, I guess I'm trying to get
+[31:14] at like the interconnects in terms of, you know, mental models, like the way
+[31:19] you're thinking about building between kind of evals and, you know, some of
+[31:25] the higher level observability.
+[31:27] Is it something that you should be thinking about early?
+[31:30] Is it something that you can be thinking about early?
+[31:32] Is something that you can't be thinking about early?
+[31:34] You just have to log everything and like, you know, once you have the
+[31:38] data, then you have to, then you can figure it out.
+[31:40] Yeah.
+[31:41] So I think, uh, more of a roadmap or is yeah, log everything and like, it's
+[31:47] worth spending the time upfront to like, uh, instrumenting open telemetry.
+[31:53] Like everybody is, is, uh, consolidating around that.
+[31:56] It's an open framework for like logging traces.
+[31:59] Um, it's nice if you can pick like one of the semantic conventions that
+[32:03] everybody's coalescing around.
+[32:05] Gen.ai has become really popular and that's like an open, um, semantic convention.
+[32:11] And just to, to click into that for a second.
+[32:14] So, uh, open telemetry, OTEL is like kind of standard logging for anything.
+[32:20] Like been using this for, you know, web servers and whatever else, like
+[32:25] feeding it into your data dogs and those kinds of systems.
+[32:29] And then, but because it's, you know, for everything and anything is just
+[32:33] text, like you need a way to structure that and that's, you know, the Gen.ai
+[32:37] is, um, a way to structure.
+[32:40] Yeah.
+[32:40] You can think of it like a, like a schema.
+[32:42] So instead of just like, here's how JSON works, like throw whatever you want in there.
+[32:47] It's like, here's a specific schema that knows what like LLM responses look like,
+[32:53] knows what tool calls look like.
+[32:55] Um, no, and increasingly they're adding things for like evals and stuff like that
+[33:00] as well too.
+[33:00] So like, it has a general idea of like what the structure looks like.
+[33:04] And then that makes it way easier for these other tools to ingest it.
+[33:07] Because instead of trying to like, look at this giant JSON blob and be like,
+[33:12] Hmm, I wonder what, which one of these was the user?
+[33:14] Like, it's, it's very easy to see what was going on.
+[33:17] Um, and then from that, going back, so like use open
+[33:23] telemetry, use the Gen.ai open.
+[33:25] Uh, I'm going to be like really, uh, prescriptive here.
+[33:28] Use the Gen.ai semantic convention.
+[33:31] And then some things are just going to pop out at you.
+[33:34] Even if you just like tail 20 and like, look at some of these, like some of it's
+[33:38] going to be like, Oh wow, like some of these call 40 tools.
+[33:41] I thought it was, should only call one or something like that.
+[33:44] Maybe I should have that in my monitoring system to like look at the
+[33:47] distribution of tools or whatever it might be.
+[33:49] And so there's going to be some low hanging fruit.
+[33:51] Um, and again, similar to classic ML where you're like, wow, sometimes
+[33:56] the fraud detection system, like it's really aggressive or is extremely
+[34:00] biased towards this one subgroup or whatever it may be, like that'll jump out to you.
+[34:05] Um, and that'll give you that start.
+[34:07] And it's all about bootstrapping and really everybody's embraced this kind
+[34:11] of like learn as you go mentality, which is so different than I remember 10 years
+[34:16] ago when people were like terrified of random forests and logistic aggression.
+[34:19] And like, how do I understand?
+[34:21] And I would need to look at every part of the decision tree or something like that.
+[34:25] Like collectively we've decided that like, let's just YOLO a bunch of stuff out there.
+[34:29] Like three nines of uptime doesn't matter.
+[34:32] One nine of uptime doesn't matter.
+[34:34] Like dangerously ignore permissions.
+[34:36] Yeah, exactly.
+[34:38] Dangerously ship slop.
+[34:40] Um, but at the end of the day, especially at, and that's fine.
+[34:44] And it's extremely high temperature and kneeling state of like, we're trying
+[34:48] to like figure out what works and get a bunch of stuff out there.
+[34:51] But as you want to like lower the temperature on your product and like start
+[34:55] to like really make money on it and make things improve.
+[34:58] And I think obviously some of the foundational labs are here and there's
+[35:00] there's companies that are making billions of dollars, whether it be.
+[35:04] Uh, Decagon or Harvey or whatever it may be.
+[35:06] Now you actually want to start to learn and adapt and like
+[35:09] iteratively refine these systems.
+[35:11] And I think that's where it can become incredibly valuable to say, okay,
+[35:16] obviously I'm doing my, uh, telemetry at the very base.
+[35:20] I'm doing some monitoring, but now how do I continue to learn
+[35:23] to make the monitoring better?
+[35:26] Maybe start logging some new things in these spans within these traces that
+[35:31] might actually then help the whole system and just everything ends up getting
+[35:34] stronger, more refined and aligned to your individual use case, but also
+[35:39] catching these issues, uh, over time.
+[35:42] And as you go, and I'm, I'm a sucker for premature optimization.
+[35:48] So like, of course you should be like thinking about how you're going to do
+[35:51] analytics at the end of the day, but like, as you go, just know, just keep moving
+[35:56] forward and then eventually once the low hanging fruit is gone, there are tools
+[36:01] out there to like get to that next layer.
+[36:03] You don't need to look through a hundred thousand traces to try to like
+[36:07] mentally come up with a pattern.
+[36:09] There are tools for that.
+[36:10] Um, and the only way to make that flywheel actually automatic and put it
+[36:15] into like a Carpathi auto research loop or something like that is to come up
+[36:19] with these new signals and ideas, um, and inject that into the system.
+[36:24] You mentioned goblins earlier, which, uh, if anyone missed that reference,
+[36:28] there's, uh, a blog post from open AI about why the, uh, GBG five five is
+[36:36] like talking about goblins so much recently.
+[36:39] Uh, another kind of contemporary recent articles from, you know, Anthropic
+[36:46] once again, like breaking down, like why the models felt like it's
+[36:51] been sucking more recently.
+[36:53] Um, and one of the issues with like building agents is that.
+[37:01] Like, you know, for the most part, like they're dependent on these black boxes
+[37:06] that you don't control, you don't know.
+[37:09] And like the more, you know, we see disclosure from Anthropic and the like,
+[37:13] the more we understand that, like, there are all kinds of knobs that they're
+[37:17] twiddling with, even though like the model version number is like the same.
+[37:22] And they impact our, you know, the experience, you know, of, you know, our
+[37:27] experiences, builders of things and the experience of the people that are using
+[37:31] the things that we build.
+[37:32] And I'm wondering if like this kind of analytics is part of the answer to that.
+[37:37] Like if you could have, you know, predicted in a live system that the
+[37:44] underlying model, I guess, distribution again is, you know, shifting under you.
+[37:51] Yeah.
+[37:51] And I think this non-stationarity, which is what you're pointing at here is
+[37:56] actually one of the strongest arguments for keeping this in an online loop.
+[38:01] Because whatever evals and guardrails or whatever it was that worked before
+[38:07] might not work tomorrow because the model may have shifted around it
+[38:12] or whatever it may be.
+[38:13] It's like, you're trying to box something into something in some, some high
+[38:17] dimensional box and it's going to, it's going to find some dimension that maybe
+[38:22] you didn't realize, or it's going to come up with some new skill or it's going
+[38:25] to come up with something and they were using reinforcement learning to teach
+[38:29] it to like stop talking about goblins, but it ended up learning that it should
+[38:34] like be mean to your users or something like that.
+[38:37] And maybe it's an important point that this is not an anomaly.
+[38:40] Like this is by design.
+[38:41] This is what the thing does and why it works so well.
+[38:44] Yeah.
+[38:45] Yeah, exactly.
+[38:46] And it's, it's important to think about these, these dynamic systems that do
+[38:50] effectively evolve over time.
+[38:53] And yes, Anthropic and OpenAI get to choose the stimulus and the reward that
+[38:57] like guides that evolution, but that evolution is going to have some
+[39:01] interesting side effects to it.
+[39:03] And so I go back to the, there's this fun quote from Jurassic Park from 25 years
+[39:09] ago or whatever about like the Raptors like testing the fence and like constantly
+[39:13] trying to like find its way out.
+[39:15] And it's like a fence that works in one situation isn't necessarily going to work
+[39:19] in the other or like eventually there's going to be ways to get out of these
+[39:22] systems.
+[39:22] And this isn't even with like an adversarial system that's like intentionally
+[39:26] trying to escape the box.
+[39:27] Like these things are just going to naturally grow in a way where it's like,
+[39:30] yeah, it turns out your chicken wire fence doesn't work for an elephant.
+[39:36] And so like I've often, you know, when I, when I come across these reports, like
+[39:42] the Anthropic report, like I've often wondered where it's like the, the internet
+[39:48] like, or the model weather report, like how's my model doing today?
+[39:52] Like does this type of approach to analytics give that to me for the types
+[39:58] of, you know, for the models that I'm building on?
+[40:00] Yeah.
+[40:01] Well, and again, I think it's to use the weather report analogy.
+[40:04] I think that there's like two ways to look at this.
+[40:06] Like one is like, what, what's the temperature today?
+[40:10] And that's your, that's your monitoring system.
+[40:12] That's like a known signal that you can like plot in a time series.
+[40:16] And if it spikes, like, you know what that means.
+[40:19] And so that might be, for example, rejections.
+[40:23] Yeah.
+[40:23] Rejections or a number of tool goals or yeah, whatever.
+[40:28] Again, a lot of it's hard to come up with like good generic evals because they
+[40:32] were like by necessity need to be like constructed very specifically.
+[40:36] And there's been some great work out there.
+[40:38] Like Hamill Hussain has like a great, great blogs about like why you
+[40:42] need like more specific evals.
+[40:44] You should have him on the show by the way, if you haven't already.
+[40:47] He's been on and we can drop a link to that podcast in the show notes.
+[40:51] Wonderful.
+[40:51] Wonderful.
+[40:52] But that's not that we're not overdue with, you know, likely for a new combo,
+[40:57] but we will include that.
+[41:00] So yeah, temperature, humidity, things like this.
+[41:02] These are known knowns that you can track looking at the time series.
+[41:05] You can immediately interpret that, but something that like, oh, there's a
+[41:09] heat dome or an atmospheric river or something that like you didn't know to
+[41:13] think about ahead of time, but could be used to explain some underlying
+[41:17] intrinsic phenomenon within your eval system could actually be really interesting.
+[41:22] And then once you know about this phenomenon, then you might actually put
+[41:25] it into your, your monitoring or weather app.
+[41:27] You're like, oh, I actually want to know when the, the atmosphere has this sort
+[41:31] of like barometric pressure differential or whatever it may be.
+[41:34] And that could be your trigger for like probability for atmospheric river or
+[41:38] heat dome or whatever it may be.
+[41:40] But you need to like, find it from this way more abstract, like higher
+[41:44] dimensional data first, and that's what analytics can help with.
+[41:48] So it can help explain issues that happened in your lower dimensional eval
+[41:53] space, but it can also help you construct once this event does occur and you do
+[41:58] see it ways to measure it more directly and more timely, but you need to have
+[42:03] that richer analysis in order to do so.
+[42:06] And so in the context of this, you know, LLM weather notion, what's the, what's
+[42:14] a concrete example of that kind of distributional shift that I might be able to see?
+[42:21] So it could just be, yeah, the proclivity for tool calls, as I was saying before,
+[42:24] like if, if you, you, and it's all these like interesting unintended consequences
+[42:29] that we see where it's like, you tell it to be more efficient or you tell it to
+[42:34] like use resources more because maybe your boss told you, Hey, we're using too
+[42:38] many tokens per request or whatever.
+[42:41] And you add something to your system prompt to say like, uh, don't call
+[42:45] tools when you don't need to, or something like that, something obvious.
+[42:48] So it's like, don't, don't waste resources.
+[42:50] Um, and you look at your monitoring dashboard, everything looks great.
+[42:54] Like all of the evals you have look the same and all your costs drop at like 20%.
+[43:00] That's great.
+[43:01] But what you don't realize is in some small fraction of your sessions, like
+[43:06] it's cheating and like trying to use a pre-cache version, or if it's like, Oh,
+[43:10] like I, I've probably memorized a pretty good answer for this.
+[43:13] So I'm just going to like use it from no knowledge instead of doing a web search
+[43:16] or whatever it may be, and you don't catch it because what you were looking
+[43:22] at before actually looks good and it's doing what you told it to do, but had
+[43:25] this second order effect.
+[43:27] The thing that I'm poking at though, I want to poke at is like, we said that
+[43:31] the number of tool calls is like the temperature, like that's a monitoring
+[43:35] thing, you know, we're talking about, uh, in terms of analytics is not, you know,
+[43:41] so we could see what you're describing, a scenario you're describing by looking
+[43:45] at the temperature and that the temperature is lower, you know, or has
+[43:49] a tendency to be lower is what you're talking about, like, is it, um,
+[43:57] you know, analogous to like the first derivative, like the change of, you
+[44:01] know, and over time, or is that also a metric as opposed to analytics?
+[44:06] You could also, to know that you want to look at that as a metric is something
+[44:10] you could discover from analytics.
+[44:12] Maybe to go back to the weather analogy, it's like, I didn't remember, like, uh,
+[44:17] so I lived in the Pacific Northwest growing up and, uh, lived there a
+[44:21] little bit recently during the pandemic and this concept of a heat dome was not
+[44:25] something that I knew growing up, like it was a relatively temperate place.
+[44:29] And it turns out it's like this interesting atmospheric phenomenon that
+[44:32] like just recently started happening because of climate change.
+[44:35] And that's the type of thing where you wouldn't know to even look for it before.
+[44:41] But because of the non-stationarity of global climate, like now it's
+[44:45] something that can happen and it can actually have these incredibly adverse
+[44:49] effects and can blow up your, your simple metrics, but you wouldn't necessarily
+[44:54] know why those metrics were going crazy without having this other concept.
+[44:58] I think that's closing the loop for me.
+[44:59] It's not that you can't see the important things as these kind of, you
+[45:06] know, independent numbers, you know, temperature or number of tool calls.
+[45:12] It's that, you know, starting from a blank slate, you might not realize
+[45:18] that the tool call is the thing that you need to be tracking.
+[45:22] You may have thought it was something else.
+[45:25] You know, maybe you're, you know, just your token cost or
+[45:27] something and you're tracking that.
+[45:29] But then you see, you notice some change in something that you are tracking, or
+[45:35] you maybe even don't even notice the change, but you can be alerted to about,
+[45:44] you know, this key correlative metric, I guess, through analytics.
+[45:51] And it might be something completely orthogonal to like, go back to a fraud
+[45:55] detection, super simple binary classification, you could look at the
+[45:58] confusion matrix of true and false positives and things like that, and maybe
+[46:02] have a pretty good idea of like, okay, my classifier is doing pretty good.
+[46:06] But that's very different than looking at that versus looking at that weighted
+[46:09] by average transaction cost within each bucket.
+[46:12] And now all of a sudden it could jump out to you that like false negatives
+[46:17] were all the massive transactions.
+[46:19] And that has a way different business impact to you than, oh, it was only 2%.
+[46:24] If you're weighting it by transaction volume, which is this completely
+[46:27] orthogonal signal to correct or incorrect.
+[46:30] Now all of a sudden it jumps out.
+[46:31] That's like, okay, this part of the confusion matrix is actually worth
+[46:34] billions of dollars, whereas the rest of it's kind of whatever.
+[46:38] Got it.
+[46:38] Got it.
+[46:39] But analytics is how you learn that you should even look for that.
+[46:42] And then you put it in.
+[46:43] Yeah.
+[46:43] Eventually everything is measurable and then you can put it into the, the, the
+[46:48] monitoring system or whatever it may be, but finding those unknown unknowns,
+[46:52] especially in a non-stationary environment is a really difficult problem that needs
+[46:57] to be automated with, with analytics is, is my hypothesis.
+[47:02] And distributionals tool is open source.
+[47:06] Not open source, but open distribution.
+[47:08] So completely free to use, um, deploys on-prem or you can use our SAS
+[47:13] offering for free, um, but a lot of our clients like to keep their logs
+[47:18] because there's a lot of sensitive information in the logs.
+[47:19] They like to keep that to themselves.
+[47:22] So it deploys on-prem uses whatever local or third party LLM that you already
+[47:27] have in place, um, and runs these analytics alongside your monitoring system or like
+[47:34] your nightly, like ETL jobs or whatever it may be.
+[47:37] If I'm using analytics broadly or, you know, distributionals tool, like what is
+[47:44] the, what's the key metric that I'm tracking?
+[47:49] Is it like improvement in, you know, whatever metric that I care about, like
+[47:54] over time, or is there some, uh, you know, how do folks think about, you know,
+[48:01] metrics for applying optimization or, or for analytics metrics for a
+[48:07] metric discovery system?
+[48:08] Exactly.
+[48:09] Yeah.
+[48:10] Right.
+[48:11] Right.
+[48:11] Right.
+[48:11] Right.
+[48:11] Right.
+[48:11] No, I love it.
+[48:12] Let's go full meta.
+[48:14] So I would say, uh, is it, is it finding things that you either wouldn't have
+[48:20] found or would have taken you a long time to find, and then you could do some sort
+[48:25] of calculation for like how much quicker am I finding it or what's the value of
+[48:29] finding this thing, um, uh, ahead of time.
+[48:33] And so it ends up looking closer to like how many like net new features or pull
+[48:37] requests or new metrics discovered as opposed to this specific metric
+[48:42] dropped or raised by this amount.
+[48:44] It could have that type of global effect because if you find these, like
+[48:48] implicit signals that are impacting a very specific business metric, like
+[48:53] it could have that type of effect as well too.
+[48:56] But again, similar to data science, when you're doing like more descriptive
+[49:01] data science, as opposed to more predictive data science, it's about like,
+[49:04] what were the insights discovered and then did that materially affect the
+[49:08] business and what would have happened in the absence of that insight.
+[49:12] And that's ultimately like the artifact that we have in our system.
+[49:14] And at the very end of this, it like goes through this whole data pipeline
+[49:18] and it pops it up as an insight.
+[49:19] It's like 2% of your data had this pattern.
+[49:22] Here's some examples.
+[49:23] It thinks it's bad for this reason.
+[49:25] Here's how you could fix it.
+[49:27] Do you want to track it?
+[49:27] Do you want to run an experiment and then loop.
+[49:31] And does there exist a, like an academic benchmark for this kind of problem?
+[49:38] Like it strikes me that doesn't necessarily, it doesn't defy benchmarking.
+[49:43] Like I could have some benchmark of, you know, some logs for, you know,
+[49:48] some commerce problem, or maybe it sounds a little bit like a cybersecurity,
+[49:53] like some cybersecurity data set and you apply this, you know, analytical tool
+[50:01] and, you know, other approaches to analytics and try to benchmark how
+[50:06] many insights, you know, are identified.
+[50:09] Is that a thing or is it a thing that could be a thing?
+[50:12] I think it's a thing that could be a thing.
+[50:14] Like, yeah, having some sort of hidden signal that needs to be learned in order
+[50:20] to like fix some known signal and then trying to find a system that can do that automatically.
+[50:29] Security is actually a really interesting use case here because weird behavior or
+[50:35] like these sub distributions of behavior could represent like literal issues with
+[50:39] your agent or it could represent malicious activity as well.
+[50:43] And so that's a really interesting use cases as well.
+[50:47] You've given me something to think about.
+[50:50] We should write that benchmark.
+[50:54] Have you done much or been pulled into security scenarios?
+[50:59] When we pitch this to companies, we can typically focus on enterprise customers.
+[51:05] They definitely are very attuned and especially with mythos and things like
+[51:09] that coming out that security is going to become a really big thing.
+[51:13] Everybody's gotten superpowers, including the black hat hackers.
+[51:17] And so, yeah, this is an interesting side effect.
+[51:20] It's really difficult for us though, to get good security data in order to like train our models.
+[51:27] And because we're like on-prem and like data providence, like focused first, like we
+[51:32] can't get a lot of signals from our customers as well.
+[51:34] So I think this is going to be something that's going to require like a much deeper
+[51:38] partnership or acquisition or something like that for us to be able to like really sink our teeth into.
+[51:43] Got it.
+[51:44] Got it.
+[51:44] Got it.
+[51:45] So what's next?
+[51:45] We're just going to continue to work on the system.
+[51:47] Again, we pivoted somewhat recently from the pre-production testing and as post-production
+[51:53] analytics, and I've found a lot of value there.
+[51:56] The system is completely free to use, free to download, free to deploy the full system.
+[52:02] It's packaged as a Helm chart and like you can just run it on your infrastructure air gap if you want.
+[52:07] And see where it takes us.
+[52:10] I think the larger market is really interesting right now.
+[52:14] There's obviously a lot of consolidation happening.
+[52:18] There's a lot of different tools and open source and things like that.
+[52:22] And we're just looking to have the largest impact we can and try to help move the field forward as much as we can.
+[52:29] Well, Scott, it is always great chatting with you and particularly great catching up about, you know, this idea
+[52:37] because it's an important one, you know, and the grand scheme of things we want to put systems out in production.
+[52:43] And ensure that they work.
+[52:45] And this is an important idea on ensuring that these statistical systems work in the ways that we want them to.
+[52:53] And continue to work over time as the world changes underneath you.
+[52:56] Right. Right. Underneath us and them.
+[52:59] Yeah.
+[53:01] Awesome. Awesome.
+[53:02] Well, thanks so much.
+[53:03] Yeah. Thanks so much, Sam.
+[53:04] Always a pleasure.
+[53:05] Cheers.

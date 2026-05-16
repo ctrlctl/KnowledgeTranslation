@@ -1,0 +1,431 @@
+Detected language: English
+[00:00] I mean, it might be the fastest timeline in the world.
+[00:02] If you think about medicine, for example, it can take decades for research to reach a pharmacy.
+[00:07] If you think about, you know, physics or engineering, it can take years to apply a new concept.
+[00:15] Even within AI, if you want to train a model off of a new technique, it can still take weeks or months to find the exact right way to sort of express that technique.
+[00:25] But with inference, the timeline is often hours.
+[00:29] A new model architecture comes out, you have to figure out how to support it day zero.
+[00:46] All right, everyone, welcome to another episode of the TwinMill AI Podcast.
+[00:50] I am your host, Sam Sherrington.
+[00:52] Today, I'm joined by Philip Kiley.
+[00:54] Philip is head of AI education at Base 10.
+[00:58] Before we get going, be sure to take a moment to hit that subscribe button wherever you're listening to today's show.
+[01:04] Philip, great to see you again and welcome to the podcast.
+[01:07] Hey, Sam, thanks for having me on.
+[01:09] Absolutely.
+[01:09] Absolutely.
+[01:10] We met at the recent GTC conference where you were signing copies of that book that you have there over your, I guess, your left shoulder.
+[01:21] Yeah, the, I've got one here on my desk.
+[01:24] Hey, there we go.
+[01:25] There you go.
+[01:26] That was a really fun conference.
+[01:28] I felt like a rock star, you know, just like handing out.
+[01:32] We also had, honestly, I think part of it was we had free ice cream at the booth as well.
+[01:37] And I gave away a lot of books, but I did run the numbers at the end of the show.
+[01:42] The ice cream was more popular.
+[01:45] You know, I thought it'd be good to get you on and talk through like, you know, a little bit about, you know, inference engineering, you know, what you're writing.
+[01:56] About in the book, but also kind of what you're seeing beyond the book and what is really kind of making a difference from, you know, inference perspective nowadays.
+[02:08] So before we get to that, though, I'd love to have you talk a little bit about, you know, your journey, like what brought you to, you know, base 10 and inference engineering.
+[02:19] So back in 2022, this was 10 months before chat GPT was launched to the public.
+[02:26] I had a really strong and novel thesis about the AI industry.
+[02:32] That strong and novel thesis was I need a job.
+[02:37] And so I applied for a bunch of jobs and I ended up choosing between base 10 and a laundry delivery startup.
+[02:46] And it was like a really tough decision because it's a good, the other one is a good company.
+[02:51] You're still around.
+[02:53] Um, but ultimately I decided to go work on some, some really interesting problems in the ML space with a tiny startup at the time called called base 10.
+[03:03] And I've been at it for more than four years now.
+[03:07] I've had a really fortunate position to be able to learn on the job and experience the rise of the AI industry firsthand.
+[03:18] Going from predictive to generative modeling, going from modeling being something mostly done for internal workflows to modeling, you know, being part of the cost of goods sold modeling being in the revenue path for AI native companies.
+[03:33] And going from like very, very small use cases because of that to very, very large and complex ones.
+[03:40] You know, one thing that's interesting about, uh, your experience and I'm thinking about base 10 in particular, like base 10, uh, as your timing indicates predated chat GPT.
+[03:53] And they were, you know, one of, you know, a great number of companies at the time kind of competing around this ML ops, you know, set of ideas.
+[04:04] And with the rise of generative AI, a lot of those companies, you know, got acquired.
+[04:11] A lot of those companies went away.
+[04:14] Um, but those of those companies that are, you know, still around and doing well, like a lot of them are in inference.
+[04:23] Why is that?
+[04:24] So inference is I believe the most important workload in AI and it's definitely the stickiest.
+[04:31] That's been one of the reasons we've treated it as our wedge into the AI infrastructure market.
+[04:37] Influence is very, very complicated.
+[04:39] Um, and doing it well is really critical to any company that actually relies on generative models to power their product.
+[04:48] So we started as an influence company, but we were just influencing very different models.
+[04:55] I was, you know, taking CPUs and I was taking some, you know, T four GPUs or eight 10 G's when I was feeling real fancy and running, you know, XG boost models on them running very early, like wave to VEC and GPTJ type models.
+[05:11] And honestly, just like having a lot of fun with it.
+[05:14] Uh, we were building simple classifiers, dashboards, that kind of stuff.
+[05:19] And found over time that like, as the models were getting a little bit bigger and more complicated, like I remember when whisper came out, that was huge because, oh man, now the model is a billion parameters.
+[05:33] Like, can you imagine one billion parameters in just one model?
+[05:37] Like, I can't believe I'm going to spend all my parameters in one place, but this model now it's like, it's really capable, but now it needs GPUs.
+[05:45] You need a lot of them all of a sudden, and it's hard to get it running.
+[05:49] It's hard to make it fast enough.
+[05:51] There's a lot of interesting problems all of a sudden in, in running models.
+[05:57] And so I think it, it just kind of naturally occurred that like the most complicated piece of the broader ML serving stack became inference as these models got larger.
+[06:08] And then as, you know, true generative models came around, we were already, you know, thinking about an influence first view of the world.
+[06:16] And it felt natural to just extend that to larger and larger and more capable models.
+[06:21] You, you reference both model serving and inference as a component of model serving.
+[06:29] Like, where do you draw the line, you know, between the beginning and end of inference and the broader model surveying set of requirements?
+[06:39] I probably use those tones a little too loosely and a little too interchangeably because the technical definition would be that like model serving is everything that happens end to end from a user request to a user getting the response.
+[06:54] And influences the piece that happens on the GPU.
+[06:58] But when I think about influence as a discipline, I am thinking about end to end.
+[07:02] I think those as an influence system, you have to own the entire experience.
+[07:09] And so to do that, you have to think not only about what's happening on the GPU, but what's happening every step of the way on the user journey.
+[07:17] Yeah.
+[07:18] So let's talk a little bit more deeply about like what makes inference difficult.
+[07:23] You know, clearly there, you know, we know the models are getting bigger.
+[07:27] We know we don't have enough compute in the form of CPU, GPU, et cetera.
+[07:33] You know, talk a little bit about some of the other challenges that you see with regards to doing inference.
+[07:38] Well, yeah.
+[07:39] So inference is a really fun and difficult topic.
+[07:42] And I'm going to go into metaphor territory for a second here, which is that I'm a, I'm a martial artist.
+[07:49] I have been my entire life.
+[07:50] Are you familiar with like UFC and MMA and all those kinds of things?
+[07:55] So, you know, they are, you can't just be an expert in one thing and expect to become a champion.
+[08:02] You can't just be a great wrestler.
+[08:03] You can't just be a great boxer.
+[08:06] The idea is that you have a lot of different skills, each one of which can take a lifetime to master.
+[08:12] And somehow you have to be excellent at all of them in order to be a well-rounded mixed martial artist.
+[08:18] And, you know, in my background, I'm certainly no UFC champion, but I've done striking of various disciplines.
+[08:25] I've done wrestling in various disciplines and I've started to understand how those things blend together.
+[08:30] I think inference is very similar.
+[08:32] You need to have a wide range of expertise on a lot of very different complicated topics to build a truly effective inference system.
+[08:41] There's what happens on the GPU, right?
+[08:42] There's understanding CUDA level programming and PyTorch on top of that.
+[08:48] And then the influence engines on top of that.
+[08:51] There's being able to take and apply the research, the understanding of different quantization techniques, different speculation algorithms, different KV cache reuse mechanisms.
+[09:01] How do you paralyze models across GPUs?
+[09:04] How do you disaggregate across different types of hardware?
+[09:07] So there's all that applied research.
+[09:08] And then on top of that, there are all the traditional problems of running very large scale distributed systems.
+[09:14] Anything that you're familiar with from the last 20 years of cloud architecture, as well as understanding how to take very, very large volume workloads that are coming from around the world and handle them appropriately.
+[09:29] So every piece of backend web infrastructure, every piece of GPU programming, it all comes together in inference in windows and packages that are very demanding.
+[09:43] Like you often have a couple hundred milliseconds latency SLAs that you're dealing with.
+[09:49] So it's the orchestration of a large number of very complex systems together that makes it such a difficult problem.
+[09:57] In AI broadly, there's this very tight relationship between research and implementation.
+[10:06] But in inference in particular, I've noted on several occasions, like, hear about the speculative decoding work one day and I hear about it all over in two weeks and everybody's already using it.
+[10:21] Like, do you find that that research to production timeline and inferences, you know, particularly rapid relative to other aspects of AI?
+[10:33] I mean, it might be the fastest timeline in the world.
+[10:35] If you think about medicine, for example, it can take decades for research to reach a pharmacy.
+[10:41] If you think about, you know, physics or engineering, it can take years to apply a new concept, material science.
+[10:50] Even within AI, what moves faster training runs, for example, if you want to train a model off of a new technique, it can still take weeks or months to fine tune the hyper parameters and find the exact right way to sort of express that technique.
+[11:06] But with inference, the timeline is often hours.
+[11:10] A new model architecture comes out, you have to figure out how to support it day zero.
+[11:15] We had PoloQuant come out that research paper and an engineer on our model performance team had it implemented 31 hours later as a CUDA kernel.
+[11:25] So the pace of applied research is very, very fast because it is a highly competitive industry and everyone is sort of searching for that next edge.
+[11:37] Maybe the only industry where research goes into production faster than inference might still be like trading.
+[11:44] To be clear, trading with a D, not training.
+[11:47] Yeah, this might be a little bit too in the weeds, but with regards to PoloQuant, like the paper was a year old and then all of a sudden it got really popular last week or a couple of weeks ago.
+[12:00] Like, what was it?
+[12:01] What's the backstory there?
+[12:02] Yeah.
+[12:03] So it was sort of republished as a blog post and sort of caught everyone's attention.
+[12:10] I think like as a little detour, you know, I grew up in Iowa, so I was very influenced by sort of the best Midwestern school of thought in economics, which is the Chicago School of Economics.
+[12:25] Famed creator of the efficient market hypothesis.
+[12:28] I think the most dangerous falsehood that you can expose an impressionable young person to is the efficient market hypothesis.
+[12:36] And the idea that like everything is already figured out and everyone already knows everything because that's just not true.
+[12:42] You know, with the volume of research techniques that are coming out, I think that it's easy to lose track of things.
+[12:53] But it's also a case where there's a lot of low hanging fruit in the influence world that has already been picked.
+[12:59] And so now as we try to figure out what's next to push the envelope, sometimes techniques that might not have seemed either feasible or worthwhile, even as recently as a year ago, all of a sudden become like, oh wait, now we're ready for this.
+[13:15] Now it's time to add this to the sort of industry standard and move the move the influence stack forward.
+[13:21] It was just that, you know, the bump in the email that brought it back to everyone's attention and the timing was just right.
+[13:31] It won't, you know, if the great thing about a launch that doesn't go viral is that no one knows about it.
+[13:37] You can always do it again.
+[13:38] Exactly.
+[13:41] You know, let's talk a little bit about who should care or who does care about inference engineering.
+[13:46] Like for many, you know, that's somebody else's problem, you know, and it's, you know, the problem of engineers at like a handful of really large companies.
+[13:58] But I suspect that there are a number of reasons why a broader set of folks should care about it.
+[14:03] Like, what's your take on that?
+[14:05] Yeah.
+[14:06] Well, one reason to care about it is that it's a really interesting field that you might consider working in.
+[14:12] There was, you know, three years ago, there were maybe a couple hundred inference engineers in the world.
+[14:17] They probably didn't even call themselves inference engineers back then.
+[14:21] And now there are thousands, tens of thousands, probably depending on, you know, where you make the cutoff.
+[14:29] And software engineering, of course, undergoing a massive change in the way it works.
+[14:35] And the best engineers are becoming substantially more productive.
+[14:39] There's a lot of questions around how many engineers we're going to need in the future and what our jobs are going to look like.
+[14:46] I believe that even with the advances in AI assisted code generation, even with the increase in productivity on an individual engineering basis, there's still going to be demand for 10 to 100 times more inference engineers in a couple of years than we have today.
+[15:05] I mean, I know at Base 10, like we can't hire people who are knowledgeable about inference fast enough.
+[15:11] And even if you're not wanting to work at an inference platform, the other reason to care about it is that every vertical AI application company is eventually going to have to figure out what their inference strategy is.
+[15:26] And it's going to need knowledgeable members of technical staff who understand the actual technologies and trade-offs involved in inference to sort of develop and execute a competent strategy.
+[15:39] Because great inference can be the difference between a really fast product that feels magical to users and a slow buggy experience that causes constant churn.
+[15:49] Let's talk about when and why and how knowing about inference impacts the decisions I'm making and the strategy or approach that I'm taking.
+[16:03] A lot of people will be delegating inference to a provider, whether it's a first-party model provider or a third-party inference provider like Base 10 or Firefly or someone.
+[16:15] What are the situations where I'm going to want to have deep knowledge about inference?
+[16:22] Yeah.
+[16:23] So I think the first thing is understanding what's possible.
+[16:29] Because in a world where most AI engineers are sort of trained on GPT and Claude models, you understand the world in a certain way.
+[16:39] I have access to N models and there's maybe three or five or 10.
+[16:44] And each one of them has a sort of fixed level of intelligence, a fixed level of speed in terms of tokens per second, time to first token, maybe a range of that.
+[16:55] A fixed cost in terms of input output tokens with maybe a couple variables around something like a cash token price or a discount for long running batch jobs.
+[17:08] And then also a reliability, you know, you have an endpoint where you might get a couple nines of uptime and maybe need to engineer the rest of your product around that reality.
+[17:20] And the first sort of lesson of inference engineering is going from taking all of these as sort of immutable, discrete points and understanding them more as a spectrum.
+[17:32] You can trade off between, for example, latency and throughput in a given influence engine by adjusting things as simple as batch size or things like, you know, adding or removing a speculation algorithm.
+[17:46] When you do that, when you create sort of a spectrum of outcomes, an efficient frontier of high performance inference, then you start to understand like, wait, I can choose to
+[17:59] change the way that I consume these systems.
+[18:06] So for example, you might start having priority queues in your product where paid user traffic gets prioritized over free user traffic.
+[18:15] And maybe that's something that you couldn't have built previously.
+[18:19] Or maybe you add a concept of, you know, maybe you understand like I have the ability to quantize models.
+[18:29] And because I have my own very sophisticated and product specific evals, I can do that with complete confidence that I'm not degrading the quality of the service my users are experiencing.
+[18:41] And then when you quantize your own model and start to serve it faster and less expensive and with a great deal of confidence that you've calibrated properly, then you are not subject to sort of random intelligence
+[18:55] degradations from a third party provider who might not understand the exact nature of your workload.
+[19:02] Instead, you've achieved the sort of price and performance goals that they're going for with that, but actually, you know, kept things appropriate for your task.
+[19:13] So, you know, if you don't know a lot about inference, you might think like, oh, all quantized models are bad when in fact you can calibrate them appropriately to your workload.
+[19:22] There's all sorts of examples like this, even things as simple as, you know, understanding that the way KVCash reuse works means that you have to think about only your prefix and even one token difference early in a sequence can throw off the entire rest.
+[19:38] And maybe that's how you structure your chat template or how you structure your inputs to your models.
+[19:44] There's all kinds of ways where understanding what's possible with inference helps you build a better product and helps you deliver a better user experience.
+[19:55] The last example you gave about the KVCashing, you know, is a clear example of it doesn't matter whether you're building out your own inference system, you know, you benefit from having that knowledge.
+[20:13] A lot of the other examples, do they, you know, to take advantage of, you know, things like things that you mentioned, like, you know, changing batch sizes or, you know, different tiers of service.
+[20:27] Like, do you have to host your own inference service, you know, do inference on your own models in order to take advantage of those or are there, you know, providers that like allow you, you know, I imagine like everything there's like a spectrum of the number of knobs you get when you're doing inference.
+[20:48] Our philosophy at base 10, not to, you know, cut a promo too much is that like, you as the end user should have access to every conceivable knob.
+[20:59] And of course, along with like guidance on, you know, which ones are hot to touch and which ones aren't and, you know, what some sensible defaults are.
+[21:09] But if you are, you know, making the transition from working with a closed model where you don't have access to the weights to working with either an open model or a model that you trained yourself.
+[21:20] And doing dedicated deployments, which basically everyone at a reasonable scale starts to need to do, where instead of paying on a per token basis, you're paying for the underlying GPU hardware, then you have access to these knobs.
+[21:35] Whether or not you as the engineer have the sort of knowledge and confidence to tone them is why this discipline of influence engineering exists.
+[21:45] But as companies of all kinds, especially like vertical AI native companies are achieving the massive scale that they are.
+[21:54] Everyone is thinking about taking control over their AI, owning their intelligence.
+[21:59] And part of that means owning their influence outcomes, taking these knobs and figuring out the right positioning for their product and for their use case.
+[22:08] Yeah.
+[22:08] Let's talk a little bit more deeply about the levels of control that one might pursue and, yeah, it may or may not be a strict sequence, but like what are the things that are happening in a business that, you know, drive the transition from, you know, one state to another.
+[22:31] Like, so you talked about paying per token to paying per GPU time.
+[22:39] You know, that spectrum goes to, you know, I guess I'm trying to get at like, you know, you could use a provider like you guys, you could, you know, stand up a Kubernetes cluster on like an infrastructure provider.
+[22:54] You could, you know, host it all, you know, in your own building.
+[22:58] Like what are the dominant models or the dominant setups that you're seeing and like what drives a company to go from one to the next?
+[23:12] The journey I sort of see is in many cases aligned with a product maturity cycle.
+[23:18] And I want to specify this is really a product maturity cycle.
+[23:22] This is not a company maturity cycle because oftentimes you'll see relatively small companies further along in the cycle versus relatively large companies just because they're sort of either more AGI-pilled as a company or just because the AI component of their product is more critical to what they're doing than the AI component of maybe the larger and more established product is.
+[23:50] So as we think about, you know, the maturity cycle, there's a few options.
+[23:55] Option number one is to rely entirely on per token closed model providers.
+[24:02] And everyone starts here just about everyone should start here.
+[24:06] It's really easy.
+[24:07] You get frontier intelligence with an API key and that's a hard thing to beat when you're starting out.
+[24:15] I think the next level often looks like running into one of two problems, either a cost problem or a capacity problem and saying like either my token costs are just getting out of control and or I just can't get enough tokens to do the thing I want to do.
+[24:32] And for that, oftentimes people start turning to hyperscalers, AWS, GCP, etc.
+[24:39] And doing things like provision throughput purchases, doing things like spinning up models on like a bedrock or a Vortex or an Azure AI foundry or something like that.
+[24:51] And this kicks the can down the road a little bit because now you have like a large scale commit with a provider who has, of course, massive scale and the ability to to deliver you some capacity.
+[25:05] And then the sort of next step that I see a lot of times is going on to more of a dedicated influence provider like a base 10 where companies have, you know, the the models with the weights that they own and they start to set up, you know, a specialized deployment.
+[25:23] I think these sort of other folk in the road there is to go for something that's a little bit more in-house, either, you know, building an in-house platform, staffing that team up and trying to deliver a sort of best in class influence platform internally.
+[25:38] Or, you know, in some cases, like going really deep into edge influence, especially, you know, if you want to do a lot of sort of field work, you replace all of the distributed systems problems with Internet of Things problems.
+[25:52] But you have a very similar challenge in scaling inference for sort of a large distributed edge network.
+[25:59] I see a lot less of like companies going out and making enormous capital purchases of large numbers of GPUs, sticking them in the basement of their office and doing all that stuff internally.
+[26:10] I do see that, especially in the medical field and medical research and health care companies do that.
+[26:17] I've definitely seen that in the finance world as well.
+[26:21] And some of those other traditional enterprises, I guess the alternative to that is also like going out and making a very large spend commit.
+[26:29] You saw like Jane Street, for example, announced today with Coilweave.
+[26:33] That's that's sort of a financialization difference between, you know, going out and buying a bunch of GPUs and sticking them in your basement.
+[26:40] You know, I think that all of these approaches are valid in the right circumstance.
+[26:45] I certainly wouldn't say that like all influence in the world needs to be run through a dedicated provider.
+[26:51] But I will also say that like these these technologies, like we talked about earlier, are like very challenging to do well and to keep up with as the the industry continues to scale.
+[27:04] So it's it's definitely becoming like more and more of a trend for folks to buy instead of build on the input side, which is something that I'm like very grateful for.
+[27:15] Yeah.
+[27:15] Yeah.
+[27:16] One of the critiques that you hear like about the businesses that are being set up to do inference for other companies as like the, you know, AI grows is that, you know, these GPUs are rapidly depreciating asset and the companies are financing the purchases on the public markets and financing them through debt and all these other mechanisms.
+[27:44] I'm just wondering if you have like a strong feeling about like, you know, the GPU lifespan as it relates to as it relates to inference and inference maturity and the way the field is going.
+[27:59] So I've been through now three full GPU cycles, Ampere, Hopper, Blackwell.
+[28:06] And I actually like haven't really been all the way through Blackwell because Blackwell isn't fully rolled out yet.
+[28:12] The thing is the time it takes for a GPU generation to first be manufactured and actually distributed to the point where everyone can get their hands on it is is months to a year.
+[28:24] And then there's another cycle of months to a year of porting all of the code in the industry to run on it.
+[28:31] So actually like Hopper GPUs in particular still are very, very popular for inference.
+[28:37] One big reason for that actually is because so much open source work comes out of Chinese labs who do the export controls generally work on Hopper GPUs and not Blackwell GPUs.
+[28:48] So you generally get like either, you know, FPA to info kernels, you get things that are built for Hopper's asynchronous programming paradigm instead of the slightly different paradigm of Blackwell kernels.
+[29:01] You get things that are models that are built for the size and restriction of say like an 8x H200 node instead of say a GB 300 NVL 72 system.
+[29:14] So there's a lot that still is built for Blackwell.
+[29:19] Oh, sorry for Hopper.
+[29:21] I think that like Ampere has finally fallen out of favor in inference for the most part, mostly because it doesn't have support for FPA quantization.
+[29:31] So you have to run models at full precision or suffer sort of catastrophic quality loss.
+[29:37] And that makes Hopper GPUs like much more cost effective for inference versus Ampere.
+[29:44] But due to both like Blackwell shortages as well as the large number of sort of Hopper optimized workloads in the industry, like Hopper has had a ton of staying power.
+[29:57] You know, an H100 is more expensive now than it was a year ago in terms of a rental basis.
+[30:04] And I think that like as we continue to radically underestimate the demand for inference, even though we're able to scale models bigger, make them cheaper, make them faster.
+[30:19] There's going to be a very strong sustained demand for Hopper inference.
+[30:25] I think there's going to be a very, very strong sustained demand for Blackwell inference, even as Rubin rolls out.
+[30:32] And yeah, the other thing about Hopper is that they are really good for like smaller models too.
+[30:40] As we're getting bigger and bigger GPUs, we're relying more on like MIG multi-instance GPUs to split them up and right size them for small models.
+[30:48] Stuff like embedding models, voice in, voice out models, like these can be one to three billion parameter models, maybe as big as like seven or eight billion in many cases.
+[31:00] And so you don't need like the massive brand new 72 Blackwell GPUs in a rack to run these things.
+[31:08] You need like a small slice of a Hopper GPU to do them in a very efficient and cost-effective way.
+[31:15] So long-winded answer, but I am very bullish on the sort of valuable lifespan of GPU generations, especially starting with Hopper.
+[31:30] I do think that, again, like the older stuff, actually, I mean, Lovelace, like we still run a lot of L4 and L40 workloads.
+[31:39] Again, a lot of times for these smaller models are like more cost-sensitive batch workloads.
+[31:45] But yeah, before that, Ampere, the T4s, like all that sort of stuff, you used to have like Kepler GPUs, I remember, back in the day.
+[31:56] We don't really see demand for that anymore, but starting with the Lovelace Hopper, like 2018 GPUs.
+[32:03] So that's like 2018, 2020.
+[32:06] And then we're still using them like five, six years later.
+[32:09] So it's got staying power.
+[32:14] Okay.
+[32:14] Okay.
+[32:15] We talked a little bit about inference engineering as kind of a career direction.
+[32:22] And you kind of alluded to the rise of like AI assisted coding.
+[32:32] I'm curious, do you think that AI, I'm sorry, inference engineering is like, you know, particularly more or less resistant to being fully automated via LLMs and GenAI?
+[32:49] Like does the system's nature of it make it, you know, more robust or, you know, can LLM figure out how to, you know, write the CUDA and the cube control commands and like all the random stuff just as easily as, or maybe even easier than other aspects of software engineering?
+[33:14] Well, there's definitely certain pieces of the stack that are getting AI accelerated right now.
+[33:20] I think one great example is CUDA kernel writing, which is a very sophisticated type of programming.
+[33:26] Over the past several months, like there's a whole bunch of, you know, open source and startups that are like doing custom CUDA kernels on demand, you know, essentially.
+[33:34] Exactly.
+[33:35] Exactly.
+[33:36] So that's big.
+[33:37] The thing is there's, first off, like there's a lot of, there's a lot of demand for more specialized inference.
+[33:45] Inference systems are still very generic relative to the models.
+[33:50] You're taking a sort of specific architecture and running it with a pretty general set of kernels, a pretty general set of frameworks and engines on top of that on very, very general hardware.
+[34:03] So there's, there's a lot of, a lot of unlocks to be made in terms of making the inference system more specific to the exact workload that's running as well as adjusting that inference system on the fly.
+[34:17] So I could, I could imagine a world where the inference systems we use are 10 times more complex than the ones we have today.
+[34:26] You made a really interesting point in the book about how inference unlocks, essentially, I'm paraphrasing here, but inference unlocks are essentially adding constraints to the way you think about inference.
+[34:40] Yeah.
+[34:40] Yeah.
+[34:40] So understanding the nature of the workload and, you know, giving, making, making something more specific to exactly what you want to do.
+[34:49] It's like, it's not about being able to do everything reasonably well, which is where our systems are today as an industry.
+[34:57] It's about being able to do the exact thing you want as well as possible.
+[35:02] And so the, you know, the, the first thing that LLM assisted inference, I hope unlocks is more of that.
+[35:12] The ability to, you know, create much more workload specific systems.
+[35:19] The, you know, the, the other pieces that are, that are getting assisted by, by AI programming are certainly, you know, the, the developer experience of, of deploying models and influencing them.
+[35:33] The creation of, for example, like if you want to create a spec deck algorithm for a model, like you need a large spec deck algorithm, sorry, spec of decoding.
+[35:45] Got it.
+[35:45] Yeah.
+[35:46] If you want to ask us a speculation algorithm, like a, like say like an Eagle three model, you need to create a large amount of samples, you know, that sort of synthetic data generation can be AI assisted.
+[35:57] There's a lot of work.
+[35:59] There's a lot of sort of grunt work in this, um, influence industry for, for LLMs to take over for us.
+[36:06] And, you know, eventually I do see them owning certain systems end to end.
+[36:12] But one of the things we like to say it based on is like, you can't vibe code uptime.
+[36:18] Ultimately, like there is still going to need to be for these mission critical systems that have, you know, hundreds of millions of billions of dollars of economic value, like relying on them.
+[36:31] There's going to need to be human owners who can be accountable for the results of this system.
+[36:37] And, you know, of course, like we're going to continue to develop better and better tooling to amplify the impact of these people, but they're not going to go away entirely.
+[36:46] We talked a little bit about this idea of like adding constraints as a way to get to higher performing systems or more efficient systems.
+[36:57] At the same time, like we're also moving as an industry, I think, to, um, you know, these multimodal models that can do everything, agents that can do everything.
+[37:15] Like are these ideas at tension or, you know, does it just kind of point to a particular direction for inference?
+[37:23] I think that the demand for agents and multi-step inference is in fact, what is driving the need for this very specialized inference optimization.
+[37:36] In a chat world, you are making every time a user takes an action, you are making one request to one model.
+[37:43] In an agent world, when a user takes an action, you are making dozens, hundreds, maybe even thousands of requests, oftentimes across different models.
+[37:52] And if you want your agent to be fast and reliable, then every single one of these models, as well as every connection between them needs to be fast and reliable.
+[38:04] And so that makes inference a more critical challenge.
+[38:08] And it also means that having a system where you are able to very quickly optimized individual models and very quickly optimize individual workloads, perhaps with a sort of AI accelerated programming paradigm means that you can actually build and scale these agents much more reliably.
+[38:29] Talk about the multimodality aspect of that and the kind of disparate workload aspect of that.
+[38:39] Like, and I think I'm asking two distinct questions here.
+[38:42] One is like, you know, we've got, you know, multimodal models, like what is different and interesting about them from an inference perspective, if anything.
+[38:53] The other is more trying to get at in the agentic world, you kind of spoke to calling, you know, this fan out of like requests to like different types of models.
+[39:08] I don't know, this question is just kind of occurring to me.
+[39:11] Like you also have like tools, like, you know, have you thought about or to what degree are people like really focusing on like tool engineering or tool inference engineering?
+[39:22] I don't know if this makes sense.
+[39:24] But I'm curious, like, it's probably a separate question of like tool at scale system optimization and engineering that maybe is out of scope of inference.
+[39:42] But, you know, if not, I want to hear your thoughts on that.
+[39:46] I like to think that that most things are in scope, like we want to take as much responsibility for the outcomes of the system as possible.
+[39:55] And the provisioning sort of provisioning of tools and figuring out how to supply tools to the model, that is somewhat more of a context engineering problem.
+[40:07] But the actual execution of those tools, you know, is an important part of an influencing system in an agentic world.
+[40:16] I will say that like the the model modalities like you were talking about is is a interesting place to focus just because.
+[40:27] There is another example here of how understanding influence helps you build better products.
+[40:37] Let's take classification as an example of a task.
+[40:43] If I want to classify some data, I could throw that data into Opus four point six with Max thinking high.
+[40:50] And I'm pretty sure I would get a really, really good classification out of that.
+[40:57] And then I would pay a whole lot of money for it as well.
+[41:03] And if I want to use a traditional ML based classifier, like I was playing with in early twenty twenty two, if I have the right one, maybe one that I wrote with with the agent coding loop.
+[41:15] I can also get a really, really good classification and I can get it effectively free.
+[41:22] So understanding like the the different tasks that different models are capable of means that, of course, you can save cost by moving it over to a smaller model.
+[41:39] But you can also save time. And that's maybe even more important.
+[41:41] So like I say, like named entity recognition as a, you know, over the top example.
+[41:48] No one is truly doing named entity recognition, which is sort of extracting keywords from sentences.
+[41:54] No one is truly using frontier LLMs to do that.
+[41:57] Or at least I sure hope they're not.
+[41:59] But even if you're using, you know, like a flash model type of thing for that versus specialized model, maybe a highly optimized small LLM can can do that task in five hundred milliseconds.
+[42:11] We just released and named activity recognition runtime that does it in one millisecond.
+[42:16] One, not five hundred.
+[42:18] And if you have an agent that is, you know, doing this a hundred times per user request, all of a sudden this has gone from something where you have to look at spinner to something that happens instantly.
+[42:30] So having having optimized runtimes for every different thing you want to do, it might seem like overkill at first.
+[42:38] But when you look at the scale that many of these sort of frontier AI companies are operating at, like it actually very much isn't.
+[42:47] There are tons of workloads sitting out there with, you know, seven, eight figure spend behind them in the inference world that are just being used to do that.
+[42:57] In the inference world that are just running on these very generic systems and need something that's that's very specialized.
+[43:05] And that specialization can often look like, you know, a modality specific thing.
+[43:11] You know, a lot of a lot of models are kind of congregating around two ways of being one being a sort of autoregressive token look of the world.
+[43:21] And even like voice in voice out models look like that.
+[43:24] Embedding models look like that.
+[43:26] The other being a diffusion look at the world, which is more often seen in video generation and image generation, but also like the diffusion LLMs.
+[43:35] There's that they're always sneaking diffusion into all kinds of different things.
+[43:39] And there's a lot of sort of promising research there.
+[43:43] But within within each of those, like you still have, you know, different components to consider, like with a vision language model, vision language models can take images as input as well.
+[43:54] They have this like tiny little one billion parameter vision encoder in front of your trillion parameter LLM.
+[44:00] And honestly, that little vision encoder often causes a lot more runtime problems than the LLM itself does just because the vision encoders right now, they're so heterogeneous across the industry.
+[44:11] And there's so much less software support for all their different quirks.
+[44:15] So, yeah, so that's that's just to say, like the the specialization of the inference systems to the workload is like still in very, very early days.
+[44:26] And there's a lot more to build across every single thing, although than just like take a giant LLM and run it as fast as possible.
+[44:36] Although there's still a lot to build there, too.
+[44:38] Yeah, I thought as you were talking that you were, you know, when you can break everything down to, you know, sequential autoregressive models or diffusion models, then like, you know, all of the problems get abstracted away into these two types.
+[44:53] But if the VLM is any example, then each of these modalities has its own quirks that you need to address.
+[45:02] It does. I think like one place, sometimes like sometimes you do get sort of unexpected carryover benefits.
+[45:08] One place for that actually is like text to speech models.
+[45:12] Many modern text to speech models are basically extremely fine tuned LLMs.
+[45:19] What you do is you extend the vocabulary of the LLM, the different things it's able to represent in a token with.
+[45:28] Yeah, you extend it to actually like audio waveforms.
+[45:33] You add like an encoded representation of a couple tens of thousands of audio waveforms.
+[45:38] And then you fine tune the model to generate those token at the time and stream them out and decode them.
+[45:44] And that's why for those sort of models, we were able to just like grab a custom version of Tensil LLM, stick the TTS model in it and let it rip.
+[45:53] And all of a sudden get really, really excellent performance.
+[45:56] But if you tried to do the same thing with again, like, you know, VLMs is an example I talked about.
+[46:02] Or, you know, if you try and do the exact same thing with Whisper for audio in, which does have the encoder and the decoder component, then then then then it doesn't work.
+[46:10] So you do get a free lunch here and there.
+[46:14] But a lot of times you do have to do this, this like very specific work.
+[46:18] And even when you don't, even in a case like TTS, where you are able to sort of reuse an existing system,
+[46:25] there's still modality specific considerations.
+[46:28] With LLMs, you just want to make as many tokens as possible.
+[46:31] You want your tokens per second to be as high as possible.
+[46:34] With X to speech, you only need a certain number of tokens per second for real time speech.
+[46:39] Oftentimes that's about like 80 to 100, depending on the model.
+[46:43] So if you get your system to like 100 tokens per second, all of a sudden what you want to do is increase the batch size so that you can run more concurrent streams.
+[46:52] Or, you know, maybe you want to leave room for like retries and checks and that kind of stuff.
+[46:57] So there's or, you know, figure out how to get that 100 tokens per second now on cheaper hardware.
+[47:03] There's a cap on your TPS speed that you care about, and that's novel.
+[47:10] So, yeah, so even in a similar architecture across modality, you might have a different performance goal.
+[47:17] And having a different performance goal completely changes the way you architect your system.
+[47:21] You mentioned TensorRT and that made me think about like the software side of this, like VLLM, TensorRT.
+[47:31] Like, where do you think we are in the cycle?
+[47:34] Like, are we like in the explosion part where we're getting a lot more options or are we at the like the narrowing part?
+[47:44] It kind of feels like a little bit of both to me sometimes.
+[47:47] You know, the market here is remarkably concentrated in open source.
+[47:53] If you look at, for example, JavaScript frameworks at the height, there were dozens of very viable frameworks you could build an application on.
+[48:02] If you look at programming languages, there are still like maybe eight languages that I think would most people would say are a reasonable pick to like build a website with.
+[48:14] There are, of course, a large number of really promising open source projects across the entire AI community.
+[48:21] I think there's a ton of really interesting work in agent orchestration and context work and that kind of stuff.
+[48:27] Within inference, there's really been a concentration around like three major open source runtimes, the VLLM, SGLang and TensorRT LLM.
+[48:39] And I think part of that is just the complexity of standing up a new runtime from zero is very, very high.
+[48:48] And so most people find it more useful to sort of contribute to an existing one.
+[48:54] There's a lot of really good open source work around inference optimization outside of that, like good open source kernel libraries, open source quantization tools,
+[49:06] KVCache reuse tools, new speculation stuff, that kind of thing.
+[49:10] But I think it's just due to the complexity of building a complete inference engine from scratch that,
+[49:20] I mean, even the inference providers tend to take a open source engine and build a bunch of customization on top of it versus like completely reinventing everything from scratch,
+[49:33] unless they have to do to either like being on specialized hardware that they design themselves or like, you know, creating their own programming language or whatever.
+[49:40] The sort of practice in the industry is to take the best of open source and the best of what you can build yourself and put them together.
+[49:50] And you mentioned hardware. What do you see happening on the hardware side of the equation?
+[49:56] I mean, I'm team green all the way.
+[49:58] Like the book cover is green for a reason.
+[50:01] But I think that there's a argument to be made for the specialization at the hardware layer as well.
+[50:10] I think one of the coolest demos I saw recently was Talos, which was that ASIC, they burned the actual llama 3.18B onto a chip and got to some ridiculous like 16000 tokens per second number,
+[50:24] which was really cool and sort of an interesting research project in the direction of like where this industry could go.
+[50:32] I think that what we're seeing, you know, maybe 2026 is the year of a lot of things.
+[50:37] One thing 2026 could be is the year of disaggregation with, for example, Nvidia buying Grok and having more specialized prefill compute versus decode compute.
+[50:47] We saw the same thing on AWS with combining their tranium chips with Cerebris for decode.
+[50:55] I think that there's definitely something to be said for these systems, especially for like very, very large scale workloads where you have one model that you are sending millions of concurrent requests to.
+[51:08] And so, yeah, the increasing specialization in hardware is really just beginning and I think is going to offer a lot of unlocks for the industry,
+[51:18] but it's certainly not going to entirely replace the need for very sophisticated software as well.
+[51:24] You started going down this path of 2026 is the year of like, what else are you seeing?
+[51:29] What are you excited about? What's your crystal ball saying?
+[51:33] I mean, 2026 is the year of influence. Like 2025 was too, 2024 was, 2027 will be, but well, it's the year of influence.
+[51:43] And Linux on the desktop.
+[51:47] I think that this year we're going to see a real increase in ownership of intelligence.
+[51:57] You've seen like you saw with Shopify, then moving to a Quen model and saving millions, tens of millions on their workloads.
+[52:05] You see companies like Koso coming out with very sophisticated models like Composer that are allowing them to really create a novel experience for the users who are depending on their platform.
+[52:20] I am a daily user, for example.
+[52:22] So I think that's the trend that I'm most excited about is companies understanding that if they want to build a really differentiated product,
+[52:30] they need to be differentiated at every level and that's starting to include the model level.
+[52:35] And for folks that want to dig in more is, you know, where can they get the book? Is it easily accessible?
+[52:41] Yeah, so influence engineering is available at basetend.com slash influence engineering.
+[52:47] There's a free PDF and free ebook, EPUB.
+[52:51] I'm working on an audiobook with actually with a customer of ours, which is very exciting.
+[52:55] So that'll be out hopefully in a few weeks.
+[52:59] Physical copies are a little harder to come by.
+[53:02] I massively underestimated the demand for this book.
+[53:05] I've already done 20,000 digital copies and given away nearly my entire first print run.
+[53:11] I should have a Shopify store up next week, which will allow people to self-sew stuff.
+[53:16] But there's always copies at any Base 10 booth at a conference or trade show.
+[53:22] So what's the next conference you're going to?
+[53:24] I'm going to AIE Miami and GTC next week.
+[53:29] We're going to be at AI Engineer World's Fair this summer.
+[53:32] We do a bunch of events around San Francisco and New York where we hand these out.
+[53:36] So yeah, it's a little bit of a scavenger hunt to get your hands on one.
+[53:42] But influence is here and it's time to learn about it.
+[53:46] So come through.
+[53:47] Awesome. Awesome. Well, Philip, thanks so much for jumping on and talking with us about inference engineering.
+[53:55] Hey, Sam, thanks so much for having me and appreciate the conversation.
+[53:59] Same. Thank you.
