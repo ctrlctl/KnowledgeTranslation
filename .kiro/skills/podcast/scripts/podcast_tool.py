@@ -211,9 +211,16 @@ def fetch_article(url):
 # ─── FETCH IMAGES ───────────────────────────────────────────────────────────
 
 def fetch_images(source, output_dir):
-    """Extract and download all images from HTML (file path or URL). Output JSON mapping."""
+    """Extract and download all images from HTML (file path or URL). Output JSON mapping.
+
+    Images with a description (alt text or nearby figcaption) are considered
+    content images and named fig_XX_<slug>.ext. Images without description are
+    treated as decorative (hero/banner/icon) and named fig_XX_untitled.ext.
+    The output JSON includes a "use" field: true for content images, false for decorative.
+    """
     from html import unescape
     from urllib.parse import urljoin, urlparse, parse_qs
+    import unicodedata
 
     if os.path.isfile(source):
         html = Path(source).read_text(encoding="utf-8", errors="ignore")
@@ -227,7 +234,7 @@ def fetch_images(source, output_dir):
 
     def resolve_url(src):
         """Resolve a src to a downloadable URL, handling Next.js _next/image wrappers."""
-        src = unescape(src)  # decode &amp; etc.
+        src = unescape(src)
         if src.startswith("data:"):
             return None
         if not src.startswith("http"):
@@ -235,7 +242,6 @@ def fetch_images(source, output_dir):
                 src = urljoin(base_url, src)
             else:
                 return None
-        # Unwrap Next.js image optimizer URLs
         parsed = urlparse(src)
         if "/_next/image" in parsed.path:
             qs = parse_qs(parsed.query)
@@ -243,38 +249,75 @@ def fetch_images(source, output_dir):
                 src = qs["url"][0]
         return src
 
-    # Extract img src from HTML
-    img_urls = []
-    for m in re.finditer(r'<img[^>]+src="([^"]+)"', html, re.IGNORECASE):
-        url = resolve_url(m.group(1))
-        if url and url not in img_urls:
-            img_urls.append(url)
+    def slugify(text, max_len=40):
+        """Convert text to a filename-safe slug."""
+        text = text.strip().lower()
+        text = re.sub(r'[^\w\s-]', '', text)
+        text = re.sub(r'[\s_]+', '-', text)
+        text = text.strip('-')[:max_len].rstrip('-')
+        return text or ""
 
-    # Also check srcset (take largest entry)
-    for m in re.finditer(r'<img[^>]+srcset="([^"]+)"', html, re.IGNORECASE):
-        srcset = m.group(1)
-        parts = [p.strip().split()[0] for p in srcset.split(",") if p.strip()]
-        if parts:
-            url = resolve_url(parts[-1])
-            if url and url not in img_urls:
-                img_urls.append(url)
+    def get_description(match, html_text):
+        """Extract description from alt attr or nearby figcaption."""
+        tag = match.group(0)
+        # Try alt attribute
+        alt_m = re.search(r'alt="([^"]*)"', tag, re.IGNORECASE)
+        alt = alt_m.group(1).strip() if alt_m else ""
+        if alt and alt.lower() not in ("", "image", "img", "photo", "picture", "figure"):
+            return alt
+        # Try figcaption after the img (within 300 chars)
+        after = html_text[match.end():match.end()+500]
+        cap_m = re.search(r'<figcaption[^>]*>(.*?)</figcaption>', after, re.IGNORECASE|re.DOTALL)
+        if cap_m:
+            cap = re.sub(r'<[^>]+>', '', cap_m.group(1)).strip()
+            if cap:
+                return cap[:80]
+        return ""
+
+    # Extract img entries with context
+    img_entries = []  # list of (url, description)
+    seen_urls = set()
+    for m in re.finditer(r'<img[^>]+>', html, re.IGNORECASE):
+        tag = m.group(0)
+        src_m = re.search(r'src="([^"]+)"', tag, re.IGNORECASE)
+        if not src_m:
+            continue
+        url = resolve_url(src_m.group(1))
+        if not url or url in seen_urls:
+            # Also try srcset
+            srcset_m = re.search(r'srcset="([^"]+)"', tag, re.IGNORECASE)
+            if srcset_m:
+                parts = [p.strip().split()[0] for p in srcset_m.group(1).split(",") if p.strip()]
+                if parts:
+                    url = resolve_url(parts[-1])
+            if not url or url in seen_urls:
+                continue
+        seen_urls.add(url)
+        desc = get_description(m, html)
+        img_entries.append((url, desc))
 
     results = []
-    for i, url in enumerate(img_urls, 1):
+    for i, (url, desc) in enumerate(img_entries, 1):
         ext = Path(urlparse(url).path).suffix or ".png"
         if ext.lower() not in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"):
             ext = ".png"
-        filename = f"fig_{i:02d}{ext}"
+        slug = slugify(desc)
+        use = bool(slug)  # has description = content image
+        if slug:
+            filename = f"fig_{i:02d}_{slug}{ext}"
+        else:
+            filename = f"fig_{i:02d}_untitled{ext}"
         filepath = output_path / filename
         try:
             req = urllib.request.Request(url, headers=HEADERS)
             with urllib.request.urlopen(req, timeout=30) as resp:
                 filepath.write_bytes(resp.read())
-            results.append({"index": i, "file": filename, "original_url": url})
-            print(f"  ✓ {filename} ← {url[:80]}", file=sys.stderr)
+            results.append({"index": i, "file": filename, "description": desc, "use": use, "original_url": url})
+            mark = "✓" if use else "○"
+            print(f"  {mark} {filename} ← {url[:70]}", file=sys.stderr)
         except Exception as e:
             print(f"  ✗ {filename} 失败: {e}", file=sys.stderr)
-            results.append({"index": i, "file": filename, "original_url": url, "error": str(e)})
+            results.append({"index": i, "file": filename, "description": desc, "use": use, "original_url": url, "error": str(e)})
 
     print(json.dumps(results, ensure_ascii=False, indent=2))
 

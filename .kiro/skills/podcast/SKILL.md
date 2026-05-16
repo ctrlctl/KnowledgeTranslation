@@ -146,7 +146,13 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 ```
 ⚠️ **必须从原文 URL 抓取图片，不能从 source.html 抓取。** 很多网站（如 Anthropic）的图片通过 JavaScript 动态加载，静态 HTML 中不包含内容图片。
 
-脚本解析页面中所有 `<img>` 标签（含 srcset），下载到 images/ 目录，输出 JSON 映射（序号、文件名、原始URL）。翻译时根据图片在原文中的位置插入对应的 `![](images/fig_XX.png)`。
+脚本解析页面中所有 `<img>` 标签（含 srcset），下载到 images/ 目录，输出 JSON 映射（序号、文件名、描述、是否使用、原始URL）。
+
+图片命名规则：
+- **有描述的图**（alt 文本或 figcaption）：`fig_XX_<description-slug>.ext`，标记 `"use": true`，这些是正文要插入的内容图
+- **无描述的图**（hero/banner/icon）：`fig_XX_untitled.ext`，标记 `"use": false`，默认不插入翻译中
+
+翻译时根据图片文件名中的描述，与原文中对应段落的内容匹配，确定插入位置。只插入 `"use": true` 的图片。
 
 **步骤3：分块翻译**
 
