@@ -76,7 +76,7 @@ body, .markdown-body {
 
 Agentic 系统的基本构建模块是经过增强的 LLM——配备了检索（retrieval）、工具（tools）和记忆（memory）等能力。当前的模型能主动使用这些能力：自己生成搜索查询、选择合适的工具、决定保留哪些信息。
 
-![](images/fig_01.png)
+![](images/fig_02.png)
 
 *图：增强型 LLM 的基本结构*
 
@@ -88,7 +88,7 @@ Agentic 系统的基本构建模块是经过增强的 LLM——配备了检索�
 
 Prompt chaining（链式调用）将任务分解为一系列步骤，每次 LLM 调用处理上一步的输出。你可以在任何中间步骤添加程序化检查（如下图中的"gate"），确保流程仍在正轨上。
 
-![](images/fig_02.png)
+![](images/fig_03.png)
 
 *图：Prompt 链式调用工作流*
 
@@ -104,7 +104,7 @@ Prompt chaining（链式调用）将任务分解为一系列步骤，每次 LLM 
 
 Routing（路由）对输入进行分类，并将其导向专门的后续任务。这种工作流实现了关注点分离，可以构建更专门化的 prompt。如果不做路由，针对某类输入的优化可能会损害其他输入的表现。
 
-![](images/fig_03.png)
+![](images/fig_04.png)
 
 *图：路由工作流*
 
@@ -123,7 +123,7 @@ LLM 有时可以同时处理一个任务的不同部分，然后通过程序化�
 - **分段（Sectioning）：** 将任务拆分为独立的子任务并行执行
 - **投票（Voting）：** 对同一任务运行多次以获得多样化输出
 
-![](images/fig_04.png)
+![](images/fig_05.png)
 
 *图：并行化工作流*
 
@@ -140,7 +140,7 @@ LLM 有时可以同时处理一个任务的不同部分，然后通过程序化�
 
 在 orchestrator-workers（编排者-工作者）工作流中，一个中央 LLM 动态拆解任务、将子任务委派给工作者 LLM，然后综合它们的结果。
 
-![](images/fig_05.png)
+![](images/fig_06.png)
 
 *图：编排者-工作者工作流*
 
@@ -156,7 +156,7 @@ LLM 有时可以同时处理一个任务的不同部分，然后通过程序化�
 
 在 evaluator-optimizer（评估者-优化者）工作流中，一个 LLM 调用生成响应，另一个在循环中提供评估和反馈。
 
-![](images/fig_06.png)
+![](images/fig_07.png)
 
 *图：评估者-优化者工作流*
 
@@ -176,7 +176,7 @@ LLM 有时可以同时处理一个任务的不同部分，然后通过程序化�
 
 Agent 能处理复杂任务，但实现往往很直接。它们通常只是 LLM 在循环中根据环境反馈使用工具。因此，**清晰、周到地设计工具集及其文档**至关重要。我们在附录 2（"Prompt Engineering your Tools"）中展开了工具开发的最佳实践。
 
-![](images/fig_07.png)
+![](images/fig_08.png)
 
 *图：自主 Agent*
 
@@ -188,7 +188,7 @@ Agent 能处理复杂任务，但实现往往很直接。它们通常只是 LLM 
 - 解决 SWE-bench 任务的编码 agent——根据任务描述对多个文件进行编辑
 - 我们的"computer use"参考实现——Claude 使用计算机完成任务
 
-![](images/fig_08.png)
+![](images/fig_09.png)
 
 *图：编码 agent 的高层流程*
 
