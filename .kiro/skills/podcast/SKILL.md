@@ -201,10 +201,12 @@ Markdown 格式：按分数分组，每条包含序号、类型图标、来源�
 6. **信息是否完整**：对照原文检查是否有遗漏的段落、论点或关键细节。翻译可以重组句子结构，但不能丢信息。
 
 **音频/视频（type=media）**：
-```bash
-.venv/bin/python .kiro/skills/podcast/scripts/podcast_tool.py transcribe "<url>" -t "标题" -m base > /tmp/transcript.txt
+
+使用 `transcribe` MCP tool（whisper-mcp-server）：
 ```
-转录完成后，将转录文件保存到 `production/<slug>/transcript.txt`（不要删除，方便后续回溯）。
+transcribe(source="<url>", language="auto", model_name="medium", output_format="timestamped")
+```
+将返回的转录文本保存到 `production/<slug>/transcript.txt`（不要删除，方便后续回溯）。
 
 **音频翻译流程（严格按步骤执行）：**
 
@@ -392,29 +394,12 @@ python3 -m venv .venv
 .venv/bin/pip install openai-whisper
 ```
 
-### GPU 转录（Windows侧 anaconda）
+### GPU 转录（通过 MCP Server）
 
-WSL 内的 CUDA 驱动不兼容，转录使用 Windows 侧的 anaconda 环境 + RTX 3060 GPU。
+转录能力已封装为 whisper-mcp-server（独立项目），通过 MCP 协议调用。
 
-**环境位置**：`C:\Users\lqita\anaconda3\python.exe`（已安装 openai-whisper、yt-dlp、PyTorch CUDA）
-
-**使用方式**（从 WSL 调用）：
-
-1. 用 WSL 的 yt-dlp 下载音频到 Windows 可访问路径：
-```bash
-.venv/bin/yt-dlp -x --audio-format mp3 -o "/mnt/c/Users/lqita/tmp_transcribe/audio.%(ext)s" "<url>"
-```
-
-2. 调用 Windows 侧 Python 跑 GPU 转录：
-```bash
-cmd.exe /c "C:\Users\lqita\anaconda3\python.exe C:\Users\lqita\tmp_transcribe\run_whisper.py C:\Users\lqita\tmp_transcribe\audio.mp3 medium > C:\Users\lqita\tmp_transcribe\transcript.txt"
-```
-
-3. 复制结果回来：
-```bash
-cp /mnt/c/Users/lqita/tmp_transcribe/transcript.txt /tmp/transcript.txt
-```
-
-**转录脚本**：`/mnt/c/Users/lqita/tmp_transcribe/run_whisper.py`
+- Server 使用 Python 3.14 运行 MCP 协议层，subprocess 调用 anaconda 3.9 + RTX 3060 GPU 做实际转录
+- 配置见 `.kiro/settings/mcp.json`
+- 调用方式：直接使用 `transcribe` MCP tool，无需手动管理下载/转录/复制流程
 
 **Windows pip 代理注意**：安装新包时需设置 `HTTPS_PROXY=http://127.0.0.1:7897`（注意是 `http://` 不是 `https://`）。

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "whisper": {
+      "command": "cmd.exe",
+      "args": ["/c", "C:\\Users\\lqita\\AppData\\Local\\Programs\\Python\\Python314\\python.exe", "C:\\Users\\lqita\\Documents\\whisper-mcp-server\\server.py"]
+    }
+  }
+}
