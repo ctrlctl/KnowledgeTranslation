@@ -335,6 +335,34 @@ const CARDS = [
     a: "函数/类开头的文档字符串，描述做什么、参数、返回值。\n\n在ACI中：工具描述就是给LLM看的docstring。\n要写得像给初级开发者写文档一样清晰：\n包含使用示例、边界情况、输入格式、与其他工具的边界。",
     source: "AnthropicEngineering_20241219_构建有效的Agent",
     topic: "Tooling & Infra"
+  },
+  {
+    q: "为Agent编写工具的三步迭代流程是什么？",
+    hint: "三步闭环，每步一个关键动作",
+    a: "1. 构建原型：用Claude Code快速搭建，包装为MCP server/DXT，本地测试\n2. 运行评估：生成真实任务，程序化agentic循环运行，追踪准确率/时间/token/错误\n3. 与Agent协作优化：将transcript给Claude分析，一次重构大量工具，用held-out测试集防过拟合",
+    source: "AnthropicEngineering_20250911_用Agent为Agent编写有效工具",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "工具（Tool）与传统API的本质区别是什么？",
+    hint: "从\u201c契约双方的性质\u201d角度回答",
+    a: "传统API：确定性系统之间的契约，相同输入总是相同行为。\n工具：确定性系统与非确定性Agent之间的契约。\nAgent可能调用工具、从知识回答、或问澄清问题——行为不可预测。\n所以不能像给开发者写API那样写工具，要考虑误用、幻觉、需要从描述中理解用法。",
+    source: "AnthropicEngineering_20250911_用Agent为Agent编写有效工具",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "优化工具响应token效率的三个策略是什么？",
+    hint: "控制量 + 截断引导 + 错误引导",
+    a: "1. 控制返回量：分页、过滤、范围选择、截断，设合理默认值（Claude Code默认25k token上限）\n2. 截断时引导行为：附提示教Agent用更精准查询（加过滤条件、缩小范围）\n3. 错误响应做教学：返回具体可操作的修正建议，而非不透明错误码或堆栈跟踪",
+    source: "AnthropicEngineering_20250911_用Agent为Agent编写有效工具",
+    topic: "Tooling & Infra"
+  },
+  {
+    q: "为什么不应该给Agent提供list_contacts这样的工具？应该怎么做？",
+    hint: "从Agent的\u201c可供性\u201d（affordances）角度回答",
+    a: "Agent上下文有限且昂贵，不像程序有廉价内存。\nlist_contacts返回全部联系人会浪费上下文在无关信息上（暴力搜索）。\n应该提供search_contacts或message_contact——让Agent像人翻通讯录一样直接跳到相关页。\n原则：构建少量针对高影响力工作流的精心设计工具，而非包装所有API端点。",
+    source: "AnthropicEngineering_20250911_用Agent为Agent编写有效工具",
+    topic: "Tooling & Infra"
   }
 ];
 
